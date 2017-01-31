@@ -1,0 +1,11 @@
+{
+  "name": "express-jsonapi",
+  "dependencies": {
+    "body-parser": "^1.16.0",
+    "body-parser-json": "^1.9.2",
+    "express": "^4.14.1"
+  },
+  "devDependencies": {
+    "mocha": "^3.2.0"
+  }
+}
