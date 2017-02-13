@@ -58,6 +58,7 @@ ALTER TABLE `projects`
 CREATE TABLE `timers` (
   `id` int(11) NOT NULL,
   `type` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `project_id` int(11),
   `status` ENUM('new','done','interrupted') DEFAULT 'new',
   `created_at` datetime COLLATE utf8_unicode_ci DEFAULT NULL,

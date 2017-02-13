@@ -4,6 +4,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
   <script src=https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.4/chance.min.js"></script>
+  <script src="js/ng-lodash.min.js"></script>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
   <title>AngularTracker</title>
@@ -66,7 +67,7 @@
         }
 
         // Declare app
-        var app = angular.module("myApp", ["ngRoute"]);
+        var app = angular.module("myApp", ["ngRoute", 'ngLodash']);
         app.filter('formatTimer', function() {
           return formatTimer;
         });
@@ -85,7 +86,7 @@
         });
 
         // Projects controller
-        app.controller("projectsCtrl", function ($scope, $http) {
+        app.controller("projectsCtrl", function ($scope, $http, lodash) {
 
           $scope.projects = [];
           $scope.name = chance.word();
@@ -120,7 +121,7 @@
         });
 
         // Timer controller
-        app.controller("timerCtrl", function ($scope, $http) {
+        app.controller("timerCtrl", function ($scope, $http, lodash) {
           const DURATION = 1500;
           // const DURATION = 5;
           // const IDLE = 0;
@@ -128,7 +129,8 @@
           // $scope.timerStatus = IDLE;
           $scope.timer = null;
           $scope.timeRemaining = 0;
-          $scope.items = [];
+          $scope.currentTimer = {};
+          $scope.timers = [];
           $scope.projects = [];
 
           $scope.startTimer = function() {
@@ -145,20 +147,55 @@
 
           }
 
+          $scope.select = function( evt ) {
+            var id = parseInt( $( evt.target ).attr( 'id' ).substr( 6 ), 10 );
+            console.log( $scope.timers );
+            var timer = lodash.find( $scope.timers, { id } );
+            $scope.currentTimer = timer;
+          }
+
           $scope.createPomodoro = function() {
             const type = "pomodoro";
+            $scope.description = "enter description here";
+            $scope.currentTimer = null;
             $scope.startTimer();
 
             $http.post("/api/v1/timers",
             { data: { attributes: { type } } } )
             .then(function(response) {
-              const newTimer = mapAttributes( response.data.data );
-              $scope.items.push( newTimer );
+              $scope.currentTimer = mapAttributes( response.data.data );
+              $scope.items.push( $scope.currentTimer );
             })
             .catch(err => {
               $scope.statustext = err;
             });
           }
+
+          $scope.updatePomodoro = function() {
+
+            $http.put("/api/v1/timers/" + $scope.currentTimer.id,
+            { data: { attributes: { description: $scope.description } } } )
+            .then(function(response) {
+              $scope.currentTimer = Object.assign( 
+                $scope.currentTimer,
+                mapAttributes( response.data.data )
+              );
+            })
+            .catch(err => {
+              $scope.statustext = err;
+            });
+          }
+
+
+
+          // Get existing projects
+          $http.get("/api/v1/timers")
+          .then(function(response) {
+            $scope.timers = response.data.data.map( mapAttributes );
+          })
+          .catch(err => {
+            $scope.statustext = err;
+          } );
 
           // Get existing projects
           $http.get("/api/v1/projects")

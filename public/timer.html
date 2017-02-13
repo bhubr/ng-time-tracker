@@ -9,13 +9,14 @@
       </ul>
       <h3>Timeline</h3>
       <ul>
-        <li class="{{ x.type }}" ng-repeat="x in items">
-         {{ x.type }}
+        <li id="{{ 'timer-' + x.id }}" class="{{ x.type }}" ng-repeat="x in timers" ng-click="select($event)" selected="{{ x.id === currentTimer.id }}">
+          {{ x.id }}. {{ x.type }} {{ x.description }}
         </li>
       </ul>
     </div>
     <div class="col s6">
       <h3>Start timer</h3>
+      What are you working on? <input type="text" ng-model="description"><button ng-click="updatePomodoro()">Update</button><br>
       <button ng-click="createPomodoro()">Start</button>
       <div>{{ timeRemaining | formatTimer }}</div>
     </div>
