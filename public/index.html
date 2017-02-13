@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+  <script src=https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js></script>
 
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
@@ -12,11 +13,11 @@
   <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 </head>
-<body>
+<body ng-app="myApp">
   <nav class="teal lighten-1" role="navigation">
     <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Logo</a>
       <ul class="right hide-on-med-and-down">
-        <li><a href="#">Navbar Link</a></li>
+        <li><a href="#/main">Main</a></li>
       </ul>
 
       <ul id="nav-mobile" class="side-nav">
@@ -29,24 +30,63 @@
 
   <div class="container">
     <div class="section">
-      <div ng-app="myApp" ng-controller="myCtrl">
 
-        Project Name: <input type="text" ng-model="name"><br>
-        Project Description: <textarea ng-model="description">{{ description }}</textarea><br>
-        Color: <input ng-model="myCol"><br>
-        <button ng-click="submit()">Submit</button>
-        <br>
+        <div ng-view></div>
 
-        <span style="background-color:{{myCol}}">Project: {{ name + " (" + description + ")" }}</span>
+        <div ng-controller="createProjectCtrl">
+          Project Name: <input type="text" ng-model="name"><br>
+          Project Description: <textarea ng-model="description">{{ description }}</textarea><br>
+          Color: <input ng-model="myCol"><br>
+          <button ng-click="submit()">Submit</button>
+          <br>
 
-        <div>
-        {{ content }} {{ statuscode }} {{ statustext }}
+          <span style="background-color:{{myCol}}">Project: {{ name + " (" + description + ")" }}</span>
+
+          <div>
+          {{ content }} {{ statuscode }} {{ statustext }}
         </div>
-        </div>
+      </div>
 
         <script>
-        var app = angular.module('myApp', []);
-        app.controller('myCtrl', function($scope, $http) {
+        var app = angular.module("myApp", ["ngRoute"]);
+        app.config(function($routeProvider) {
+            $routeProvider
+            .when("/main", {
+                templateUrl : "projectsList.html",
+                controller : "projectsCtrl"
+            });
+/*            .when("/london", {
+                templateUrl : "london.htm",
+                controller : "londonCtrl"
+            })
+            .when("/paris", {
+                templateUrl : "paris.htm",
+                controller : "parisCtrl"
+            });
+*/        });
+        app.controller("projectsCtrl", function ($scope, $http) {
+          $http.get("/api/v1/projects")
+          .then(function(response) {
+            console.log(response);
+            $scope.projects = response.data.data.map( project => {
+              const { id } = project;
+              return Object.assign( {}, { id }, project.attributes );
+            } );
+            // $scope.content = response.data;
+            // $scope.statuscode = response.status;
+            // $scope.statustext = response.statustext; 
+          })
+          .catch(err => {
+            $scope.statustext = err;
+          } );
+
+        });
+        // app.controller("parisCtrl", function ($scope) {
+        //     $scope.msg = "I love Paris";
+        // });
+
+        // var app = angular.module('myApp', []);
+        app.controller('createProjectCtrl', function($scope, $http) {
             $scope.name= "Dummy Project";
             $scope.description= "This is a cool project";
             $scope.myCol = '#abc';
