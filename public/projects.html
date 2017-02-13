@@ -1,0 +1,24 @@
+<div ng-app="">
+  <div class="row">
+    <div class="col s6">
+      <h3>Projects list</h3>
+      <ul>
+        <li ng-repeat="x in projects">
+          <strong>{{ x.name }}</strong> {{ x.description }}
+        </li>
+      </ul>
+    </div>
+    <div class="col s6">
+      <h3>Create project</h3>
+      Project Name: <input type="text" ng-model="name"><br>
+      Project Description: <textarea ng-model="description">{{ description }}</textarea><br>
+      <!-- Color: <input xxng-model="myCol"><br> -->
+      <button ng-click="createProject()">Submit</button>
+      <br>
+
+      <span">Project: {{ name + " (" + description + ")" }}</span>
+
+    </div>
+  </div>
+  {{ content }} {{ statuscode }} {{ statustext }}
+</div>
