@@ -1,30 +1,30 @@
-
 var express = require('express');
 var http = require('http');
-express.response
+// var Promise = require('bluebird');
+// var fs = require('fs');
+// var readFileAsync = Promise.promisify( fs.readFile );
+var bodyParser = require('body-parser');
 
-var bodyParser = require('body-parser')
 var knex = require('knex')({
   client: 'mysql',
   connection: {
     host : '127.0.0.1',
-    user : 'root',
+    project : 'root',
     password : '',
-    database : 'celeb_dev'
+    database : 'node_project_tracker_dev'
   },
-  // migrations: {
-  //   tableName: 'migrations'
-  // }
 });
 var bookshelf = require('bookshelf')(knex);
 
-var User = bookshelf.Model.extend({
-  tableName: 'users',
+var Project = bookshelf.Model.extend({
+  tableName: 'projects',
   // posts: function() {
   //   return this.hasMany(Posts);
   // }
 });
 var app = express();
+app.use(express.static('public'));
+
 var id = 1;
 
 //var convertAttributes = require('./convert-attributes');
@@ -34,8 +34,8 @@ app.use(function(req, res, next) {
   res.jsonApi = function(data) {
     console.log(data);
     res.set({
-      'Content-Type': 'application/vnd.api+json',
-      'Accept': 'application/vnd.api+json'
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
     });
     return res.send(JSON.stringify({ data }));
   }
@@ -44,25 +44,22 @@ app.use(function(req, res, next) {
 
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 
-app.get('/', function (req, res) {
-  res.send('Hello World!');
-});
+// app.get('/', function (req, res) {
+//   res.send('Hello World!');
+// });
 
-app.post('/api/v1/users', function (req, res) {
-  console.log(req.params);
-  console.log(req.body);
+app.post('/api/v1/projects', function (req, res) {
   var attrs = req.body.data.attributes;
-  var newUser = {
-    'first-name': attrs['first-name'],
-    'last-name': attrs['last-name'],
-    'image-url': attrs['image-url']
+  var newProject = {
+    'name': attrs['name'],
+    'description': attrs['description'],
+    // 'image-url': attrs['image-url']
   }
-  var userObj = utils.snakeAttributes(attrs);
-  console.log(userObj);
-  user = new User(userObj);
-  user.save().then(result => {
+  var projectObj = utils.snakeAttributes(attrs);
+  project = new User(projectObj);
+  project.save().then(result => {
     console.log('id', result);
-  var payload = { data: { id: result, type: "users", attributes: newUser } };
+  var payload = { data: { id: result, type: "projects", attributes: newProject } };
   res.set('Content-Type', 'application/vnd.api+json');
   res.set('Accept', 'application/vnd.api+json');
   res.send(JSON.stringify(payload));

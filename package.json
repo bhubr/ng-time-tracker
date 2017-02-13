@@ -1,6 +1,10 @@
 {
-  "name": "express-jsonapi",
+  "name": "angular-tracker",
+  "license": "WTFPL",
+  "repository": "https://github.com/",
+  "description": "Track projects and time with Express and AngularJS",
   "dependencies": {
+    "bluebird": "^3.4.7",
     "body-parser": "^1.16.0",
     "body-parser-json": "^1.9.2",
     "bookshelf": "^0.10.3",
