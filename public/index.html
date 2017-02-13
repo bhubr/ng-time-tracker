@@ -1,44 +1,110 @@
 <!DOCTYPE html>
-<html lang="en-US">
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<html lang="en">
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>AngularTracker</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+</head>
 <body>
+  <nav class="teal lighten-1" role="navigation">
+    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Logo</a>
+      <ul class="right hide-on-med-and-down">
+        <li><a href="#">Navbar Link</a></li>
+      </ul>
 
-<div ng-app="myApp" ng-controller="myCtrl">
+      <ul id="nav-mobile" class="side-nav">
+        <li><a href="#">Navbar Link</a></li>
+      </ul>
+      <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+    </div>
+  </nav>
 
-Project Name: <input type="text" ng-model="name"><br>
-Project Description: <textarea ng-model="description">{{ description }}</textarea><br>
-Color: <input ng-model="myCol"><br>
-<button ng-click="submit()">Submit</button>
-<br>
 
-<span style="background-color:{{myCol}}">Project: {{ name + " (" + description + ")" }}</span>
+  <div class="container">
+    <div class="section">
+      <div ng-app="myApp" ng-controller="myCtrl">
 
-<div>
-{{ content }} {{ statuscode }} {{ statustext }}
-</div>
-</div>
+        Project Name: <input type="text" ng-model="name"><br>
+        Project Description: <textarea ng-model="description">{{ description }}</textarea><br>
+        Color: <input ng-model="myCol"><br>
+        <button ng-click="submit()">Submit</button>
+        <br>
 
-<script>
-var app = angular.module('myApp', []);
-app.controller('myCtrl', function($scope, $http) {
-    $scope.name= "Dummy Project";
-    $scope.description= "This is a cool project";
-    $scope.myCol = '#abc';
-    const { name, description } = $scope;
-    $scope.submit = function() {
-    	$http.post("/api/v1/projects",
-    	{ data: { attributes: { name, description } } } )
-    	.then(function(response) {
-    	    $scope.content = response.data;
-    	    $scope.statuscode = response.status;
-    	    $scope.statustext = response.statustext; 
-    	})
-    	.catch(err => {
-    		$scope.statustext = err;
-    	});
-    }
-});
-</script>
+        <span style="background-color:{{myCol}}">Project: {{ name + " (" + description + ")" }}</span>
 
-</body>
+        <div>
+        {{ content }} {{ statuscode }} {{ statustext }}
+        </div>
+        </div>
+
+        <script>
+        var app = angular.module('myApp', []);
+        app.controller('myCtrl', function($scope, $http) {
+            $scope.name= "Dummy Project";
+            $scope.description= "This is a cool project";
+            $scope.myCol = '#abc';
+            $scope.submit = function() {
+              const { name, description } = $scope;
+              $http.post("/api/v1/projects",
+              { data: { attributes: { name, description } } } )
+              .then(function(response) {
+                  $scope.content = response.data;
+                  $scope.statuscode = response.status;
+                  $scope.statustext = response.statustext; 
+              })
+              .catch(err => {
+                $scope.statustext = err;
+              });
+            }
+        });
+        </script>
+    </div>
+
+  </div>
+
+  <footer class="page-footer purple">
+    <div class="container">
+      <div class="row">
+        <div class="col l6 s12">
+          <h5 class="white-text">bhu</h5>
+          <p class="grey-text text-lighten-4">Je suis un geek.</p>
+
+
+        </div>
+        <div class="col l3 s12">
+          <h5 class="white-text">Settings</h5>
+          <ul>
+            <li><a class="white-text" href="#!">Link 1</a></li>
+         </ul>
+        </div>
+        <div class="col l3 s12">
+          <h5 class="white-text">Connect</h5>
+          <ul>
+            <li><a class="white-text" href="#!">Link 1</a></li>
+            <li><a class="white-text" href="#!">Link 4</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+      Made by <a class="purple-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+      </div>
+    </div>
+  </footer>
+
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="js/materialize.js"></script>
+  <script src="js/init.js"></script>
+
+  </body>
 </html>
