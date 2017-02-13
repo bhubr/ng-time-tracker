@@ -17,7 +17,8 @@
   <nav class="teal lighten-1" role="navigation">
     <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Logo</a>
       <ul class="right hide-on-med-and-down">
-        <li><a href="#/main">Main</a></li>
+        <li><a href="#/">Projects</a></li>
+        <li><a href="#/timer">Timer</a></li>
       </ul>
 
       <ul id="nav-mobile" class="side-nav">
@@ -35,12 +36,40 @@
   </div>
         <script>
 
+        /**
+         * You first need to create a formatting function to pad numbers to two digits…
+         **/
+        function twoDigits(d) {
+            if(0 <= d && d < 10) return "0" + d.toString();
+            if(-10 < d && d < 0) return "-0" + (-1*d).toString();
+            return d.toString();
+        }
+
+        /**
+         * …and then create the method to output the date string as desired.
+         * Some people hate using prototypes this way, but if you are going
+         * to apply this to more than one Date object, having it as a prototype
+         * makes sense.
+         **/
+        // Date.prototype.toMysqlFormat = function() {
+        //     return this.getUTCFullYear() + "-" + twoDigits(1 + this.getUTCMonth()) + "-" + twoDigits(this.getUTCDate()) + " " + twoDigits(this.getUTCHours()) + ":" + twoDigits(this.getUTCMinutes()) + ":" + twoDigits(this.getUTCSeconds());
+        // };
+
         function mapAttributes( item ) {
           return Object.assign( {}, { id: item.id }, item.attributes );
         }
 
+        function formatTimer( seconds ) {
+          const minutes = Math.floor( seconds / 60 );
+          seconds = seconds % 60;
+          return twoDigits( minutes ) + ':' + twoDigits( seconds );
+        }
+
         // Declare app
         var app = angular.module("myApp", ["ngRoute"]);
+        app.filter('formatTimer', function() {
+          return formatTimer;
+        });
 
         // Routing
         app.config(function($routeProvider) {
@@ -48,11 +77,11 @@
             .when("/", {
                 templateUrl : "projects.html",
                 controller : "projectsCtrl"
+            })
+            .when("/timer", {
+                templateUrl : "timer.html",
+                controller : "timerCtrl"
             });
-            // .when("/paris", {
-            //     templateUrl : "paris.htm",
-            //     controller : "parisCtrl"
-            // });
         });
 
         // Projects controller
@@ -73,9 +102,57 @@
             .then(function(response) {
               const newProject = mapAttributes( response.data.data );
               $scope.projects.push( newProject );
-                // $scope.content = response.data;
-                // $scope.statuscode = response.status;
-                // $scope.statustext = response.statustext; 
+            })
+            .catch(err => {
+              $scope.statustext = err;
+            });
+          }
+
+          // Get existing projects
+          $http.get("/api/v1/projects")
+          .then(function(response) {
+            $scope.projects = response.data.data.map( mapAttributes );
+          })
+          .catch(err => {
+            $scope.statustext = err;
+          } );
+
+        });
+
+        // Timer controller
+        app.controller("timerCtrl", function ($scope, $http) {
+          const DURATION = 10;
+          // const IDLE = 0;
+          // const RUNNING = 1;
+          // $scope.timerStatus = IDLE;
+          $scope.timer = null;
+          $scope.timeRemaining = 0;
+          $scope.items = [];
+          $scope.projects = [];
+
+          $scope.startTimer = function() {
+            $scope.timeRemaining = DURATION;
+            $scope.timer = setInterval( () => {
+              $scope.$apply(function(){
+                $scope.timeRemaining -= 1;
+                if( $scope.timeRemaining === 0 ) {
+                  clearInterval( $scope.timer );
+                  $scope.timer = null;
+                }
+              });
+            }, 1000 );
+
+          }
+
+          $scope.createPomodoro = function() {
+            const type = "pomodoro";
+            $scope.startTimer();
+
+            $http.post("/api/v1/timers",
+            { data: { attributes: { type } } } )
+            .then(function(response) {
+              const newTimer = mapAttributes( response.data.data );
+              $scope.items.push( newTimer );
             })
             .catch(err => {
               $scope.statustext = err;

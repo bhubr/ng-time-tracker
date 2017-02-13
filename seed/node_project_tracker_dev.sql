@@ -29,7 +29,9 @@ SET time_zone = "+00:00";
 CREATE TABLE `projects` (
   `id` int(11) NOT NULL,
   `name` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8_unicode_ci DEFAULT NULL
+  `description` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `created_at` datetime COLLATE utf8_unicode_ci DEFAULT NULL,
+  `updated_at` datetime COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -50,6 +52,35 @@ ALTER TABLE `projects`
 -- AUTO_INCREMENT pour la table `projects`
 --
 ALTER TABLE `projects`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+
+CREATE TABLE `timers` (
+  `id` int(11) NOT NULL,
+  `type` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `project_id` int(11),
+  `created_at` datetime COLLATE utf8_unicode_ci DEFAULT NULL,
+  `updated_at` datetime COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Index pour les tables exportées
+--
+
+--
+-- Index pour la table `timers`
+--
+ALTER TABLE `timers`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT pour les tables exportées
+--
+
+--
+-- AUTO_INCREMENT pour la table `timers`
+--
+ALTER TABLE `timers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

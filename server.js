@@ -4,6 +4,7 @@ var http = require('http');
 // var fs = require('fs');
 // var readFileAsync = Promise.promisify( fs.readFile );
 var bodyParser = require('body-parser');
+var utils = require('./utils');
 
 var knex = require('knex')({
   client: 'mysql',
@@ -16,20 +17,60 @@ var knex = require('knex')({
 });
 var bookshelf = require('bookshelf')(knex);
 
-var Project = bookshelf.Model.extend({
+global.Project = bookshelf.Model.extend({
   tableName: 'projects',
+});
+
+/**
+ * http://wesleytsai.io/2015/07/28/bookshelf-bcrpyt-password-hashing/
+ */
+ global.Timer = bookshelf.Model.extend({
+  tableName: 'timers',
+  // initialize: function() {
+  //   this.on('creating', this.timestampToDatetime, this);
+  // },
+  // timestampToDatetime: function( model, attrs, options ) {
+  //   return new Promise(function(resolve, reject) {
+
+  //   });
+  // }
   // posts: function() {
   //   return this.hasMany(Posts);
   // }
 });
+
+const tableObjMap = {
+  projects: 'Project',
+  timers: 'Timer'
+}
+
+
+/**
+ * You first need to create a formatting function to pad numbers to two digits…
+ **/
+function twoDigits(d) {
+    if(0 <= d && d < 10) return "0" + d.toString();
+    if(-10 < d && d < 0) return "-0" + (-1*d).toString();
+    return d.toString();
+}
+
+/**
+ * …and then create the method to output the date string as desired.
+ * Some people hate using prototypes this way, but if you are going
+ * to apply this to more than one Date object, having it as a prototype
+ * makes sense.
+ **/
+Date.prototype.toMysqlFormat = function() {
+    return this.getUTCFullYear() + "-" + twoDigits(1 + this.getUTCMonth()) + "-" + twoDigits(this.getUTCDate()) + " " + twoDigits(this.getUTCHours()) + ":" + twoDigits(this.getUTCMinutes()) + ":" + twoDigits(this.getUTCSeconds());
+};
+
+
+/**
+ * Setup Express
+ */
 var app = express();
 app.use(express.static('public'));
-
-var id = 1;
-
-//var convertAttributes = require('./convert-attributes');
-var utils = require('./utils');
-
+app.use(bodyParser.json({ type: 'application/json' }));
 app.use(function(req, res, next) {
   res.jsonApi = function(data) {
     console.log(data);
@@ -42,31 +83,24 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(bodyParser.json({ type: 'application/json' }));
 
-// app.get('/', function (req, res) {
-//   res.send('Hello World!');
-// });
+app.post('/api/v1/:type', function (req, res) {
+  const type = req.params.type;
+  const objType = tableObjMap[type];
+  const attributes = req.body.data.attributes;
+  const snakedAttrs = Object.assign( {},
+    utils.snakeAttributes(attributes), {
+      created_at: new Date().toMysqlFormat(),
+      updated_at: new Date().toMysqlFormat()
+  } );
+  const item = new global[objType](snakedAttrs);
 
-app.post('/api/v1/projects', function (req, res) {
-  console.log( '##body', req.body, "\n\n" );
-  var attrs = req.body.data.attributes;
-  var newProject = {
-    'name': attrs['name'],
-    'description': attrs['description'],
-    // 'image-url': attrs['image-url']
-  }
-  var projectObj = utils.snakeAttributes(attrs);
-  project = new Project(projectObj);
-  project.save().then(result => {
-    console.log('id', result.attributes.id);
-  var payload = { data: { id: result.attributes.id, type: "projects", attributes: newProject } };
-  res.set('Content-Type', 'application/json');
-  res.set('Accept', 'application/+json');
-  res.send(JSON.stringify(payload));
-
+  item.save().then(result => {
+    var payload = { data: { id: result.attributes.id, type, attributes } };
+    res.set('Content-Type', 'application/json');
+    res.set('Accept', 'application/+json');
+    res.send(JSON.stringify(payload));
   });
-
 });
 
 app.get('/api/v1/:table', (req, res) => {
