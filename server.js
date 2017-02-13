@@ -9,7 +9,7 @@ var knex = require('knex')({
   client: 'mysql',
   connection: {
     host : '127.0.0.1',
-    project : 'root',
+    user : 'root',
     password : '',
     database : 'node_project_tracker_dev'
   },
@@ -42,13 +42,14 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
+app.use(bodyParser.json({ type: 'application/json' }));
 
 // app.get('/', function (req, res) {
 //   res.send('Hello World!');
 // });
 
 app.post('/api/v1/projects', function (req, res) {
+  console.log( '##body', req.body, "\n\n" );
   var attrs = req.body.data.attributes;
   var newProject = {
     'name': attrs['name'],
@@ -56,12 +57,12 @@ app.post('/api/v1/projects', function (req, res) {
     // 'image-url': attrs['image-url']
   }
   var projectObj = utils.snakeAttributes(attrs);
-  project = new User(projectObj);
+  project = new Project(projectObj);
   project.save().then(result => {
-    console.log('id', result);
-  var payload = { data: { id: result, type: "projects", attributes: newProject } };
-  res.set('Content-Type', 'application/vnd.api+json');
-  res.set('Accept', 'application/vnd.api+json');
+    console.log('id', result.attributes.id);
+  var payload = { data: { id: result.attributes.id, type: "projects", attributes: newProject } };
+  res.set('Content-Type', 'application/json');
+  res.set('Accept', 'application/+json');
   res.send(JSON.stringify(payload));
 
   });

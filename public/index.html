@@ -27,7 +27,7 @@ app.controller('myCtrl', function($scope, $http) {
     const { name, description } = $scope;
     $scope.submit = function() {
     	$http.post("/api/v1/projects",
-    	{ name, description } )
+    	{ data: { attributes: { name, description } } } )
     	.then(function(response) {
     	    $scope.content = response.data;
     	    $scope.statuscode = response.status;
