@@ -3,8 +3,11 @@ var http = require('http');
 // var Promise = require('bluebird');
 // var fs = require('fs');
 // var readFileAsync = Promise.promisify( fs.readFile );
+
 var bodyParser = require('body-parser');
 var utils = require('./utils');
+var exec = require('child_process').exec;
+var child;
 
 var knex = require('knex')({
   client: 'mysql',
@@ -17,26 +20,56 @@ var knex = require('knex')({
 });
 var bookshelf = require('bookshelf')(knex);
 
+var timer = {
+  interval: null,
+  remaining: 0,
+  current: null
+};
+const DURATION = 1500;
+
+function lockScreen() {
+  child = exec(__dirname + "/lock_session.exe", function (error, stdout, stderr) {
+    console.log('stdout: ' + stdout);
+    console.log('stderr: ' + stderr);
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+  });
+}
 global.Project = bookshelf.Model.extend({
   tableName: 'projects',
 });
 
+function startTimer( model ) {
+  timer.current = model;
+  timer.remaining = DURATION;
+  timer.interval = setInterval( () => {
+    timer.remaining -= 1;
+    if( timer.remaining === 0 ) {
+      model.set( 'status', 'done' );
+      clearInterval( timer.interval );
+      timer.interval = null;
+      model.save().then( () => {
+        lockScreen();
+      } );
+    }
+    console.log( timer.remaining );
+  }, 1000 );
+}
 /**
  * http://wesleytsai.io/2015/07/28/bookshelf-bcrpyt-password-hashing/
  */
  global.Timer = bookshelf.Model.extend({
   tableName: 'timers',
-  // initialize: function() {
-  //   this.on('creating', this.timestampToDatetime, this);
-  // },
-  // timestampToDatetime: function( model, attrs, options ) {
-  //   return new Promise(function(resolve, reject) {
-
-  //   });
-  // }
-  // posts: function() {
-  //   return this.hasMany(Posts);
-  // }
+  initialize: function() {
+    this.on('created', this.startTimer, this);
+  },
+  startTimer: function( model, attrs, options ) {
+    return new Promise(function(resolve, reject) {
+      startTimer( model );
+      resolve(true);
+    });
+  }
 });
 
 const tableObjMap = {
