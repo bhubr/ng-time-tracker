@@ -7,13 +7,16 @@ var http = require('http');
 var bodyParser = require('body-parser');
 var utils = require('./utils');
 var api = require('./jsonapi');
-  
+var port;
 
 const tableObjMap = {
   projects: 'Project',
   timers: 'Timer'
 }
 
+if( process.argv.length >= 3 ) {
+  port = parseInt( process.argv[2], 10 );
+}
 
 /**
  * You first need to create a formatting function to pad numbers to two digits…
@@ -81,8 +84,8 @@ app.use(function(req, res, next) {
 // });
 app.use('/api/v1', api);
 
-app.listen(3001, function () {
-  console.log('Example app listening on port 3001!');
+app.listen(port, function () {
+  console.log('Example app listening on port ' + port);
 });
 
 
