@@ -12,11 +12,15 @@
       <h3>Create project</h3>
       Project Name: <input type="text" ng-model="name"><br>
       Project Description: <textarea ng-model="description">{{ description }}</textarea><br>
-      <!-- Color: <input xxng-model="myCol"><br> -->
-      <button ng-click="createProject()">Submit</button>
+      Color: <input ng-model="color"><br>
+      <div class="row">
+        <span ng-click="pickColor($event)" data-color="{{ c.color }}" class="col s6" ng-repeat="c in colors" style="background-color: {{ c.color }}">{{ c.name }}</span>
+      </div>
+
+      <button class="btn" ng-click="createProject()">Submit</button>
       <br>
 
-      <span">Project: {{ name + " (" + description + ")" }}</span>
+      <span style="background-color: {{ color }}">Project: {{ name + " (" + description + ")" }}</span>
 
     </div>
   </div>

@@ -16,24 +16,69 @@ function twoDigits(d) {
  * to apply this to more than one Date object, having it as a prototype
  * makes sense.
  **/
-// Date.prototype.toMysqlFormat = function() {
-//     return this.getUTCFullYear() + "-" + twoDigits(1 + this.getUTCMonth()) + "-" + twoDigits(this.getUTCDate()) + " " + twoDigits(this.getUTCHours()) + ":" + twoDigits(this.getUTCMinutes()) + ":" + twoDigits(this.getUTCSeconds());
-// };
-// var models = {
-//   timer: {
-//     attributes: ['summary', 'description', 'project-id'],
-//     relationships: {
-//       'project-id'
-//     }
-//   }
-// }
-//   if( modelName !== undefined ) {
-//     for( let k in models[modelName].attributes ) {
-//       const attr = models[modelName].attributes[k];
-//     }
-//   }
-// function mapBelongsTo( item, )
-
+const flatUiColors = [
+  {
+    "color": "#1abc9c",
+    "name": "TURQUOISE"
+  }, {
+    "color": "#2ecc71",
+    "name": "EMERALD"
+  }, {
+    "color": "#3498db",
+    "name": "PETER RIVER"
+  }, {
+    "color": "#9b59b6",
+    "name": "AMETHYST"
+  }, {
+    "color": "#34495e",
+    "name": "WET ASPHALT"
+  }, {
+    "color": "#16a085",
+    "name": "GREEN SEA"
+  }, {
+    "color": "#27ae60",
+    "name": "NEPHRITIS"
+  }, {
+    "color": "#2980b9",
+    "name": "BELIZE HOLE"
+  }, {
+    "color": "#8e44ad",
+    "name": "WISTERIA"
+  }, {
+    "color": "#2c3e50",
+    "name": "MIDNIGHT BLUE"
+  }, {
+    "color": "#f1c40f",
+    "name": "SUN FLOWER"
+  }, {
+    "color": "#e67e22",
+    "name": "CARROT"
+  }, {
+    "color": "#e74c3c",
+    "name": "ALIZARIN"
+  }, {
+    "color": "#ecf0f1",
+    "name": "CLOUDS"
+  }, {
+    "color": "#95a5a6",
+    "name": "CONCRETE"
+  }, {
+    "color": "#f39c12",
+    "name": "ORANGE"
+  }, {
+    "color": "#d35400",
+    "name": "PUMPKIN"
+  }, {
+    "color": "#c0392b",
+    "name": "POMEGRANATE"
+  }, {
+    "color": "#bdc3c7",
+    "name": "SILVER"
+  }, {
+    "color": "#7f8c8d",
+    "name": "ASBESTOS"
+  }
+];
 function mapAttributes( item ) {
   return Object.assign( {}, { id: item.id }, item.attributes );
 }
@@ -45,7 +90,15 @@ function formatTimer( seconds ) {
 }
 
 // Declare app
-var app = angular.module("myApp", ["ngRoute", 'ngLodash']);
+var app = angular.module("myApp", ["ngRoute", 'ngLodash', 'nvd3']);
+
+// angular.module('myApp', ['nvd3'])
+// .controller('statsCtrl', function($scope){
+//    $scope.options = { /* JSON data */ };
+//    $scope.data = { /* JSON data */ }
+//    $scope.title = 'Daily stats';
+// })
+
 app.filter('formatTimer', function() {
   return formatTimer;
 });
@@ -61,23 +114,35 @@ app.config(function($routeProvider) {
         templateUrl : "timer.html",
         controller : "timerCtrl"
     });
+    // .when("/stats", {
+    //     templateUrl : "stats.html",
+    //     controller : "statsCtrl"
+    // });
 });
+
+
+// Stats controller
+// app.controller("statsCtrl", function ($scope, $http, lodash, nvd3) {
+//   $scope.title = 'Daily stats';
+// });
+
 
 // Projects controller
 app.controller("projectsCtrl", function ($scope, $http, lodash) {
 
   $scope.projects = [];
-  $scope.name = chance.word();
-  $scope.description = chance.sentence();
-  // $scope.myCol = '#abc';
+  $scope.name = ''; // chance.word();
+  $scope.description = ''; // chance.sentence();
+  $scope.colors = flatUiColors;
+  $scope.color = '#fff';
 
   $scope.createProject = function() {
-    const { name, description } = $scope;
+    const { name, description, color } = $scope;
     $scope.name = chance.word();
     $scope.description = chance.sentence();
     
     $http.post("/api/v1/projects",
-    { data: { attributes: { name, description } } } )
+    { data: { attributes: { name, description, color } } } )
     .then(function(response) {
       const newProject = mapAttributes( response.data.data );
       $scope.projects.push( newProject );
@@ -85,6 +150,10 @@ app.controller("projectsCtrl", function ($scope, $http, lodash) {
     .catch(err => {
       $scope.statustext = err;
     });
+  }
+
+  $scope.pickColor = function( evt ) {
+    $scope.color = $( evt.target ).data( 'color' );
   }
 
   // Get existing projects
@@ -127,8 +196,9 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
   }
 
   $scope.select = function( evt ) {
-    var id = parseInt( $( evt.target ).attr( 'id' ).substr( 6 ), 10 );
-    console.log( $scope.timers );
+    var $parentLi = $( evt.target ).closest('li');
+    console.log( $parentLi );
+    var id = parseInt( $parentLi.data( 'id' ), 10 );
     var timer = lodash.find( $scope.timers, { id } );
     $scope.currentTimer = timer;
   }
@@ -168,7 +238,11 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
     });
   }
 
+  getTimersAndProjects( $scope, $http, lodash );
 
+});
+
+function getTimersAndProjects( $scope, $http, lodash ) {
   // Get existing projects
   $http.get("/api/v1/projects")
   .then(function(response) {
@@ -198,5 +272,5 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
   .catch(err => {
     $scope.statustext = err;
   } );
+}
 
-});

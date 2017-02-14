@@ -9,8 +9,10 @@
       </ul>
       <h3>Timeline</h3>
       <ul>
-        <li id="{{ 'timer-' + x.id }}" class="{{ x.type }}{{ x.status === 'new' ? ' red' : '' }}" ng-repeat="x in timers" ng-click="select($event)" selected="{{ x.id === currentTimer.id }}">
-          {{ x.id }}. {{ x.type }} {{ x.summary }}
+        <li data-id="{{ timer.id }}" ng-repeat="timer in timers" ng-click="select($event)">
+          {{ timer.id }}.
+          <span style="background-color:{{ timer.project ? timer.project.color : '#fff' }}">{{ timer.project ? timer.project.id : 'N/D' }}</span>
+          <span class="{{ timer.type }}{{ timer.status === 'new' ? ' red-text' : '' }}">{{ timer.summary }}</span>
         </li>
       </ul>
     </div>
@@ -26,7 +28,7 @@
         </div>
         <div class="input-field col s3">
           <select class="browser-default" ng-model="currentTimer['project-id']">
-            <option ng-repeat="x in projects" value="{{x.id}}">{{x.name}}</option>
+            <option ng-repeat="x in projects" value="{{ x.id }}" selected="{{ x.id === currentTimer['project-id'] ? 'selected': '' }}">{{x.name}}</option>
           </select>
         </div>
         <div class="input-field col s6">
@@ -39,7 +41,13 @@
       </div>
       
       <h1>{{ timeRemaining | formatTimer }}</h1>
-      <div>{{ currentTimer.id }} {{ currentTimer.project ? currentTimer.project.name : 'N/D' }} {{ currentTimer.summary }} {{ currentTimer.markdown }} {{ currentTimer.status }} {{ currentTimer['project-id'] }}</div>
+      <div>
+        <div>Timer #{{ currentTimer.id }} (status: {{ currentTimer.status }}, proj. id: {{ currentTimer['project-id'] }})</div>
+        <div style="background-color:{{ currentTimer.project ? currentTimer.project.color : '#fff' }}">{{ currentTimer.project ? currentTimer.project.name : 'N/D' }}</div>
+        <h5{{ currentTimer.summary }}</h5>
+        <div>{{ currentTimer.markdown }}</div>
+
+      </div>
     </div>
   </div>
   {{ content }} {{ statuscode }} {{ statustext }}

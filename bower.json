@@ -1,0 +1,10 @@
+{
+  "name": "ng-tracker",
+  "dependencies": {
+  	"angular": "1.6.2",
+  	"angular-routing": "*",
+    "nvd3": "^1.8.5",
+    "angular-markdown-filter": "^1.4.0",
+    "angular-nvd3": "^1.0.9"
+  }
+}
