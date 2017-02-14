@@ -139,7 +139,10 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
   $scope.updatePomodoro = function() {
 
     $http.put("/api/v1/timers/" + $scope.currentTimer.id,
-    { data: { attributes: { description: $scope.currentTimer.description } } } )
+    { data: { attributes: {
+      description: $scope.currentTimer.description,
+      'project-id': $scope.currentTimer['project-id']
+     } } } )
     .then(function(response) {
       $scope.currentTimer = Object.assign( 
         $scope.currentTimer,
@@ -150,8 +153,6 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
       $scope.statustext = err;
     });
   }
-
-
 
   // Get existing projects
   $http.get("/api/v1/timers")

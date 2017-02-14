@@ -29,6 +29,9 @@ function lockScreen() {
 
 global.Project = bookshelf.Model.extend({
   tableName: 'projects',
+  timers: function() {
+    return this.hasMany(Timer);
+  },
 });
 
 function startTimer( model ) {
@@ -51,6 +54,9 @@ function startTimer( model ) {
  */
  global.Timer = bookshelf.Model.extend({
   tableName: 'timers',
+  project: function() {
+    return this.belongsTo(Project);
+  },
   initialize: function() {
     this.on('created', this.startTimer, this);
   },
