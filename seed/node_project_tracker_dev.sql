@@ -93,3 +93,6 @@ ALTER TABLE `timers`
 ALTER TABLE `timers`
   ADD COLUMN `project_id` integer,
   ADD CONSTRAINT `fk_project_id` FOREIGN KEY(`project_id`) REFERENCES `projects`(`id`) ON DELETE CASCADE;
+
+-- In order to add Markdown field
+ALTER TABLE `timers` CHANGE `description` `summary` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;

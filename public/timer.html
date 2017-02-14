@@ -10,7 +10,7 @@
       <h3>Timeline</h3>
       <ul>
         <li id="{{ 'timer-' + x.id }}" class="{{ x.type }}{{ x.status === 'new' ? ' red' : '' }}" ng-repeat="x in timers" ng-click="select($event)" selected="{{ x.id === currentTimer.id }}">
-          {{ x.id }}. {{ x.type }} {{ x.description }}
+          {{ x.id }}. {{ x.type }} {{ x.summary }}
         </li>
       </ul>
     </div>
@@ -19,24 +19,27 @@
       <div><button class="btn" ng-click="createPomodoro()">Start</button></div>
       <h4>Running timer</h4>
       <div class="row">
-        <div class="input-field col s2">
+        <div class="input-field col s3">
           <select class="browser-default" ng-model="currentTimer.status">
             <option ng-repeat="x in statuses">{{x}}</option>
           </select>
         </div>
-        <div class="input-field col s2">
+        <div class="input-field col s3">
           <select class="browser-default" ng-model="currentTimer['project-id']">
             <option ng-repeat="x in projects" value="{{x.id}}">{{x.name}}</option>
           </select>
         </div>
         <div class="input-field col s6">
-          <input placeholder="What are you working on?" type="text" ng-model="currentTimer.description">
+          <input placeholder="What are you working on?" type="text" ng-model="currentTimer.summary">
+        </div>
+        <div class="input-field col s12">
+          <textarea numrows="5" ng-model="currentTimer.markdown">{{ currentTimer.markdown }}</textarea>
         </div>
         <div class="input-field col s2"><button class="btn" ng-click="updatePomodoro()">Update</button></div>
       </div>
       
       <h1>{{ timeRemaining | formatTimer }}</h1>
-      <div>{{ currentTimer.id }} {{ currentTimer.description }} {{ currentTimer.status }} {{ currentTimer['project-id'] }}</div>
+      <div>{{ currentTimer.id }} {{ currentTimer.summary }} {{ currentTimer.markdown }} {{ currentTimer.status }} {{ currentTimer['project-id'] }}</div>
     </div>
   </div>
   {{ content }} {{ statuscode }} {{ statustext }}

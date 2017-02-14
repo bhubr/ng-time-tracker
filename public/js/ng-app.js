@@ -121,7 +121,6 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
 
   $scope.createPomodoro = function() {
     const type = "pomodoro";
-    // $scope.description = "enter description here";
     $scope.currentTimer = null;
     $scope.startTimer();
 
@@ -140,7 +139,8 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
 
     $http.put("/api/v1/timers/" + $scope.currentTimer.id,
     { data: { attributes: {
-      description: $scope.currentTimer.description,
+      summary: $scope.currentTimer.summary,
+      markdown: $scope.currentTimer.markdown,
       'project-id': $scope.currentTimer['project-id']
      } } } )
     .then(function(response) {
