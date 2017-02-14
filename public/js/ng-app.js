@@ -1,3 +1,5 @@
+const MYSQL_OFFSET = 3600;
+const DURATION_POMO = 1500;
 
 /**
  * You first need to create a formatting function to pad numbers to two digits…
@@ -84,20 +86,20 @@ app.controller("projectsCtrl", function ($scope, $http, lodash) {
 
 // Timer controller
 app.controller("timerCtrl", function ($scope, $http, lodash) {
-  const DURATION = 1500;
-  // const DURATION = 5;
+  // const DURATION_POMO = 5;
   // const IDLE = 0;
   // const RUNNING = 1;
   // $scope.timerStatus = IDLE;
   $scope.timer = null;
   $scope.timeRemaining = 0;
+  $scope.lastTimer = {};
   $scope.currentTimer = {};
   $scope.timers = [];
   $scope.projects = [];
   $scope.statuses = ['new', 'done', 'interrupted'];
 
-  $scope.startTimer = function() {
-    $scope.timeRemaining = DURATION;
+  $scope.startTimer = function( duration ) {
+    $scope.timeRemaining = duration === undefined ? DURATION_POMO : duration;
     $scope.timer = setInterval( () => {
       $scope.$apply(function(){
         $scope.timeRemaining -= 1;
@@ -155,6 +157,17 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
   $http.get("/api/v1/timers")
   .then(function(response) {
     $scope.timers = response.data.data.map( mapAttributes );
+    $scope.lastTimer = lodash.findLast( $scope.timers, { status: 'new' } );
+    if( $scope.lastTimer !== undefined ) {
+      var timeStampStart = new Date( $scope.lastTimer['created-at'] ).getTime();
+      var timeStampNow = Date.now();
+      var timeDiff = Math.floor( ( timeStampNow - timeStampStart ) / 1000 ) - MYSQL_OFFSET;
+      if( timeDiff < DURATION_POMO ) {
+        $scope.startTimer( DURATION_POMO - timeDiff );
+        $scope.currentTimer = $scope.lastTimer;
+      }
+      console.log( $scope.lastTimer, timeDiff, DURATION_POMO - timeDiff );
+    }
   })
   .catch(err => {
     $scope.statustext = err;
