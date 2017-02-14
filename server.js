@@ -7,8 +7,6 @@ var http = require('http');
 var bodyParser = require('body-parser');
 var utils = require('./utils');
 var api = require('./jsonapi');
-var exec = require('child_process').exec;
-var child;
   
 
 const tableObjMap = {

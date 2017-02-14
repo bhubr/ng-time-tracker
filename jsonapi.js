@@ -3,6 +3,8 @@ var _ = require("lodash");
 _.mixin(require("lodash-inflection"));
 var express = require('express')
 var router = express.Router()
+var exec = require('child_process').exec;
+var child;
 var knex = require('knex')({
   client: 'mysql',
   connection: {
