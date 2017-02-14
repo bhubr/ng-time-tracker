@@ -19,6 +19,20 @@ function twoDigits(d) {
 // Date.prototype.toMysqlFormat = function() {
 //     return this.getUTCFullYear() + "-" + twoDigits(1 + this.getUTCMonth()) + "-" + twoDigits(this.getUTCDate()) + " " + twoDigits(this.getUTCHours()) + ":" + twoDigits(this.getUTCMinutes()) + ":" + twoDigits(this.getUTCSeconds());
 // };
+// var models = {
+//   timer: {
+//     attributes: ['summary', 'description', 'project-id'],
+//     relationships: {
+//       'project-id'
+//     }
+//   }
+// }
+//   if( modelName !== undefined ) {
+//     for( let k in models[modelName].attributes ) {
+//       const attr = models[modelName].attributes[k];
+//     }
+//   }
+// function mapBelongsTo( item, )
 
 function mapAttributes( item ) {
   return Object.assign( {}, { id: item.id }, item.attributes );
@@ -154,10 +168,22 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
     });
   }
 
+
   // Get existing projects
-  $http.get("/api/v1/timers")
+  $http.get("/api/v1/projects")
+  .then(function(response) {
+    $scope.projects = response.data.data.map( mapAttributes );
+  })
+  .then( () => $http.get("/api/v1/timers") )
   .then(function(response) {
     $scope.timers = response.data.data.map( mapAttributes );
+    console.log( $scope.projects );
+    $scope.timers.forEach( (timer, index, timers) => {
+      if( timer['project-id'] ) {
+        timers[index].project = lodash.find( $scope.projects, { id: timer['project-id'] } );
+        console.log( timer.id, 'has project id', timer['project-id'], '=>', timers[index].project );
+      }
+    } );
     $scope.lastTimer = lodash.findLast( $scope.timers, { status: 'new' } );
     if( $scope.lastTimer !== undefined ) {
       var timeStampStart = new Date( $scope.lastTimer['created-at'] ).getTime();
@@ -167,17 +193,7 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
         $scope.startTimer( DURATION_POMO - timeDiff );
         $scope.currentTimer = $scope.lastTimer;
       }
-      console.log( $scope.lastTimer, timeDiff, DURATION_POMO - timeDiff );
     }
-  })
-  .catch(err => {
-    $scope.statustext = err;
-  } );
-
-  // Get existing projects
-  $http.get("/api/v1/projects")
-  .then(function(response) {
-    $scope.projects = response.data.data.map( mapAttributes );
   })
   .catch(err => {
     $scope.statustext = err;

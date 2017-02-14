@@ -39,7 +39,7 @@
       </div>
       
       <h1>{{ timeRemaining | formatTimer }}</h1>
-      <div>{{ currentTimer.id }} {{ currentTimer.summary }} {{ currentTimer.markdown }} {{ currentTimer.status }} {{ currentTimer['project-id'] }}</div>
+      <div>{{ currentTimer.id }} {{ currentTimer.project ? currentTimer.project.name : 'N/D' }} {{ currentTimer.summary }} {{ currentTimer.markdown }} {{ currentTimer.status }} {{ currentTimer['project-id'] }}</div>
     </div>
   </div>
   {{ content }} {{ statuscode }} {{ statustext }}
