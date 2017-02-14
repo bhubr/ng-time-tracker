@@ -103,3 +103,36 @@ ALTER TABLE `timers` ADD COLUMN `markdown` TEXT CHARACTER SET utf8 COLLATE utf8_
 ALTER TABLE `projects` ADD COLUMN `color` VARCHAR(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 
 ALTER TABLE `timers` ADD COLUMN `stopped_at` datetime COLLATE utf8_unicode_ci DEFAULT NULL AFTER `updated_at`;
+
+
+CREATE TABLE `options` (
+  `id` int(11) NOT NULL,
+  `key` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `value` text COLLATE utf8_unicode_ci DEFAULT NULL
+);
+
+--
+-- Index pour la table `options`
+--
+ALTER TABLE `options`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT pour les tables exportées
+--
+
+--
+-- AUTO_INCREMENT pour la table `options`
+--
+ALTER TABLE `options`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+INSERT INTO `options` (`key`, `value`) VALUES ('pomodoroDuration', '1500'), ('shortBreakDuration', '300'),('longBreakDuration', '900');
+
+-- lowerCamel style
+ALTER TABLE `projects` CHANGE `created_at` `createdAt` DATETIME NULL DEFAULT NULL;
+ALTER TABLE `projects` CHANGE `updated_at` `updatedAt` DATETIME NULL DEFAULT NULL;
+ALTER TABLE `timers` CHANGE `created_at` `createdAt` DATETIME NULL DEFAULT NULL;
+ALTER TABLE `timers` CHANGE `updated_at` `updatedAt` DATETIME NULL DEFAULT NULL;
+ALTER TABLE `timers` CHANGE `stopped_at` `stoppedAt` DATETIME NULL DEFAULT NULL;
+ALTER TABLE `timers` CHANGE `project_id` `projectId` INT(11) NULL DEFAULT NULL;

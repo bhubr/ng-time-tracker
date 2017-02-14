@@ -1,5 +1,14 @@
 var _ = require('lodash');
 
+function lowerCamelAttributes(attributes) {
+  var newAttrs = {};
+  for(var a in attributes) {
+    var lowerCamelAttrKey = _.lowerFirst( _.camelCase(a));
+    newAttrs[lowerCamelAttrKey] = attributes[a];
+  }
+  return newAttrs;
+}
+
 function snakeAttributes(attributes) {
   var newAttrs = {};
   for(var a in attributes) {
@@ -19,14 +28,14 @@ function kebabAttributes(attributes) {
 }
 
 function mapRecords(records, type) {
-  return _.map(records, record => {
-    const id = record.id;
-    delete record.id;
-    const attributes = kebabAttributes(record);
+  return _.map(records.models, model => {
+    const id = model.attributes.id;
+    delete model.attributes.id;
+    const attributes = kebabAttributes(model.attributes);
     return Object.assign({}, { id, type }, { attributes });
   });
 }
 
 module.exports = {
-  snakeAttributes, kebabAttributes, mapRecords
+  lowerCamelAttributes, snakeAttributes, kebabAttributes, mapRecords
 }

@@ -1,19 +1,9 @@
 var express = require('express');
 var http = require('http');
-// var Promise = require('bluebird');
-// var fs = require('fs');
-// var readFileAsync = Promise.promisify( fs.readFile );
-
+var models = require('./models');
 var bodyParser = require('body-parser');
 var utils = require('./utils');
 var api = require('./jsonapi');
-
-
-const tableObjMap = {
-  projects: 'Project',
-  timers: 'Timer'
-};
-
 var port = process.argv.length >= 3 ? parseInt( process.argv[2], 10 ) : 3001;
 
 
@@ -45,7 +35,6 @@ app.use(express.static('public'));
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(function(req, res, next) {
   res.jsonApi = function(data) {
-    console.log(data);
     res.set({
       'Content-Type': 'application/json',
       'Accept': 'application/json'
@@ -55,44 +44,19 @@ app.use(function(req, res, next) {
   next();
 });
 
-
-// app.post('/api/v1/:type', function (req, res) {
-//   const type = req.params.type;
-//   const objType = tableObjMap[type];
-//   const attributes = req.body.data.attributes;
-//   const snakedAttrs = Object.assign( {},
-//     utils.snakeAttributes(attributes), {
-//       created_at: new Date().toMysqlFormat(),
-//       updated_at: new Date().toMysqlFormat()
-//   } );
-//   const item = new global[objType](snakedAttrs);
-
-//   item.save().then(result => {
-//     var payload = { data: { id: result.attributes.id, type, attributes } };
-//     res.jsonApi(payload);
-//   });
-// });
-
-
-// app.get('/api/v1/:table', (req, res) => {
-//   // console.log(req.params);
-//   const table = req.params.table;
-//   knex.select().from(req.params.table)
-//   .then(records => utils.mapRecords(records, table))
-//   .then(res.jsonApi);
-// });
 app.use('/api/v1', api);
 
-app.listen(port, function () {
-  console.log('Example app listening on port ' + port);
-});
+models.Option.fetchAll()
+  .then(results => {
+    global.durations = {};
+    results.models.forEach(model => {
+      const { key, value } = model.attributes;
+      if( key.endsWith('Duration')) {
+        global.durations[key.replace('Duration', '')] = value;
+      }
+    });
+    app.listen(port, function () {
+      console.log('Example app listening on port ' + port);
+    });
+  });
 
-
-// extract path from req
-// extract model name from path
-// extract relationships from model descriptor
-// convert attribute names from score to lower camel
-
-function processPayload(req, res, next) {
-
-}

@@ -42,15 +42,15 @@
           </select>
         </div>
         <div class="input-field col s5">
-          <select class="browser-default" ng-model="currentTimer['project-id']">
-            <option ng-repeat="x in projects" value="{{ x.id }}" selected="{{ x.id === currentTimer['project-id'] ? 'selected': '' }}">{{x.name}}</option>
+          <select class="browser-default" ng-model="currentTimer.projectId">
+            <option ng-repeat="x in projects" value="{{ x.id }}" selected="{{ x.id === currentTimer.projectId ? 'selected': '' }}">{{x.name}}</option>
           </select>
         </div>
         <div class="input-field col s2"><button class="btn" ng-click="updatePomodoro()">Update</button></div>
       </div>
       <template-comment>
         <div>
-          <div>Timer #{{ currentTimer.id }} (status: {{ currentTimer.status }}, proj. id: {{ currentTimer['project-id'] }})</div>
+          <div>Timer #{{ currentTimer.id }} (status: {{ currentTimer.status }}, proj. id: {{ currentTimer.projectId }})</div>
           <div style="background-color:{{ currentTimer.project ? currentTimer.project.color : '#fff' }}">{{ currentTimer.project ? currentTimer.project.name : 'N/D' }}</div>
           <h5>{{ currentTimer.summary }}</h5>
           <div>{{ currentTimer.markdown }}</div>
