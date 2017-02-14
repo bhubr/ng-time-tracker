@@ -90,8 +90,24 @@ function formatTimer( seconds ) {
 }
 
 // Declare app
-var app = angular.module("myApp", ["ngRoute", 'ngLodash', 'nvd3']);
-
+var app = angular.module("myApp", ["ngRoute", 'ngLodash', 'ngSanitize', 'markdown', 'nvd3']);
+app.config(['$locationProvider', function($locationProvider) {
+  $locationProvider.hashPrefix('');
+}]);
+app.directive('templateComment', function () {
+    return {
+        restrict: 'E',
+        compile: function (tElement, attrs) {
+            tElement.remove();
+        }
+    };
+});
+// angular.module('markdown')
+// .config(function(markdownProvider) {
+//   markdownProvider.config({
+//     extensions: ['table']
+//   });
+// });
 // angular.module('myApp', ['nvd3'])
 // .controller('statsCtrl', function($scope){
 //    $scope.options = { /* JSON data */ };
@@ -197,7 +213,6 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
 
   $scope.select = function( evt ) {
     var $parentLi = $( evt.target ).closest('li');
-    console.log( $parentLi );
     var id = parseInt( $parentLi.data( 'id' ), 10 );
     var timer = lodash.find( $scope.timers, { id } );
     $scope.currentTimer = timer;
@@ -251,11 +266,9 @@ function getTimersAndProjects( $scope, $http, lodash ) {
   .then( () => $http.get("/api/v1/timers") )
   .then(function(response) {
     $scope.timers = response.data.data.map( mapAttributes );
-    console.log( $scope.projects );
     $scope.timers.forEach( (timer, index, timers) => {
       if( timer['project-id'] ) {
         timers[index].project = lodash.find( $scope.projects, { id: timer['project-id'] } );
-        console.log( timer.id, 'has project id', timer['project-id'], '=>', timers[index].project );
       }
     } );
     $scope.lastTimer = lodash.findLast( $scope.timers, { status: 'new' } );

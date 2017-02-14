@@ -1,12 +1,16 @@
 <div ng-app="">
   <div class="row">
     <div class="col s6">
-      <h3>Projects list</h3>
+      <h3>Start timer</h3>
+      <div><button class="btn" ng-click="createPomodoro()">Start</button></div>
+      <h1>{{ timeRemaining | formatTimer }}</h1>
+
+      <template-comment><h3>Projects list</h3>
       <ul>
         <li ng-repeat="x in projects">
           <strong>{{ x.name }}</strong> {{ x.description }}
         </li>
-      </ul>
+      </ul></template-comment>
       <h3>Timeline</h3>
       <ul>
         <li data-id="{{ timer.id }}" ng-repeat="timer in timers" ng-click="select($event)">
@@ -17,37 +21,35 @@
       </ul>
     </div>
     <div class="col s6">
-      <h3>Start timer</h3>
-      <div><button class="btn" ng-click="createPomodoro()">Start</button></div>
-      <h4>Running timer</h4>
+      <h4>Selected timer</h4>
       <div class="row">
-        <div class="input-field col s3">
+        <div class="input-field col s12">
+          <input placeholder="What are you working on?" type="text" ng-model="currentTimer.summary">
+        </div>
+        <div class="input-field col s6">
           <select class="browser-default" ng-model="currentTimer.status">
             <option ng-repeat="x in statuses">{{x}}</option>
           </select>
         </div>
-        <div class="input-field col s3">
+        <div class="input-field col s6">
           <select class="browser-default" ng-model="currentTimer['project-id']">
             <option ng-repeat="x in projects" value="{{ x.id }}" selected="{{ x.id === currentTimer['project-id'] ? 'selected': '' }}">{{x.name}}</option>
           </select>
         </div>
-        <div class="input-field col s6">
-          <input placeholder="What are you working on?" type="text" ng-model="currentTimer.summary">
-        </div>
         <div class="input-field col s12">
-          <textarea numrows="5" ng-model="currentTimer.markdown">{{ currentTimer.markdown }}</textarea>
+          <textarea ng-model="currentTimer.markdown">{{ currentTimer.markdown }}</textarea>
         </div>
+        <div class="browser-default col s12" ng-bind-html="currentTimer.markdown | markdown"></div>
         <div class="input-field col s2"><button class="btn" ng-click="updatePomodoro()">Update</button></div>
       </div>
-      
-      <h1>{{ timeRemaining | formatTimer }}</h1>
-      <div>
-        <div>Timer #{{ currentTimer.id }} (status: {{ currentTimer.status }}, proj. id: {{ currentTimer['project-id'] }})</div>
-        <div style="background-color:{{ currentTimer.project ? currentTimer.project.color : '#fff' }}">{{ currentTimer.project ? currentTimer.project.name : 'N/D' }}</div>
-        <h5{{ currentTimer.summary }}</h5>
-        <div>{{ currentTimer.markdown }}</div>
-
-      </div>
+      <template-comment>
+        <div>
+          <div>Timer #{{ currentTimer.id }} (status: {{ currentTimer.status }}, proj. id: {{ currentTimer['project-id'] }})</div>
+          <div style="background-color:{{ currentTimer.project ? currentTimer.project.color : '#fff' }}">{{ currentTimer.project ? currentTimer.project.name : 'N/D' }}</div>
+          <h5>{{ currentTimer.summary }}</h5>
+          <div>{{ currentTimer.markdown }}</div>
+        </div>
+      </template-comment>
     </div>
   </div>
   {{ content }} {{ statuscode }} {{ statustext }}

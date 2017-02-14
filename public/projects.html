@@ -12,7 +12,7 @@
       <h3>Create project</h3>
       Project Name: <input type="text" ng-model="name"><br>
       Project Description: <textarea ng-model="description">{{ description }}</textarea><br>
-      Color: <input ng-model="color"><br>
+      Color (colors by <a href="https://flatuicolors.com/" target="_blank">https://flatuicolors.com/</a>): <input style="background-color: {{ color }}" ng-model="color"><br>
       <div class="row">
         <span ng-click="pickColor($event)" data-color="{{ c.color }}" class="col s6" ng-repeat="c in colors" style="background-color: {{ c.color }}">{{ c.name }}</span>
       </div>

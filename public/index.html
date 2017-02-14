@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-  <script src=https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js></script>
+  <script src="https://code.angularjs.org/1.6.2//angular.min.js"></script>
+  <script src=https://code.angularjs.org/1.6.2/angular-route.min.js></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.4/chance.min.js"></script>
   <script src="js/ng-lodash.min.js"></script>
   <script src="components/d3/d3.js"></script>
   <script src="components/nvd3/build/nv.d3.js"></script> <!-- or use another assembly -->
   <script src="components/angular-nvd3/dist/angular-nvd3.js"></script>
+  <script src="components/showdown/dist/showdown.min.js"></script>
+  <script src="js/angular-sanitize.min.js"></script>
+  <script src="components/angular-markdown-filter/markdown.js"></script>
   <link rel="stylesheet" href="components/nvd3/build/nv.d3.css">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
@@ -17,6 +20,18 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <style>
+  textarea {
+    height: 10rem;
+    font-size: 13px;
+  }
+  div.browser-default ul {
+    padding-left: 20px;
+  }
+  div.browser-default ul li {
+    list-style-type: disc;
+  }
+  </style>
 </head>
 <body ng-app="myApp">
   <nav class="teal lighten-1" role="navigation">
