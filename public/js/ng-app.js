@@ -223,6 +223,7 @@ app.controller("timerCtrl", ['$scope', '$http', 'lodash', 'optionService', funct
   // const IDLE = 0;
   // const RUNNING = 1;
   // $scope.timerStatus = IDLE;
+  console.log('timerCtrl', optionService.get('pomodoro'));
   $scope.timer = null;
   $scope.timeRemaining = 0;
   $scope.lastTimer = {};
@@ -287,11 +288,11 @@ app.controller("timerCtrl", ['$scope', '$http', 'lodash', 'optionService', funct
     });
   }
 
-  getTimersAndProjects( $scope, $http, lodash );
+  getTimersAndProjects( $scope, $http, lodash, optionService );
 
 } ]);
 
-function getTimersAndProjects( $scope, $http, lodash ) {
+function getTimersAndProjects( $scope, $http, lodash, optionService ) {
   // Get existing projects
   $http.get("/api/v1/projects")
   .then(function(response) {
@@ -313,8 +314,8 @@ function getTimersAndProjects( $scope, $http, lodash ) {
       var timeStampNow = Date.now();
       var timeDiff = Math.floor( ( timeStampNow - timeStampStart ) / 1000 ) - MYSQL_OFFSET;
       console.log( timeStampStart, timeStampNow, timeDiff);
-      if( timeDiff < DURATION_POMO ) {
-        $scope.startTimer( DURATION_POMO - timeDiff );
+      if( timeDiff < optionService.get('pomodoro') ) {
+        $scope.startTimer( optionService.get('pomodoro') - timeDiff );
         $scope.currentTimer = $scope.lastTimer;
       }
     }

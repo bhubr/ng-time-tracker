@@ -1,12 +1,9 @@
 const utils = require('./utils');
 const models = require('./models');
-const lockScreen = require('./lockScreen');
 let _ = require("lodash");
 _.mixin(require("lodash-inflection"));
 const express = require('express');
 const router = express.Router();
-var exec = require('child_process').exec;
-var child;
 
 
 

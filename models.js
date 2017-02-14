@@ -1,10 +1,12 @@
 /**
  * Created by Benoît on 14/02/2017.
  */
+const lockScreen = require('./lockScreen');
 
 function startTimer( model ) {
   timer.current = model;
-  timer.remaining = global.durations[model.type];
+  timer.remaining = parseInt(global.durations[model.attributes.type], 10);
+
   timer.interval = setInterval( () => {
     timer.remaining -= 1;
     if( timer.remaining === 0 ) {
