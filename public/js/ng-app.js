@@ -94,6 +94,7 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
   $scope.currentTimer = {};
   $scope.timers = [];
   $scope.projects = [];
+  $scope.statuses = ['new', 'done', 'interrupted'];
 
   $scope.startTimer = function() {
     $scope.timeRemaining = DURATION;
@@ -118,7 +119,7 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
 
   $scope.createPomodoro = function() {
     const type = "pomodoro";
-    $scope.description = "enter description here";
+    // $scope.description = "enter description here";
     $scope.currentTimer = null;
     $scope.startTimer();
 
@@ -136,7 +137,7 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
   $scope.updatePomodoro = function() {
 
     $http.put("/api/v1/timers/" + $scope.currentTimer.id,
-    { data: { attributes: { description: $scope.description } } } )
+    { data: { attributes: { description: $scope.currentTimer.description } } } )
     .then(function(response) {
       $scope.currentTimer = Object.assign( 
         $scope.currentTimer,

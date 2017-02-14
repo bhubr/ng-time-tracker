@@ -18,7 +18,18 @@
       <h3>Start timer</h3>
       <div><button class="btn" ng-click="createPomodoro()">Start</button></div>
       <h4>Running timer</h4>
-      <div>What are you working on? <input type="text" ng-model="description"><button class="btn" ng-click="updatePomodoro()">Update</button></div>
+      <div class="row">
+        <div class="input-field col s3">
+          <select class="browser-default" ng-model="currentTimer.status">
+            <option ng-repeat="x in statuses">{{x}}</option>
+          </select>
+        </div>
+        <div class="input-field col s7">
+          <input placeholder="What are you working on?" type="text" ng-model="currentTimer.description">
+        </div>
+        <div class="input-field col s2"><button class="btn" ng-click="updatePomodoro()">Update</button></div>
+      </div>
+      
       <h1>{{ timeRemaining | formatTimer }}</h1>
       <div>{{ currentTimer.id }} {{ currentTimer.description }} {{ currentTimer.status }}</div>
     </div>
