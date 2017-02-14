@@ -227,7 +227,7 @@ app.controller("timerCtrl", function ($scope, $http, lodash) {
     { data: { attributes: { type } } } )
     .then(function(response) {
       $scope.currentTimer = mapAttributes( response.data.data );
-      $scope.items.push( $scope.currentTimer );
+      $scope.timers.push( $scope.currentTimer );
     })
     .catch(err => {
       $scope.statustext = err;
