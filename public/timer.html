@@ -1,9 +1,15 @@
 <div ng-app="">
   <div class="row">
     <div class="col s6">
-      <h3>Start timer</h3>
-      <div><button class="btn" ng-click="createPomodoro()">Start</button></div>
-      <h1>{{ timeRemaining | formatTimer }}</h1>
+      <div class="row">
+        <div class="col s6">
+          <h3>Start timer</h3>
+          <div><button class="btn" ng-click="createPomodoro()">Start</button></div>
+        </div>
+        <div class="col s6">
+          <h1>{{ timeRemaining | formatTimer }}</h1>
+        </div>
+      </div>
 
       <template-comment><h3>Projects list</h3>
       <ul>
@@ -26,20 +32,20 @@
         <div class="input-field col s12">
           <input placeholder="What are you working on?" type="text" ng-model="currentTimer.summary">
         </div>
-        <div class="input-field col s6">
-          <select class="browser-default" ng-model="currentTimer.status">
-            <option ng-repeat="x in statuses">{{x}}</option>
-          </select>
-        </div>
-        <div class="input-field col s6">
-          <select class="browser-default" ng-model="currentTimer['project-id']">
-            <option ng-repeat="x in projects" value="{{ x.id }}" selected="{{ x.id === currentTimer['project-id'] ? 'selected': '' }}">{{x.name}}</option>
-          </select>
-        </div>
         <div class="input-field col s12">
           <textarea ng-model="currentTimer.markdown">{{ currentTimer.markdown }}</textarea>
         </div>
         <div class="browser-default col s12" ng-bind-html="currentTimer.markdown | markdown"></div>
+        <div class="input-field col s5">
+          <select class="browser-default" ng-model="currentTimer.status">
+            <option ng-repeat="x in statuses">{{x}}</option>
+          </select>
+        </div>
+        <div class="input-field col s5">
+          <select class="browser-default" ng-model="currentTimer['project-id']">
+            <option ng-repeat="x in projects" value="{{ x.id }}" selected="{{ x.id === currentTimer['project-id'] ? 'selected': '' }}">{{x.name}}</option>
+          </select>
+        </div>
         <div class="input-field col s2"><button class="btn" ng-click="updatePomodoro()">Update</button></div>
       </div>
       <template-comment>

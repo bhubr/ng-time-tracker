@@ -7,16 +7,15 @@ var http = require('http');
 var bodyParser = require('body-parser');
 var utils = require('./utils');
 var api = require('./jsonapi');
-var port;
+
 
 const tableObjMap = {
   projects: 'Project',
   timers: 'Timer'
-}
+};
 
-if( process.argv.length >= 3 ) {
-  port = parseInt( process.argv[2], 10 );
-}
+var port = process.argv.length >= 3 ? parseInt( process.argv[2], 10 ) : 3001;
+
 
 /**
  * You first need to create a formatting function to pad numbers to two digits…
@@ -52,7 +51,7 @@ app.use(function(req, res, next) {
       'Accept': 'application/json'
     });
     return res.send(JSON.stringify({ data }));
-  }
+  };
   next();
 });
 

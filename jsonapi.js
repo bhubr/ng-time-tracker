@@ -40,7 +40,12 @@ function startTimer( model ) {
   timer.interval = setInterval( () => {
     timer.remaining -= 1;
     if( timer.remaining === 0 ) {
-      model.set( 'status', 'done' );
+      const dateTime = new Date().toMysqlFormat();
+      model.set({
+        status: 'done',
+        stopped_at: dateTime,
+        updated_at: dateTime
+      } );
       clearInterval( timer.interval );
       timer.interval = null;
       model.save().then( () => {

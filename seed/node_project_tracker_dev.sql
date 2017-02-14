@@ -101,3 +101,5 @@ ALTER TABLE `timers` ADD COLUMN `markdown` TEXT CHARACTER SET utf8 COLLATE utf8_
 
 -- Bind color to project
 ALTER TABLE `projects` ADD COLUMN `color` VARCHAR(7) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+
+ALTER TABLE `timers` ADD COLUMN `stopped_at` datetime COLLATE utf8_unicode_ci DEFAULT NULL AFTER `updated_at`;
