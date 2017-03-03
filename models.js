@@ -2,11 +2,12 @@
  * Created by Benoît on 14/02/2017.
  */
 const lockScreen = require('./lockScreen');
+const eventHub = require('./eventHub');
 
 function startTimer( model ) {
   timer.current = model;
   timer.remaining = parseInt(global.durations[model.attributes.type], 10);
-
+  console.log( 'starting timer with duration (s):', timer.remaining);
   timer.interval = setInterval( () => {
     timer.remaining -= 1;
     if( timer.remaining === 0 ) {
