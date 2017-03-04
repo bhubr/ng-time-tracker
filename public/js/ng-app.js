@@ -120,48 +120,91 @@ app.directive('templateComment', function () {
 // });
 // angular.module('myApp', ['nvd3'])
 app
-.controller('statsCtrl', function($scope){
-   $scope.options = {
-    chart: {
-        type: 'discreteBarChart',
-        height: 450,
-        margin : {
-            top: 20,
-            right: 20,
-            bottom: 60,
-            left: 55
-        },
-        x: function(d){ return d.label; },
-        y: function(d){ return d.value; },
-        showValues: true,
-        valueFormat: function(d){
-            return d3.format(',.4f')(d);
-        },
-        transitionDuration: 500,
-        xAxis: {
-            axisLabel: 'X Axis'
-        },
-        yAxis: {
-            axisLabel: 'Y Axis',
-            axisLabelDistance: 30
-        }
+.controller('statsCtrl', ['$scope', 'dataStoreService', 'lodash', function($scope, store, lodash){
+
+  $scope.data = [];
+
+  function getDates(firstDay, stopDate) {
+    var dateArray = new Array();
+    var currentDate = new Date(firstDay);
+    console.log(currentDate);
+    while (currentDate <= stopDate) {
+        dateArray.push( ( new Date (currentDate) ).toISOString().substr(0,10) );
+        currentDate.setDate( currentDate.getDate() + 1 );
     }
-  };
-  $scope.data = [{
-    key: "Cumulative Return",
-    values: [
-      { "label" : "A" , "value" : -29.765957771107 },
-      { "label" : "B" , "value" : 0 },
-      { "label" : "C" , "value" : 32.807804682612 },
-      { "label" : "D" , "value" : 196.45946739256 },
-      { "label" : "E" , "value" : 0.19434030906893 },
-      { "label" : "F" , "value" : -98.079782601442 },
-      { "label" : "G" , "value" : -13.925743130903 },
-      { "label" : "H" , "value" : -5.1387322875705 }
-      ]
-      }];
+    return dateArray;
+}
   $scope.title = 'Daily stats';
-})
+  store.get(['projects', 'timers'])
+  .then(({ projects, timers }) => {
+    const todayDate = new Date();
+    const firstDay = timers.reduce((oldestDay, timer) => {
+      const timerDay = timer.createdAt.substr(0,10);
+      return timerDay < oldestDay ? timerDay : oldestDay;
+    }, todayDate.toISOString().substr(0,10));
+
+    const daysArr = getDates(firstDay, todayDate);
+    console.log(daysArr);
+
+    const timersByDay = lodash.groupBy(timers, timer => (timer.createdAt.substr(0, 10)));
+    const dataByDay = daysArr.map((day, dayIdx) => {
+      const timersForDay = timersByDay[day] !== undefined ? timersByDay[day] : [];
+      const timersByProj = lodash.countBy(timersForDay, timer => (timer.projectId));
+      return projects.reduce((dataBefore, project, projIdx) => {
+        const numTimers = timersByProj[project.id] !== undefined ? timersByProj[project.id] : 0;
+        const y0 = dataBefore.reduce((totalBefore, obj) => { return totalBefore + obj.y; }, 0);
+        return dataBefore.concat([{
+          key: project.name,
+          series: projIdx, // stream (project) index
+          size: numTimers, // # of timers for project
+          x: dayIdx, // day index
+          y: numTimers, // equals size
+          y0, // # of timers before
+          y1: y0 + numTimers, // # y0 + size
+        }]);
+      }, []);
+    });
+
+    $scope.options = {
+        chart: {
+            type: 'multiBarChart',
+            height: 450,
+            margin : {
+                top: 20,
+                right: 20,
+                bottom: 45,
+                left: 45
+            },
+            clipEdge: true,
+            duration: 500,
+            stacked: true,
+            xAxis: {
+                axisLabel: 'Time (ms)',
+                showMaxMin: false,
+                tickFormat: function(d){
+                    return daysArr[d];
+                }
+            },
+            yAxis: {
+                axisLabel: 'Y Axis',
+                axisLabelDistance: -20,
+                tickFormat: function(d){
+                    return d;
+                }
+            }
+        }
+    };
+
+    $scope.data = projects.map((project, projIdx) => {
+      let obj = {
+        key: project.name
+      };
+      obj.values = dataByDay.map(valuesForDay => (valuesForDay[projIdx]));
+      return obj;
+    });
+
+  });
+}]);
 
 app.filter('formatTimer', function() {
   return formatTimer;
@@ -209,10 +252,23 @@ app.service('optionService', function() {
     }
   };
 });
-// Stats controller
-// app.controller("statsCtrl", function ($scope, $http, lodash, nvd3) {
-//   $scope.title = 'Daily stats';
-// });
+app.service('dataStoreService', ['$http', '$q', function($http, $q) {
+  return {
+    get: function(keys) {
+      var promises = keys.map(
+        key => $http.get('/api/v1/' + key)
+          .then(response => (response.data.data))
+      );
+      return $q.all(promises)
+      .then(results => results.reduce(
+        (dataSet, dataItems, index) => {
+          dataSet[keys[index]] = dataItems.map(mapAttributes);
+          return dataSet;
+        }, {}
+      ));
+    }
+  };
+}]);
 
 
 // Projects controller
