@@ -3,11 +3,13 @@
  */
 const lockScreen = require('./lockScreen');
 const eventHub = require('./eventHub');
+const { startIdleTimer, stopIdleTimer } = require('./notify');
 
 function startTimer( model ) {
   timer.current = model;
   timer.remaining = parseInt(global.durations[model.attributes.type], 10);
   console.log( 'starting timer with duration (s):', timer.remaining);
+  stopIdleTimer();
   timer.interval = setInterval( () => {
     timer.remaining -= 1;
     if( timer.remaining === 0 ) {
@@ -19,6 +21,7 @@ function startTimer( model ) {
       } );
       clearInterval( timer.interval );
       timer.interval = null;
+      startIdleTimer();
       model.save().then( () => {
         lockScreen();
       } );

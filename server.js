@@ -1,5 +1,4 @@
 var express = require('express');
-var http = require('http');
 var models = require('./models');
 var bodyParser = require('body-parser');
 var utils = require('./utils');
@@ -31,6 +30,10 @@ Date.prototype.toMysqlFormat = function() {
  * Setup Express
  */
 var app = express();
+var http = require('http').Server(app);
+
+var io = require('socket.io')(http);
+
 app.use(express.static('public'));
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(function(req, res, next) {
@@ -55,8 +58,10 @@ models.Option.fetchAll()
         global.durations[key.replace('Duration', '')] = value;
       }
     });
-    app.listen(port, function () {
+    http.listen(port, function () {
       console.log('Example app listening on port ' + port);
+      var notify = require('./notify');
+      notify.setIo(io);
     });
   });
 
