@@ -60,6 +60,7 @@ CREATE TABLE `timers` (
   `type` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `description` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `project_id` int(11),
+  `duration` int(11),
   `status` ENUM('new','done','interrupted') DEFAULT 'new',
   `created_at` datetime COLLATE utf8_unicode_ci DEFAULT NULL,
   `updated_at` datetime COLLATE utf8_unicode_ci DEFAULT NULL
@@ -136,3 +137,21 @@ ALTER TABLE `timers` CHANGE `created_at` `createdAt` DATETIME NULL DEFAULT NULL;
 ALTER TABLE `timers` CHANGE `updated_at` `updatedAt` DATETIME NULL DEFAULT NULL;
 ALTER TABLE `timers` CHANGE `stopped_at` `stoppedAt` DATETIME NULL DEFAULT NULL;
 ALTER TABLE `timers` CHANGE `project_id` `projectId` INT(11) NULL DEFAULT NULL;
+ALTER TABLE `timers` ADD COLUMN `duration` int(11);
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `firstName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `lastName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `website` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `role_permission` (
+  `roleId` int(11) UNSIGNED NOT NULL,
+  `permissionId` int(11) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

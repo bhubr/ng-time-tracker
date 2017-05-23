@@ -1,0 +1,16 @@
+{
+  "development": {
+    "db": {
+      "user": "root",
+      "password": "",
+      "database": "node_project_tracker_dev",
+      "host": "127.0.0.1",
+      "dialect": "mysql"
+    },
+    "keys": {
+      "private": "keys/private.key",
+      "public": "keys/public.key"
+    },
+    "whitelistedUrls": ["GET /api/v1/users*"]
+  }
+}

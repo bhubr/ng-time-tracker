@@ -22,15 +22,19 @@ var idleTimer = {
 function startIdleTimer() {
   idleTimer.interval = setInterval( () => {
     idleTimer.running += 1;
-    if( idleTimer.running % 300 === 0 ) {
+    if( idleTimer.running % 15 === 0 ) {
       console.log('idle', idleTimer.running);
-      // notifier.notify('Idle for ' + idleTimer.running / 60 + ' minute(s)');
+    }
+    if( idleTimer.running % 300 === 0 ) {
+      // console.log('idle', idleTimer.running);
+      notifier.notify('Idle for ' + idleTimer.running / 60 + ' minute(s)');
     }
   }, 1000 );
 }
 
 function stopIdleTimer() {
   clearInterval(idleTimer.interval);
+  idleTimer.running = 0;
   idleTimer.interval = null;
 }
 

@@ -1,63 +1,47 @@
-var express = require('express');
-var models = require('./models');
-var bodyParser = require('body-parser');
-var utils = require('./utils');
-var api = require('./jsonapi');
-var port = process.argv.length >= 3 ? parseInt( process.argv[2], 10 ) : 3001;
-// var watcher = require('./watcher');
 
-/**
- * You first need to create a formatting function to pad numbers to two digits…
- **/
-function twoDigits(d) {
-    if(0 <= d && d < 10) return "0" + d.toString();
-    if(-10 < d && d < 0) return "-0" + (-1*d).toString();
-    return d.toString();
-}
+const express = require('express');
+const bodyParser = require('body-parser');
+const configs = require(__dirname + '/config.json');
+const env = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
+const config = configs[env];
+const models = require('./models');
+const { router, middlewares, queryBuilder, queryAsync } = require('jsonapi-express-backend')(__dirname, config, models);
 
-/**
- * …and then create the method to output the date string as desired.
- * Some people hate using prototypes this way, but if you are going
- * to apply this to more than one Date object, having it as a prototype
- * makes sense.
- **/
-Date.prototype.toMysqlFormat = function() {
-    return this.getUTCFullYear() + "-" + twoDigits(1 + this.getUTCMonth()) + "-" + twoDigits(this.getUTCDate()) + " " + twoDigits(this.getUTCHours()) + ":" + twoDigits(this.getUTCMinutes()) + ":" + twoDigits(this.getUTCSeconds());
-};
+const port = config.port || 3001;
 
+process.on('uncaughtException', function (err) {
+  console.error(err.stack);
+  console.log("Node NOT Exiting...");
+});
 
 /**
  * Setup Express
  */
-var app = express();
-var http = require('http').Server(app);
-
-var io = require('socket.io')(http);
-
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 app.use(express.static('public'));
 app.use(bodyParser.json({ type: 'application/json' }));
-app.use(function(req, res, next) {
-  res.jsonApi = function(data) {
-    res.set({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    return res.send(JSON.stringify({ data }));
-  };
-  next();
+
+app.use('/api/v1', middlewares.checkJwt);
+app.use('/api/v1', middlewares.jsonApi);
+app.use('/api/v1', router);
+
+app.get(/^[^\.]+$/, (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
 });
 
-app.use('/api/v1', api);
-
-models.Option.fetchAll()
-  .then(results => {
+// models.Option.fetchAll()
+queryAsync(queryBuilder.selectAll('options'))
+  .then(records => {
     global.durations = {};
-    results.models.forEach(model => {
-      const { key, value } = model.attributes;
+    records.forEach(record => {
+      const { key, value } = record;
       if( key.endsWith('Duration')) {
         global.durations[key.replace('Duration', '')] = value;
       }
     });
+    console.log(global.durations);
     http.listen(port, function () {
       console.log('Example app listening on port ' + port);
       var notify = require('./notify');
