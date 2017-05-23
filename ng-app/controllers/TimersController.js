@@ -1,15 +1,16 @@
-TimersController.$inject = ['$scope', '$http', 'lodash', 'optionService', 'notificationService'];
+const MYSQL_OFFSET = 7200;
 
+TimersController.$inject = ['$scope', '$http', 'lodash', 'optionService', 'notificationService', 'jsonapiUtils'];
 
-function getTimersAndProjects( $scope, $http, lodash, optionService ) {
+function getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtils ) {
   // Get existing projects
   $http.get("/api/v1/projects")
   .then(function(response) {
-    $scope.projects = response.data.data.map( mapAttributes );
+    $scope.projects = jsonapiUtils.unmapRecords(response.data.data);
   })
   .then( () => $http.get("/api/v1/timers") )
   .then(function(response) {
-    $scope.timers = response.data.data.map( mapAttributes );
+    $scope.timers = jsonapiUtils.unmapRecords(response.data.data);
     $scope.timers.forEach( (timer, index, timers) => {
       if( timer.projectId ) {
         timers[index].project = lodash.find( $scope.projects, { id: timer.projectId } );
@@ -33,7 +34,8 @@ function getTimersAndProjects( $scope, $http, lodash, optionService ) {
   } );
 }
 
-function TimersController($scope, $http, lodash, optionService, notificationService) {
+function TimersController($scope, $http, lodash, optionService, notificationService, jsonapiUtils) {
+
   // const DURATION_POMO = 5;
   // const IDLE = 0;
   // const RUNNING = 1;
@@ -90,9 +92,9 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
     $scope.startTimer();
 
     $http.post("/api/v1/timers",
-    { data: { attributes: { type } } } )
+    { data: { type: 'timers', attributes: { type } } } )
     .then(function(response) {
-      $scope.currentTimer = mapAttributes( response.data.data );
+      $scope.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
       $scope.timers.push( $scope.currentTimer );
     })
     .catch(err => {
@@ -102,16 +104,20 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
 
   $scope.updatePomodoro = function() {
 
-    $http.put("/api/v1/timers/" + $scope.currentTimer.id,
-    { data: { attributes: {
-      summary: $scope.currentTimer.summary,
-      markdown: $scope.currentTimer.markdown,
-      projectId: $scope.currentTimer.projectId
-     } } } )
+    $http.put("/api/v1/timers/" + $scope.currentTimer.id, {
+      data: {
+        type: 'timers',
+        attributes: {
+          summary: $scope.currentTimer.summary,
+          markdown: $scope.currentTimer.markdown,
+          projectId: $scope.currentTimer.projectId
+        }
+      } 
+    } )
     .then(function(response) {
       $scope.currentTimer = Object.assign( 
         $scope.currentTimer,
-        mapAttributes( response.data.data )
+        jsonapiUtils.unmapRecord(response.data.data)
       );
     })
     .catch(err => {
@@ -119,7 +125,7 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
     });
   }
 
-  getTimersAndProjects( $scope, $http, lodash, optionService );
+  getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtils );
 
 }
 module.exports = TimersController;

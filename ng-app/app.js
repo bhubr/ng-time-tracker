@@ -1,4 +1,6 @@
-const MYSQL_OFFSET = 7200;
+require("./vendor/socket.js");
+
+
 const DURATION_POMO = 1500;
 
 /**
@@ -69,7 +71,9 @@ function notifyMe(idleTime) {
 }
 
 // Declare app
-var app = angular.module("myApp", ["ngRoute", 'ngLodash', 'ngSanitize', 'markdown', 'nvd3', 'angular-jwt']);
+var app = angular.module("myApp", [
+  "ngRoute", 'ngLodash', 'ngSanitize', 'markdown', 'nvd3', 'angular-jwt', 'btford.socket-io'
+]);
 app.config(['$locationProvider', function($locationProvider) {
   $locationProvider.hashPrefix('');
 }]);
@@ -139,7 +143,18 @@ app.config(function($routeProvider, $httpProvider) {
         controller : "statsCtrl"
     });
 });
-
+app.factory('myInterceptor', require('./factories/TokenCheckInterceptor'));
+app.config(['$httpProvider', function($httpProvider) {  
+    $httpProvider.interceptors.push('myInterceptor');
+}]);
+// app.run(function(authManager) {
+//     authManager.checkAuthOnRefresh();
+//   })
+// app.run(['$rootScope', function($rootScope) {
+//   $rootScope.$on('tokenHasExpired', function() {
+//     alert('Your session has expired!');
+//   });
+// }]);
 app.run(function ($http, optionService) {
   $http.get('/api/v1/options').then(function (data) {
     let options = {};

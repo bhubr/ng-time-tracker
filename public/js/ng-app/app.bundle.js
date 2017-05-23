@@ -187,18 +187,19 @@ module.exports = StatsController;
 /* 4 */
 /***/ (function(module, exports) {
 
-TimersController.$inject = ['$scope', '$http', 'lodash', 'optionService', 'notificationService'];
+const MYSQL_OFFSET = 7200;
 
+TimersController.$inject = ['$scope', '$http', 'lodash', 'optionService', 'notificationService', 'jsonapiUtils'];
 
-function getTimersAndProjects( $scope, $http, lodash, optionService ) {
+function getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtils ) {
   // Get existing projects
   $http.get("/api/v1/projects")
   .then(function(response) {
-    $scope.projects = response.data.data.map( mapAttributes );
+    $scope.projects = jsonapiUtils.unmapRecords(response.data.data);
   })
   .then( () => $http.get("/api/v1/timers") )
   .then(function(response) {
-    $scope.timers = response.data.data.map( mapAttributes );
+    $scope.timers = jsonapiUtils.unmapRecords(response.data.data);
     $scope.timers.forEach( (timer, index, timers) => {
       if( timer.projectId ) {
         timers[index].project = lodash.find( $scope.projects, { id: timer.projectId } );
@@ -222,7 +223,8 @@ function getTimersAndProjects( $scope, $http, lodash, optionService ) {
   } );
 }
 
-function TimersController($scope, $http, lodash, optionService, notificationService) {
+function TimersController($scope, $http, lodash, optionService, notificationService, jsonapiUtils) {
+
   // const DURATION_POMO = 5;
   // const IDLE = 0;
   // const RUNNING = 1;
@@ -279,9 +281,9 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
     $scope.startTimer();
 
     $http.post("/api/v1/timers",
-    { data: { attributes: { type } } } )
+    { data: { type: 'timers', attributes: { type } } } )
     .then(function(response) {
-      $scope.currentTimer = mapAttributes( response.data.data );
+      $scope.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
       $scope.timers.push( $scope.currentTimer );
     })
     .catch(err => {
@@ -291,16 +293,20 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
 
   $scope.updatePomodoro = function() {
 
-    $http.put("/api/v1/timers/" + $scope.currentTimer.id,
-    { data: { attributes: {
-      summary: $scope.currentTimer.summary,
-      markdown: $scope.currentTimer.markdown,
-      projectId: $scope.currentTimer.projectId
-     } } } )
+    $http.put("/api/v1/timers/" + $scope.currentTimer.id, {
+      data: {
+        type: 'timers',
+        attributes: {
+          summary: $scope.currentTimer.summary,
+          markdown: $scope.currentTimer.markdown,
+          projectId: $scope.currentTimer.projectId
+        }
+      } 
+    } )
     .then(function(response) {
       $scope.currentTimer = Object.assign( 
         $scope.currentTimer,
-        mapAttributes( response.data.data )
+        jsonapiUtils.unmapRecord(response.data.data)
       );
     })
     .catch(err => {
@@ -308,7 +314,7 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
     });
   }
 
-  getTimersAndProjects( $scope, $http, lodash, optionService );
+  getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtils );
 
 }
 module.exports = TimersController;
@@ -432,17 +438,148 @@ function JsonapiUtils(_) {
 module.exports = JsonapiUtils;
 
 /***/ }),
-/* 7 */,
-/* 8 */,
+/* 7 */
+/***/ (function(module, exports) {
+
+TokenCheckInterceptor.$inject = ['$q', '$location'];
+
+function TokenCheckInterceptor($q, $location) {
+    var responseInterceptor = {
+        responseError: function(rejection) {
+            if(typeof rejection.data === 'string' && rejection.data.includes('Token expired by')) {
+                $location.path('/signin');
+            }
+            return rejection;
+        }
+    };
+
+    return responseInterceptor;
+}
+
+module.exports = TokenCheckInterceptor;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+/*
+ * @license
+ * angular-socket-io v0.7.0
+ * (c) 2014 Brian Ford http://briantford.com
+ * License: MIT
+ */
+
+angular.module('btford.socket-io', []).
+  provider('socketFactory', function () {
+
+    'use strict';
+
+    // when forwarding events, prefix the event name
+    var defaultPrefix = 'socket:',
+      ioSocket;
+
+    // expose to provider
+    this.$get = ['$rootScope', '$timeout', function ($rootScope, $timeout) {
+
+      var asyncAngularify = function (socket, callback) {
+        return callback ? function () {
+          var args = arguments;
+          $timeout(function () {
+            callback.apply(socket, args);
+          }, 0);
+        } : angular.noop;
+      };
+
+      return function socketFactory (options) {
+        options = options || {};
+        var socket = options.ioSocket || io.connect();
+        var prefix = options.prefix === undefined ? defaultPrefix : options.prefix ;
+        var defaultScope = options.scope || $rootScope;
+
+        var addListener = function (eventName, callback) {
+          socket.on(eventName, callback.__ng = asyncAngularify(socket, callback));
+        };
+
+        var addOnceListener = function (eventName, callback) {
+          socket.once(eventName, callback.__ng = asyncAngularify(socket, callback));
+        };
+
+        var wrappedSocket = {
+          on: addListener,
+          addListener: addListener,
+          once: addOnceListener,
+
+          emit: function (eventName, data, callback) {
+            var lastIndex = arguments.length - 1;
+            var callback = arguments[lastIndex];
+            if(typeof callback == 'function') {
+              callback = asyncAngularify(socket, callback);
+              arguments[lastIndex] = callback;
+            }
+            return socket.emit.apply(socket, arguments);
+          },
+
+          removeListener: function (ev, fn) {
+            if (fn && fn.__ng) {
+              arguments[1] = fn.__ng;
+            }
+            return socket.removeListener.apply(socket, arguments);
+          },
+
+          removeAllListeners: function() {
+            return socket.removeAllListeners.apply(socket, arguments);
+          },
+
+          disconnect: function (close) {
+            return socket.disconnect(close);
+          },
+
+          connect: function() {
+            return socket.connect();
+          },
+
+          // when socket.on('someEvent', fn (data) { ... }),
+          // call scope.$broadcast('someEvent', data)
+          forward: function (events, scope) {
+            if (events instanceof Array === false) {
+              events = [events];
+            }
+            if (!scope) {
+              scope = defaultScope;
+            }
+            events.forEach(function (eventName) {
+              var prefixedEvent = prefix + eventName;
+              var forwardBroadcast = asyncAngularify(socket, function () {
+                Array.prototype.unshift.call(arguments, prefixedEvent);
+                scope.$broadcast.apply(scope, arguments);
+              });
+              scope.$on('$destroy', function () {
+                socket.removeListener(eventName, forwardBroadcast);
+              });
+              socket.on(eventName, forwardBroadcast);
+            });
+          }
+        };
+
+        return wrappedSocket;
+      };
+    }];
+  });
+
+/***/ }),
 /* 9 */,
 /* 10 */,
 /* 11 */,
 /* 12 */,
 /* 13 */,
-/* 14 */
+/* 14 */,
+/* 15 */,
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const MYSQL_OFFSET = 7200;
+__webpack_require__(8);
+
+
 const DURATION_POMO = 1500;
 
 /**
@@ -513,7 +650,9 @@ function notifyMe(idleTime) {
 }
 
 // Declare app
-var app = angular.module("myApp", ["ngRoute", 'ngLodash', 'ngSanitize', 'markdown', 'nvd3', 'angular-jwt']);
+var app = angular.module("myApp", [
+  "ngRoute", 'ngLodash', 'ngSanitize', 'markdown', 'nvd3', 'angular-jwt', 'btford.socket-io'
+]);
 app.config(['$locationProvider', function($locationProvider) {
   $locationProvider.hashPrefix('');
 }]);
@@ -583,7 +722,18 @@ app.config(function($routeProvider, $httpProvider) {
         controller : "statsCtrl"
     });
 });
-
+app.factory('myInterceptor', __webpack_require__(7));
+app.config(['$httpProvider', function($httpProvider) {  
+    $httpProvider.interceptors.push('myInterceptor');
+}]);
+// app.run(function(authManager) {
+//     authManager.checkAuthOnRefresh();
+//   })
+// app.run(['$rootScope', function($rootScope) {
+//   $rootScope.$on('tokenHasExpired', function() {
+//     alert('Your session has expired!');
+//   });
+// }]);
 app.run(function ($http, optionService) {
   $http.get('/api/v1/options').then(function (data) {
     let options = {};
@@ -650,4 +800,4 @@ app.controller("timerCtrl", __webpack_require__(4));
 
 
 /***/ })
-],[14]);
+],[16]);
