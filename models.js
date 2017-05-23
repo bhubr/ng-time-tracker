@@ -1,39 +1,21 @@
 /**
  * Created by Benoît on 14/02/2017.
  */
+const Promise = require('bluebird');
+const configs = require(__dirname + '/config.json');
+const env = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
+const config = configs[env];
+const { query } = require('jsonapi-express-backend-query')(config.db);
+const queryBuilder = require('./node_modules/jsonapi-express-backend/lib/queryBuilder');
+const lockScreen = require('./lockScreen');
+const { startIdleTimer, stopIdleTimer } = require('./notify');
 
-// const lockScreen = require('./lockScreen');
-// const { startIdleTimer, stopIdleTimer } = require('./notify');
-
-// function startTimer( model ) {
-//   timer.current = model;
-//   timer.remaining = parseInt(global.durations[model.attributes.type], 10);
-//   console.log( 'starting timer with duration (s):', timer.remaining);
-//   stopIdleTimer();
-//   timer.interval = setInterval( () => {
-//     timer.remaining -= 1;
-//     if( timer.remaining === 0 ) {
-//       const dateTime = new Date().toMysqlFormat();
-//       model.set({
-//         status: 'done',
-//         stoppedAt: dateTime,
-//         updatedAt: dateTime
-//       } );
-//       clearInterval( timer.interval );
-//       timer.interval = null;
-//       startIdleTimer();
-//       model.save().then( () => {
-//         lockScreen();
-//       } );
-//     }
-//   }, 1000 );
-// }
-
-// var timer = {
-//   interval: null,
-//   remaining: 0,
-//   current: null
-// };
+var timer = {
+  interval: null,
+  startTimestamp: 0,
+  lastTimestamp: 0,
+  current: null
+};
 
 // const knex = require('knex')({
 //   client: 'mysql',
@@ -82,7 +64,46 @@ module.exports = {
 
   },
   timers: {
+    hooks: {
+      beforeSave: attributes => {
+        attributes.duration = parseInt(global.durations[attributes.type], 10);
+        return Promise.resolve(attributes);
+      },
+      afterSave: timerModel => {
+        // WEIRD. Gotta store timer id b/c it gets erased from timerModel later on!!!
+        const timerId = timerModel.id;
+        const durationMs = timerModel.duration * 1000;
+        let newValue;
+        timer.current = timerModel;
+        timer.lastTimestamp = timer.startTimestamp = (new Date()).getTime();
+        console.log( 'starting timer with duration (s):', timerModel.duration);
+        stopIdleTimer();
+        timer.interval = setInterval( () => {
+          newValue = (new Date()).getTime();
+          // console.log('current: ' + newValue + ', prev: ' + timer.lastTimestamp+ ', diff: ' + (newValue - timer.lastTimestamp) );
+          if( newValue - timer.startTimestamp >= durationMs ) {
+            clearInterval( timer.interval );
+            timer.interval = null;
+            timer.current = null;
+            timer.lastTimestamp = 0;
+            const dateTime = new Date().toMysqlFormat();
+            const status = newValue - timer.lastTimestamp > 1050 ? 'interrupted' : 'done';
+            query(queryBuilder.updateOne('timers', timerId, {
+              status,
+              stoppedAt: dateTime,
+              updatedAt: dateTime
+            }))
+            .then( () => {
+              startIdleTimer();
+              lockScreen();
+            } );
+          }
+          timer.lastTimestamp = newValue;
+        }, 1000 );
 
+        return Promise.resolve(timerModel);
+      }
+    }
   },
   users: {}
 }

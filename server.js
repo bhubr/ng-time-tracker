@@ -41,6 +41,7 @@ queryAsync(queryBuilder.selectAll('options'))
         global.durations[key.replace('Duration', '')] = value;
       }
     });
+    console.log(global.durations);
     http.listen(port, function () {
       console.log('Example app listening on port ' + port);
       var notify = require('./notify');
