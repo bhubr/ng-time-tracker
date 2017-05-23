@@ -2,6 +2,50 @@ webpackJsonp([0],[
 /* 0 */
 /***/ (function(module, exports) {
 
+RouterConfig.$inject = ['$routeProvider', '$httpProvider', '$locationProvider'];
+
+function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
+  $routeProvider
+  .when("/signin", {
+    templateUrl : "signin.html",
+    controller : "signinCtrl"
+  })
+  .when("/signup", {
+    templateUrl : "signup.html",
+    controller : "signupCtrl"
+  })
+  .when("/", {
+    templateUrl : "projects.html",
+    controller : "projectsCtrl",
+    resolve: {
+      flatUiColors: ['$http', function($http) {
+        return $http.get('/flat-ui-colors.json')
+        .then(response => (response.data));
+      }]
+    }
+  })
+  .when("/timer", {
+    templateUrl : "timer.html",
+    controller : "timerCtrl"
+  })
+  .when("/stats", {
+    templateUrl : "stats.html",
+    controller : "statsCtrl"
+  });
+
+  $locationProvider.html5Mode({
+    enabled: true,
+    requireBase: false,
+    rewriteLinks: true
+  });
+
+}
+module.exports = RouterConfig;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
 ProjectsController.$inject = ['$scope', '$http', 'lodash', 'flatUiColors', 'jsonapiUtils'];
 
  function ProjectsController($scope, $http, lodash, flatUiColors, jsonapiUtils) {
@@ -48,7 +92,7 @@ ProjectsController.$inject = ['$scope', '$http', 'lodash', 'flatUiColors', 'json
 module.exports = ProjectsController;
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports) {
 
 SigninController.$inject = ['$rootScope', '$scope', '$location', 'authService'];
@@ -68,7 +112,7 @@ function SigninController($rootScope, $scope, $location, authService) {
 module.exports = SigninController;
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports) {
 
 SignupController.$inject = ['$rootScope', '$scope', 'authService'];
@@ -90,7 +134,7 @@ function SignupController($rootScope, $scope, authService) {
 module.exports = SignupController;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports) {
 
 StatsController.$inject = ['$scope', 'dataStoreService', 'lodash'];
@@ -184,7 +228,7 @@ function StatsController($scope, store, lodash) {
 module.exports = StatsController;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 const MYSQL_OFFSET = 7200;
@@ -320,7 +364,7 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
 module.exports = TimersController;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports) {
 
 AuthService.$inject = ['$http'];
@@ -381,7 +425,7 @@ module.exports = AuthService;
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports) {
 
 /*----------------------------------------
@@ -438,7 +482,7 @@ function JsonapiUtils(_) {
 module.exports = JsonapiUtils;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports) {
 
 TokenCheckInterceptor.$inject = ['$q', '$location'];
@@ -459,7 +503,30 @@ function TokenCheckInterceptor($q, $location) {
 module.exports = TokenCheckInterceptor;
 
 /***/ }),
-/* 8 */
+/* 9 */
+/***/ (function(module, exports) {
+
+/**
+ * You first need to create a formatting function to pad numbers to two digits…
+ **/
+function twoDigits(d) {
+    if(0 <= d && d < 10) return "0" + d.toString();
+    if(-10 < d && d < 0) return "-0" + (-1*d).toString();
+    return d.toString();
+}
+
+function formatTimer( seconds ) {
+  const minutes = Math.floor( seconds / 60 );
+  seconds = seconds % 60;
+  return twoDigits( minutes ) + ':' + twoDigits( seconds );
+}
+
+module.exports = function() {
+  return formatTimer;
+};
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports) {
 
 /*
@@ -567,29 +634,21 @@ angular.module('btford.socket-io', []).
   });
 
 /***/ }),
-/* 9 */,
-/* 10 */,
 /* 11 */,
 /* 12 */,
 /* 13 */,
 /* 14 */,
 /* 15 */,
-/* 16 */
+/* 16 */,
+/* 17 */,
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(8);
+__webpack_require__(10);
 
 
 const DURATION_POMO = 1500;
 
-/**
- * You first need to create a formatting function to pad numbers to two digits…
- **/
-function twoDigits(d) {
-    if(0 <= d && d < 10) return "0" + d.toString();
-    if(-10 < d && d < 0) return "-0" + (-1*d).toString();
-    return d.toString();
-}
 
 /**
  * …and then create the method to output the date string as desired.
@@ -611,11 +670,7 @@ function mapAttributes( item ) {
   return Object.assign( {}, { id: item.id }, lowerCamelAttributes(item.attributes) );
 }
 
-function formatTimer( seconds ) {
-  const minutes = Math.floor( seconds / 60 );
-  seconds = seconds % 60;
-  return twoDigits( minutes ) + ':' + twoDigits( seconds );
-}
+
 
 // http://0xfe.blogspot.fr/2010/04/desktop-notifications-with-webkit.html
 function Notifier() {}
@@ -653,9 +708,9 @@ function notifyMe(idleTime) {
 var app = angular.module("myApp", [
   "ngRoute", 'ngLodash', 'ngSanitize', 'markdown', 'nvd3', 'angular-jwt', 'btford.socket-io'
 ]);
-app.config(['$locationProvider', function($locationProvider) {
-  $locationProvider.hashPrefix('');
-}]);
+// app.config(['$locationProvider', function($locationProvider) {
+//   $locationProvider.hashPrefix('');
+// }]);
 app.directive('templateComment', function () {
     return {
         restrict: 'E',
@@ -682,50 +737,23 @@ app
 
   $httpProvider.interceptors.push('jwtInterceptor');
 })
-.factory('authService', __webpack_require__(5))
-.factory('jsonapiUtils', __webpack_require__(6))
-.controller('signinCtrl', __webpack_require__(1))
-.controller('signupCtrl', __webpack_require__(2))
-.controller('statsCtrl', __webpack_require__(3));
+.factory('authService', __webpack_require__(6))
+.factory('jsonapiUtils', __webpack_require__(7))
+.factory('tokenCheckInterceptor', __webpack_require__(8))
+.config(['$httpProvider', function($httpProvider) {  
+    $httpProvider.interceptors.push('tokenCheckInterceptor');
+}])
+.config(__webpack_require__(0))
+.controller('signinCtrl', __webpack_require__(2))
+.controller('signupCtrl', __webpack_require__(3))
+.controller('statsCtrl', __webpack_require__(4));
 
-app.filter('formatTimer', function() {
-  return formatTimer;
-});
+app.filter('formatTimer', __webpack_require__(9));
+// app.filter('formatTimer', function() {
+//   return s => (s);
+// });
 
 // Routing
-app.config(function($routeProvider, $httpProvider) {
-    $routeProvider
-    .when("/signin", {
-        templateUrl : "signin.html",
-        controller : "signinCtrl"
-    })
-    .when("/signup", {
-        templateUrl : "signup.html",
-        controller : "signupCtrl"
-    })
-    .when("/", {
-        templateUrl : "projects.html",
-        controller : "projectsCtrl",
-        resolve: {
-          flatUiColors: ['$http', function($http) {
-            return $http.get('/flat-ui-colors.json')
-            .then(response => (response.data));
-          }]
-        }
-    })
-    .when("/timer", {
-        templateUrl : "timer.html",
-        controller : "timerCtrl"
-    })
-    .when("/stats", {
-        templateUrl : "stats.html",
-        controller : "statsCtrl"
-    });
-});
-app.factory('myInterceptor', __webpack_require__(7));
-app.config(['$httpProvider', function($httpProvider) {  
-    $httpProvider.interceptors.push('myInterceptor');
-}]);
 // app.run(function(authManager) {
 //     authManager.checkAuthOnRefresh();
 //   })
@@ -791,13 +819,13 @@ app.service('notificationService', function() {
 
 
 // Projects controller
-app.controller("projectsCtrl", __webpack_require__(0));
+app.controller("projectsCtrl", __webpack_require__(1));
 
 // Timer controller
-app.controller("timerCtrl", __webpack_require__(4));
+app.controller("timerCtrl", __webpack_require__(5));
 
 
 
 
 /***/ })
-],[16]);
+],[18]);

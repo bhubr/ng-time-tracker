@@ -3,14 +3,6 @@ require("./vendor/socket.js");
 
 const DURATION_POMO = 1500;
 
-/**
- * You first need to create a formatting function to pad numbers to two digits…
- **/
-function twoDigits(d) {
-    if(0 <= d && d < 10) return "0" + d.toString();
-    if(-10 < d && d < 0) return "-0" + (-1*d).toString();
-    return d.toString();
-}
 
 /**
  * …and then create the method to output the date string as desired.
@@ -32,11 +24,7 @@ function mapAttributes( item ) {
   return Object.assign( {}, { id: item.id }, lowerCamelAttributes(item.attributes) );
 }
 
-function formatTimer( seconds ) {
-  const minutes = Math.floor( seconds / 60 );
-  seconds = seconds % 60;
-  return twoDigits( minutes ) + ':' + twoDigits( seconds );
-}
+
 
 // http://0xfe.blogspot.fr/2010/04/desktop-notifications-with-webkit.html
 function Notifier() {}
@@ -74,9 +62,9 @@ function notifyMe(idleTime) {
 var app = angular.module("myApp", [
   "ngRoute", 'ngLodash', 'ngSanitize', 'markdown', 'nvd3', 'angular-jwt', 'btford.socket-io'
 ]);
-app.config(['$locationProvider', function($locationProvider) {
-  $locationProvider.hashPrefix('');
-}]);
+// app.config(['$locationProvider', function($locationProvider) {
+//   $locationProvider.hashPrefix('');
+// }]);
 app.directive('templateComment', function () {
     return {
         restrict: 'E',
@@ -105,56 +93,17 @@ app
 })
 .factory('authService', require('./factories/AuthService'))
 .factory('jsonapiUtils', require('./factories/JsonapiUtils'))
+.factory('tokenCheckInterceptor', require('./factories/TokenCheckInterceptor'))
+.config(['$httpProvider', function($httpProvider) {  
+    $httpProvider.interceptors.push('tokenCheckInterceptor');
+}])
+.config(require('./config/RouterConfig'))
 .controller('signinCtrl', require('./controllers/SigninController'))
 .controller('signupCtrl', require('./controllers/SignupController'))
 .controller('statsCtrl', require('./controllers/StatsController'));
 
-app.filter('formatTimer', function() {
-  return formatTimer;
-});
+app.filter('formatTimer', require('./filters/formatTimer'));
 
-// Routing
-app.config(function($routeProvider, $httpProvider) {
-    $routeProvider
-    .when("/signin", {
-        templateUrl : "signin.html",
-        controller : "signinCtrl"
-    })
-    .when("/signup", {
-        templateUrl : "signup.html",
-        controller : "signupCtrl"
-    })
-    .when("/", {
-        templateUrl : "projects.html",
-        controller : "projectsCtrl",
-        resolve: {
-          flatUiColors: ['$http', function($http) {
-            return $http.get('/flat-ui-colors.json')
-            .then(response => (response.data));
-          }]
-        }
-    })
-    .when("/timer", {
-        templateUrl : "timer.html",
-        controller : "timerCtrl"
-    })
-    .when("/stats", {
-        templateUrl : "stats.html",
-        controller : "statsCtrl"
-    });
-});
-app.factory('myInterceptor', require('./factories/TokenCheckInterceptor'));
-app.config(['$httpProvider', function($httpProvider) {  
-    $httpProvider.interceptors.push('myInterceptor');
-}]);
-// app.run(function(authManager) {
-//     authManager.checkAuthOnRefresh();
-//   })
-// app.run(['$rootScope', function($rootScope) {
-//   $rootScope.$on('tokenHasExpired', function() {
-//     alert('Your session has expired!');
-//   });
-// }]);
 app.run(function ($http, optionService) {
   $http.get('/api/v1/options').then(function (data) {
     let options = {};

@@ -22,9 +22,14 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 app.use(express.static('public'));
 app.use(bodyParser.json({ type: 'application/json' }));
+
 app.use('/api/v1', middlewares.checkJwt);
 app.use('/api/v1', middlewares.jsonApi);
 app.use('/api/v1', router);
+
+app.get(/^[^\.]+$/, (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
+});
 
 // models.Option.fetchAll()
 queryAsync(queryBuilder.selectAll('options'))
