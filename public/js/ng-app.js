@@ -1,4 +1,4 @@
-const MYSQL_OFFSET = 3600;
+const MYSQL_OFFSET = 7200;
 const DURATION_POMO = 1500;
 
 /**
@@ -113,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
     Notification.requestPermission();
 });
 
+// http://stackoverflow.com/questions/2271156/chrome-desktop-notification-example
 function notifyMe(idleTime) {
   if (Notification.permission !== "granted")
     Notification.requestPermission();
@@ -365,9 +366,25 @@ app.controller("timerCtrl", ['$scope', '$http', 'lodash', 'optionService', 'noti
   $scope.timeRemaining = 0;
   $scope.lastTimer = {};
   $scope.currentTimer = {};
+  $scope.allTimers = [];
   $scope.timers = [];
   $scope.projects = [];
+  $scope.projectOptions = [];
   $scope.statuses = ['new', 'done', 'interrupted'];
+  $scope.filters = {
+    project: null
+  };
+  $scope.$watch('filters', filters, true);
+  $scope.$watch('projects', projectOptions, true);
+
+  function projectOptions() {
+    $scope.projectOptions = [{ id: 0, name: '' }].concat($scope.projects);
+  }
+
+  function filters() {
+    $scope.timers = ! $scope.filters.project ? $scope.allTimers :
+      lodash.filter($scope.allTimers, timer => (timer.projectId === $scope.filters.project));
+  }
 
   $scope.startTimer = function( duration ) {
     $scope.timeRemaining = duration === undefined ? optionService.get('pomodoro') : duration;
@@ -443,10 +460,12 @@ function getTimersAndProjects( $scope, $http, lodash, optionService ) {
         timers[index].project = lodash.find( $scope.projects, { id: timer.projectId } );
       }
     } );
+    $scope.allTimers = $scope.timers;
     $scope.lastTimer = lodash.findLast( $scope.timers, { status: 'new' } );
     if( $scope.lastTimer !== undefined ) {
       var timeStampStart = new Date( $scope.lastTimer.createdAt ).getTime();
       var timeStampNow = Date.now();
+      console.log('timer start, now, diff:', timeStampStart, timeStampNow, Math.floor( ( timeStampNow - timeStampStart ) / 1000 ) - MYSQL_OFFSET);
       var timeDiff = Math.floor( ( timeStampNow - timeStampStart ) / 1000 ) - MYSQL_OFFSET;
       if( timeDiff < optionService.get('pomodoro') ) {
         $scope.startTimer( optionService.get('pomodoro') - timeDiff );

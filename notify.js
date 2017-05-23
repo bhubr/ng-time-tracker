@@ -22,10 +22,9 @@ var idleTimer = {
 function startIdleTimer() {
   idleTimer.interval = setInterval( () => {
     idleTimer.running += 1;
-    if( idleTimer.running % 120 === 0 ) {
+    if( idleTimer.running % 300 === 0 ) {
       console.log('idle', idleTimer.running);
-      // socket.emit('idle', '' + idleTimer.running / 60);
-      notifier.notify('Idle for ' + idleTimer.running / 60 + ' minute(s)');
+      // notifier.notify('Idle for ' + idleTimer.running / 60 + ' minute(s)');
     }
   }, 1000 );
 }

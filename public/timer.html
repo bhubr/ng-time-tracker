@@ -1,6 +1,6 @@
 <div ng-app="">
   <div class="row">
-    <div class="col s6">
+    <div class="col s7">
       <div class="row">
         <div class="col s6">
           <h3>Start timer</h3>
@@ -18,19 +18,26 @@
         </li>
       </ul></template-comment>
       <h3>Timeline</h3>
+      <div class="input-field">
+        <select class="browser-default" ng-model="filters.project" ng-options="p.id as p.name for p in projectOptions">
+        </select>
+      </div>
       <ul>
         <li data-id="{{ timer.id }}" ng-repeat="timer in timers" ng-click="select($event)">
-          {{ timer.id }}.
+          {{ timer.createdAt.substr(0, 16).replace('T', ' ') }}
           <span style="background-color:{{ timer.project ? timer.project.color : '#fff' }}">{{ timer.project ? timer.project.id : 'N/D' }}</span>
           <span class="{{ timer.type }}{{ timer.status === 'new' ? ' red-text' : '' }}">{{ timer.summary }}</span>
         </li>
       </ul>
     </div>
-    <div class="col s6">
+    <div class="col s5">
       <h4>Selected timer</h4>
       <div class="row">
         <div class="input-field col s12">
           <input placeholder="What are you working on?" type="text" ng-model="currentTimer.summary">
+        </div>
+        <div class="col s12">
+        Started at: {{ currentTimer.createdAt.substr(11, 5) }}
         </div>
         <div class="input-field col s12">
           <textarea ng-model="currentTimer.markdown">{{ currentTimer.markdown }}</textarea>
