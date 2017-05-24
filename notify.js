@@ -9,7 +9,6 @@ function setIo(_io) {
     console.log('a user connected');
     socket = _socket;
     socket.emit('server ready', { msg: 'ready' });
-    startIdleTimer();
   });
 
 }
@@ -21,6 +20,7 @@ var idleTimer = {
 
 function startIdleTimer() {
   idleTimer.interval = setInterval( () => {
+    console.log('idle timer');
     idleTimer.running += 1;
     if( idleTimer.running % 15 === 0 ) {
       console.log('idle', idleTimer.running);

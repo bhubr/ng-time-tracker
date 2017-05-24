@@ -1,6 +1,6 @@
 const MYSQL_OFFSET = 7200;
 
-TimersController.$inject = ['$scope', '$http', 'lodash', 'optionService', 'notificationService', 'jsonapiUtils'];
+TimersController.$inject = ['$scope', '$http', 'lodash', 'optionService', 'notificationService', 'jsonapiUtils', 'currentUser'];
 
 function getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtils ) {
   // Get existing projects
@@ -34,13 +34,14 @@ function getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtil
   } );
 }
 
-function TimersController($scope, $http, lodash, optionService, notificationService, jsonapiUtils) {
+function TimersController($scope, $http, lodash, optionService, notificationService, jsonapiUtils, currentUser) {
 
   // const DURATION_POMO = 5;
   // const IDLE = 0;
   // const RUNNING = 1;
   // $scope.timerStatus = IDLE;
-  console.log('timerCtrl', optionService.get('pomodoro'));
+  console.log('timerCtrl', optionService.get('pomodoro'), currentUser);
+  // $scope.currentUser = currentUser;
   $scope.timer = null;
   $scope.timeRemaining = 0;
   $scope.lastTimer = {};
@@ -90,9 +91,18 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
     const type = "pomodoro";
     $scope.currentTimer = null;
     $scope.startTimer();
+    // console.log('before createPomodoro', $scope.currentUser, $scope.currentUser.id);
 
     $http.post("/api/v1/timers",
-    { data: { type: 'timers', attributes: { type } } } )
+    {
+      data: {
+        type: 'timers',
+        attributes: { type },
+        relationships: {
+          owner: { data: { type: 'users', id: currentUser.userId } }
+        }
+      }
+    } )
     .then(function(response) {
       $scope.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
       $scope.timers.push( $scope.currentTimer );
@@ -107,6 +117,7 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
     $http.put("/api/v1/timers/" + $scope.currentTimer.id, {
       data: {
         type: 'timers',
+        id: $scope.currentTimer.id,
         attributes: {
           summary: $scope.currentTimer.summary,
           markdown: $scope.currentTimer.markdown,

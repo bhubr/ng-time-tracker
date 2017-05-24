@@ -104,6 +104,9 @@ app
 
 app.filter('formatTimer', require('./filters/formatTimer'));
 
+app.run(function(authService) {
+  authService.init();
+});
 app.run(function ($http, optionService) {
   $http.get('/api/v1/options').then(function (data) {
     let options = {};

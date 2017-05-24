@@ -26,7 +26,12 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
   })
   .when("/timer", {
     templateUrl : "timer.html",
-    controller : "timerCtrl"
+    controller : "timerCtrl",
+    resolve: {
+      currentUser: ['authService', function(authService) {
+        return authService.getCurrentUser();
+      }]
+    }
   })
   .when("/stats", {
     templateUrl : "stats.html",
@@ -233,7 +238,7 @@ module.exports = StatsController;
 
 const MYSQL_OFFSET = 7200;
 
-TimersController.$inject = ['$scope', '$http', 'lodash', 'optionService', 'notificationService', 'jsonapiUtils'];
+TimersController.$inject = ['$scope', '$http', 'lodash', 'optionService', 'notificationService', 'jsonapiUtils', 'currentUser'];
 
 function getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtils ) {
   // Get existing projects
@@ -267,13 +272,14 @@ function getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtil
   } );
 }
 
-function TimersController($scope, $http, lodash, optionService, notificationService, jsonapiUtils) {
+function TimersController($scope, $http, lodash, optionService, notificationService, jsonapiUtils, currentUser) {
 
   // const DURATION_POMO = 5;
   // const IDLE = 0;
   // const RUNNING = 1;
   // $scope.timerStatus = IDLE;
-  console.log('timerCtrl', optionService.get('pomodoro'));
+  console.log('timerCtrl', optionService.get('pomodoro'), currentUser);
+  // $scope.currentUser = currentUser;
   $scope.timer = null;
   $scope.timeRemaining = 0;
   $scope.lastTimer = {};
@@ -323,9 +329,18 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
     const type = "pomodoro";
     $scope.currentTimer = null;
     $scope.startTimer();
+    // console.log('before createPomodoro', $scope.currentUser, $scope.currentUser.id);
 
     $http.post("/api/v1/timers",
-    { data: { type: 'timers', attributes: { type } } } )
+    {
+      data: {
+        type: 'timers',
+        attributes: { type },
+        relationships: {
+          owner: { data: { type: 'users', id: currentUser.userId } }
+        }
+      }
+    } )
     .then(function(response) {
       $scope.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
       $scope.timers.push( $scope.currentTimer );
@@ -340,6 +355,7 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
     $http.put("/api/v1/timers/" + $scope.currentTimer.id, {
       data: {
         type: 'timers',
+        id: $scope.currentTimer.id,
         attributes: {
           summary: $scope.currentTimer.summary,
           markdown: $scope.currentTimer.markdown,
@@ -367,9 +383,11 @@ module.exports = TimersController;
 /* 6 */
 /***/ (function(module, exports) {
 
-AuthService.$inject = ['$http'];
+AuthService.$inject = ['$http', 'jwtHelper'];
 
-function AuthService($http) {
+function AuthService($http, jwtHelper) {
+
+  let currentUser = null;
 
   function getToken() {
     return localStorage.getItem('id_token');
@@ -379,10 +397,24 @@ function AuthService($http) {
     return localStorage.setItem('id_token', jwt);
   }
 
+  function getCurrentUser() {
+    return currentUser;
+  }
+
+  function init() {
+    const token = getToken();
+    currentUser = jwtHelper.decodeToken(token);
+    console.log('AuthService.init currentUser: ', currentUser);
+  }
+
   return {
     setToken,
 
     getToken,
+
+    getCurrentUser,
+
+    init,
 
     signup: function(attributes) {
       return $http.post('/api/v1/users', { data:
@@ -390,7 +422,7 @@ function AuthService($http) {
      })
       .then(function(response) {
         // var token = response.data.token;
-        // self.user = jwtHelper.decodeToken(token);
+        // self.
         // return { token: token, user: self.user };
         console.log(response);
       });
@@ -412,8 +444,8 @@ function AuthService($http) {
         console.log(user, token);
         // localStorage.getItem('id_token');
         setToken(token);
-        self.user = user;
-        console.log(self);
+        currentUser = user;
+        console.log(currentUser);
       });
       //   return { token: token, user: self.user };
       // });
@@ -749,19 +781,10 @@ app
 .controller('statsCtrl', __webpack_require__(4));
 
 app.filter('formatTimer', __webpack_require__(9));
-// app.filter('formatTimer', function() {
-//   return s => (s);
-// });
 
-// Routing
-// app.run(function(authManager) {
-//     authManager.checkAuthOnRefresh();
-//   })
-// app.run(['$rootScope', function($rootScope) {
-//   $rootScope.$on('tokenHasExpired', function() {
-//     alert('Your session has expired!');
-//   });
-// }]);
+app.run(function(authService) {
+  authService.init();
+});
 app.run(function ($http, optionService) {
   $http.get('/api/v1/options').then(function (data) {
     let options = {};

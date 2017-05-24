@@ -19,8 +19,8 @@
       </ul></template-comment>
       <h3>Timeline</h3>
       <div class="input-field">
-        <select class="browser-default" ng-model="filters.project" ng-options="p.id as p.name for p in projectOptions">
-        </select>
+        <select class="browser-default" ng-model="filters.project" ng-options="p.id as p.name for p in projectOptions"></select>
+        <!-- <select class="browser-default" ng-model="filters.timeslice" ng-options="t in timesliceOptions"></select> -->
       </div>
       <ul>
         <li data-id="{{ timer.id }}" ng-repeat="timer in timers" ng-click="select($event)">

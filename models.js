@@ -64,6 +64,13 @@ module.exports = {
 
   },
   timers: {
+    relationships: {
+      owner: {
+        table: 'users',
+        type: 'belongsTo',
+        reverse: 'timers'
+      }
+    },
     hooks: {
       beforeSave: attributes => {
         attributes.duration = parseInt(global.durations[attributes.type], 10);
@@ -82,10 +89,6 @@ module.exports = {
           newValue = (new Date()).getTime();
           // console.log('current: ' + newValue + ', prev: ' + timer.lastTimestamp+ ', diff: ' + (newValue - timer.lastTimestamp) );
           if( newValue - timer.startTimestamp >= durationMs ) {
-            clearInterval( timer.interval );
-            timer.interval = null;
-            timer.current = null;
-            timer.lastTimestamp = 0;
             const dateTime = new Date().toMysqlFormat();
             const status = newValue - timer.lastTimestamp > 1050 ? 'interrupted' : 'done';
             query(queryBuilder.updateOne('timers', timerId, {
@@ -94,6 +97,10 @@ module.exports = {
               updatedAt: dateTime
             }))
             .then( () => {
+              clearInterval( timer.interval );
+              timer.interval = null;
+              timer.current = null;
+              timer.lastTimestamp = 0;
               startIdleTimer();
               lockScreen();
             } );
@@ -105,5 +112,13 @@ module.exports = {
       }
     }
   },
-  users: {}
+  users: {
+    relationships: {
+      timers: {
+        table: 'timers',
+        type: 'hasMany',
+        reverse: 'owner'
+      }
+    }
+  }
 }

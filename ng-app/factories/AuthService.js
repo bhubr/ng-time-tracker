@@ -1,6 +1,8 @@
-AuthService.$inject = ['$http'];
+AuthService.$inject = ['$http', 'jwtHelper'];
 
-function AuthService($http) {
+function AuthService($http, jwtHelper) {
+
+  let currentUser = null;
 
   function getToken() {
     return localStorage.getItem('id_token');
@@ -10,10 +12,24 @@ function AuthService($http) {
     return localStorage.setItem('id_token', jwt);
   }
 
+  function getCurrentUser() {
+    return currentUser;
+  }
+
+  function init() {
+    const token = getToken();
+    currentUser = jwtHelper.decodeToken(token);
+    console.log('AuthService.init currentUser: ', currentUser);
+  }
+
   return {
     setToken,
 
     getToken,
+
+    getCurrentUser,
+
+    init,
 
     signup: function(attributes) {
       return $http.post('/api/v1/users', { data:
@@ -21,7 +37,7 @@ function AuthService($http) {
      })
       .then(function(response) {
         // var token = response.data.token;
-        // self.user = jwtHelper.decodeToken(token);
+        // self.
         // return { token: token, user: self.user };
         console.log(response);
       });
@@ -43,8 +59,8 @@ function AuthService($http) {
         console.log(user, token);
         // localStorage.getItem('id_token');
         setToken(token);
-        self.user = user;
-        console.log(self);
+        currentUser = user;
+        console.log(currentUser);
       });
       //   return { token: token, user: self.user };
       // });

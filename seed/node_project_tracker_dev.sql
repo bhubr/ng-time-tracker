@@ -93,7 +93,7 @@ ALTER TABLE `timers`
 -- Migration: Tue Feb 14th, 2017
 ALTER TABLE `timers`
   ADD COLUMN `project_id` integer,
-  ADD CONSTRAINT `fk_project_id` FOREIGN KEY(`project_id`) REFERENCES `projects`(`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_project_id` FOREIGN KEY(`projectId`) REFERENCES `projects`(`id`) ON DELETE CASCADE;
 
 -- In order to add Markdown field
 ALTER TABLE `timers` CHANGE `description` `summary` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
@@ -138,6 +138,10 @@ ALTER TABLE `timers` CHANGE `updated_at` `updatedAt` DATETIME NULL DEFAULT NULL;
 ALTER TABLE `timers` CHANGE `stopped_at` `stoppedAt` DATETIME NULL DEFAULT NULL;
 ALTER TABLE `timers` CHANGE `project_id` `projectId` INT(11) NULL DEFAULT NULL;
 ALTER TABLE `timers` ADD COLUMN `duration` int(11);
+ALTER TABLE `timers` ADD COLUMN `ownerId` int(11) NOT NULL;
+ALTER TABLE `timers`
+  ADD CONSTRAINT `timers_ibfk_2` FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
