@@ -1,21 +1,44 @@
-DashboardController.$inject = ['$scope', 'lodash', 'moment', 'data'];
+DashboardController.$inject = ['$rootScope', '$scope', 'lodash', 'moment', 'dataStoreService', 'data'];
 
-function DashboardController($scope, _, moment, data) {
+function DashboardController($rootScope, $scope, _, moment, dataStoreService, data) {
+  $scope.dailyPost = {
+    markdown: ''
+  };
+
+  // 5 most recent timers
   var numTimers = data.timers.length;
   var sortedTimers = _.sortBy(data.timers, 'createdAt');
   $scope.latestTimers = _.slice(sortedTimers, numTimers - 5);
-  var dateNow = moment().subtract(7, 'days');
-  // dateNow mo;
-  // .toDate();
-  console.log(dateNow.toDate(), new Date());
+
+  // Projects for which there have been timers in the last 7 days
+  var oneWeekAgo = moment().subtract(7, 'days');
   var recentTimers = _.filter(sortedTimers, function(t) {
-    return moment(t.createdAt).diff(dateNow, 'minutes') > 0;
+    return moment(t.createdAt).diff(oneWeekAgo, 'minutes') > 0;
   });
   var recentProjectIds = _.map(recentTimers, 'projectId');
   $scope.activeProjects = _.filter(data.projects, function(p) {
     return recentProjectIds.indexOf(p.id) !== -1;
   });
-  console.log($scope.recentTimers, recentProjectIds);
+
+  // Daily posts
+  var today = moment().format('YYYY-MM-DD');
+  var dailyPost = _.find(data.dailyposts, function(post) {
+    return post.userId === $rootScope.currentUser.userId &&
+      post.createdAt.substr(0, 10) === today;
+  });
+  if(dailyPost === undefined) {
+    dataStoreService.create('dailyposts', {
+      markdown: '### Daily post for ' + today
+    }, {
+      user: { id: $rootScope.currentUser.userId, type: 'users' }
+    })
+    .then(post => {
+      $scope.dailyPost = post;
+    });
+  }
+  else {
+    $scope.dailyPost = dailyPost;
+  }
 }
 
 module.exports = DashboardController;

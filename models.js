@@ -112,12 +112,26 @@ module.exports = {
       }
     }
   },
+  dailyposts: {
+    relationships: {
+      user: {
+        table: 'users',
+        type: 'belongsTo',
+        reverse: 'dailyposts'
+      }
+    }
+  },
   users: {
     relationships: {
       timers: {
         table: 'timers',
         type: 'hasMany',
         reverse: 'owner'
+      },
+      dailyposts: {
+        table: 'dailyposts',
+        type: 'hasMany',
+        reverse: 'user'
       }
     }
   }

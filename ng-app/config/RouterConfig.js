@@ -15,7 +15,34 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     controller : "dashboardCtrl",
     resolve: {
       data: ['dataStoreService', function(dataStoreService) {
-        return dataStoreService.get(['projects', 'options', 'timers']);
+        return dataStoreService.get(['projects', 'options', 'timers', 'dailyposts', 'client-ids']);
+      }]
+    }
+  })
+  .when("/accounts", {
+    templateUrl : "accounts.html",
+    controller : "accountsCtrl",
+    resolve: {
+      data: ['dataStoreService', function(dataStoreService) {
+        return dataStoreService.get(['client-ids']);
+      }]
+    }
+  })
+  .when("/repos", {
+    templateUrl : "repositories.html",
+    controller : "reposCtrl",
+    resolve: {
+      data: ['bitbucketService', function(bitbucketService) {
+        return bitbucketService.getRepos();
+      }]
+    }
+  })
+  .when("/cb/:provider", {
+    templateUrl : "accounts.html",
+    controller : "accountsCtrl",
+    resolve: {
+      data: ['dataStoreService', function(dataStoreService) {
+        return dataStoreService.get(['client-ids']);
       }]
     }
   })

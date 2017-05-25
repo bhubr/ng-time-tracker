@@ -19,10 +19,8 @@ function AuthService($rootScope, $http, jwtHelper) {
   function init() {
     const token = getToken();
     if(token !== null) {
-      console.log(token, typeof token);
       $rootScope.currentUser = currentUser = jwtHelper.decodeToken(token);
     }
-    console.log('AuthService.init currentUser: ', currentUser);
   }
 
 

@@ -159,3 +159,15 @@ CREATE TABLE `role_permission` (
   `roleId` int(11) UNSIGNED NOT NULL,
   `permissionId` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+CREATE TABLE `dailyposts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `userId` int(11) NOT NULL,
+  `markdown` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `createdAt` datetime COLLATE utf8_unicode_ci DEFAULT NULL,
+  `updatedAt` datetime COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `dailyposts`
+  ADD CONSTRAINT `dailyposts_ibfk_1` FOREIGN KEY(`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE;

@@ -96,6 +96,7 @@ app
 .factory('translationService', require('./factories/TranslationService'))
 .factory('jsonapiUtils', require('./factories/JsonapiUtils'))
 .factory('tokenCheckInterceptor', require('./factories/TokenCheckInterceptor'))
+.factory('bitbucketService', require('./factories/BitbucketService'))
 .config(['$httpProvider', function($httpProvider) {  
     $httpProvider.interceptors.push('tokenCheckInterceptor');
 }])
@@ -103,7 +104,11 @@ app
 .controller('dashboardCtrl', require('./controllers/DashboardController'))
 .controller('signinCtrl', require('./controllers/SigninController'))
 .controller('signupCtrl', require('./controllers/SignupController'))
-.controller('statsCtrl', require('./controllers/StatsController'));
+.controller('accountsCtrl', require('./controllers/AccountsController'))
+.controller('statsCtrl', require('./controllers/StatsController'))
+.controller('projectsCtrl', require('./controllers/ProjectsController'))
+.controller('timerCtrl', require('./controllers/TimersController'))
+.controller('reposCtrl', require('./controllers/ReposController'))
 
 app.filter('formatTimer', require('./filters/formatTimer'));
 
@@ -137,7 +142,7 @@ app.service('optionService', function() {
     }
   };
 });
-app.service('dataStoreService', ['$http', '$q', function($http, $q) {
+app.service('dataStoreService', ['$http', '$q', 'lodash', function($http, $q, _) {
   return {
     get: function(keys) {
       if(typeof keys === 'string') {
@@ -154,6 +159,17 @@ app.service('dataStoreService', ['$http', '$q', function($http, $q) {
           return dataSet;
         }, {}
       ));
+    },
+
+    create: function(type, attributes, rawRelationships) {
+      const relationships = {};
+      _.forOwn(rawRelationships, (data, key) => {
+        relationships[key] = { data };
+      });
+      return $http.post('/api/v1/' + type, {
+        data: { type, attributes, relationships }
+      })
+      .then(response => (response.data));
     }
   };
 }]);
@@ -170,12 +186,4 @@ app.service('notificationService', function() {
     console.log(msg);
   });
 });
-
-
-// Projects controller
-app.controller("projectsCtrl", require('./controllers/ProjectsController'));
-
-// Timer controller
-app.controller("timerCtrl", require('./controllers/TimersController'));
-
 

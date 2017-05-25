@@ -1,4 +1,4 @@
-
+const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const configs = require(__dirname + '/config.json');
@@ -26,7 +26,27 @@ app.use(bodyParser.json({ type: 'application/json' }));
 
 app.use('/api/v1', middlewares.checkJwt);
 app.use('/api/v1', middlewares.jsonApi);
+
+app.get('/api/v1/client-ids', (req, res) => {
+  let id = 0;
+  let clientIds = [];
+  _.forOwn(config.clientIds, (clientId, provider) => {
+    id++;
+    clientIds.push({
+      id,
+      type: 'client-id',
+      attributes: {
+        'client-id': clientId,
+        provider
+      }
+    });
+  });
+  // res.json(clientIds);
+  res.jsonApi(clientIds);
+});
+
 app.use('/api/v1', router);
+
 
 app.get(/^[^\.]+$/, (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
