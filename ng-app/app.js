@@ -60,7 +60,15 @@ function notifyMe(idleTime) {
 
 // Declare app
 var app = angular.module("myApp", [
-  "ngRoute", 'ngLodash', 'ngSanitize', 'markdown', 'nvd3', 'angular-jwt', 'btford.socket-io'
+  'ngRoute',
+  'ngLodash',
+  'ngSanitize',
+  'angularMoment',
+  'markdown',
+  'nvd3',
+  'angular-jwt',
+  'btford.socket-io',
+  'pascalprecht.translate'
 ]);
 // app.config(['$locationProvider', function($locationProvider) {
 //   $locationProvider.hashPrefix('');
@@ -81,32 +89,30 @@ app.directive('templateComment', function () {
 // });
 // angular.module('myApp', ['nvd3'])
 app
-.config(function Config($httpProvider, jwtOptionsProvider) {
-  // Please note we're annotating the function so that the $injector works when the file is minified
-  jwtOptionsProvider.config({
-    tokenGetter: ['authService', function(authService) {
-      return authService.getToken();
-    }]
-  });
-
-  $httpProvider.interceptors.push('jwtInterceptor');
-})
+.config(require('./config/JwtConfig'))
+.config(require('./config/RouterConfig'))
+.config(require('./config/TranslationConfig'))
 .factory('authService', require('./factories/AuthService'))
+.factory('translationService', require('./factories/TranslationService'))
 .factory('jsonapiUtils', require('./factories/JsonapiUtils'))
 .factory('tokenCheckInterceptor', require('./factories/TokenCheckInterceptor'))
 .config(['$httpProvider', function($httpProvider) {  
     $httpProvider.interceptors.push('tokenCheckInterceptor');
 }])
-.config(require('./config/RouterConfig'))
+.controller('mainCtrl', require('./controllers/MainController'))
+.controller('dashboardCtrl', require('./controllers/DashboardController'))
 .controller('signinCtrl', require('./controllers/SigninController'))
 .controller('signupCtrl', require('./controllers/SignupController'))
 .controller('statsCtrl', require('./controllers/StatsController'));
 
 app.filter('formatTimer', require('./filters/formatTimer'));
 
-app.run(function(authService) {
-  authService.init();
-});
+app.run(['translationService', 'authService',
+  function(translationService, authService) {
+    translationService.init();
+    authService.init();
+  }
+]);
 app.run(function ($http, optionService) {
   $http.get('/api/v1/options').then(function (data) {
     let options = {};
@@ -134,6 +140,9 @@ app.service('optionService', function() {
 app.service('dataStoreService', ['$http', '$q', function($http, $q) {
   return {
     get: function(keys) {
+      if(typeof keys === 'string') {
+        keys = [keys];
+      }
       var promises = keys.map(
         key => $http.get('/api/v1/' + key)
           .then(response => (response.data.data))

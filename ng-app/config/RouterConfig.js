@@ -11,6 +11,15 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     controller : "signupCtrl"
   })
   .when("/", {
+    templateUrl : "dashboard.html",
+    controller : "dashboardCtrl",
+    resolve: {
+      data: ['dataStoreService', function(dataStoreService) {
+        return dataStoreService.get(['projects', 'options', 'timers']);
+      }]
+    }
+  })
+  .when("/projects", {
     templateUrl : "projects.html",
     controller : "projectsCtrl",
     resolve: {

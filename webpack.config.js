@@ -12,9 +12,11 @@ module.exports = {
     vendor: [
       'angular',
       'angular-sanitize',
-      "angular-jwt",
-      "angular-route",
+      'angular-jwt',
+      'angular-route',
       'angular-markdown-filter',
+      'angular-translate',
+      'angular-moment',
       'angular-nvd3',
       "ng-lodash"
     ]

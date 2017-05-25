@@ -1,0 +1,45 @@
+<div class="row">
+  <div class="col-sm-12 col-md-4">
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">Panel heading without title</div>
+      <div class="panel-body">
+        Panel content
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-sm-12 col-md-4">
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">Panel heading without title</div>
+      <div class="panel-body">
+        Panel content
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-sm-12 col-md-4">
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">{{ 'ACTIVE_PROJECTS' | translate}} ({{ 'LAST_7_DAYS' | translate }})</div>
+      <div class="panel-body">
+        <ul>
+          <li ng-repeat="p in activeProjects">{{ p.name }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading" translate>LATEST_TIMERS</div>
+      <div class="panel-body">
+        <ul>
+          <li ng-repeat="t in latestTimers">{{ t.summary }}</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>

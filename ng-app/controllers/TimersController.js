@@ -40,7 +40,7 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
   // const IDLE = 0;
   // const RUNNING = 1;
   // $scope.timerStatus = IDLE;
-  console.log('timerCtrl', optionService.get('pomodoro'), currentUser);
+  // console.log('timerCtrl', optionService.get('pomodoro'), currentUser);
   // $scope.currentUser = currentUser;
   $scope.timer = null;
   $scope.timeRemaining = 0;

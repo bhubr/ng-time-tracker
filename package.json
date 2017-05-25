@@ -4,6 +4,8 @@
   "repository": "https://github.com/",
   "description": "Track projects and time with Express and AngularJS",
   "dependencies": {
+    "angular-moment": "^1.0.1",
+    "angular-translate": "^2.15.1",
     "bluebird": "^3.4.7",
     "body-parser": "^1.16.0",
     "body-parser-json": "^1.9.2",

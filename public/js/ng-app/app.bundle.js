@@ -1,5 +1,24 @@
-webpackJsonp([0],[
-/* 0 */
+webpackJsonp([0],{
+
+/***/ 118:
+/***/ (function(module, exports) {
+
+function JwtConfig($httpProvider, jwtOptionsProvider) {
+  // Please note we're annotating the function so that the $injector works when the file is minified
+  jwtOptionsProvider.config({
+    tokenGetter: ['authService', function(authService) {
+      return authService.getToken();
+    }]
+  });
+
+  $httpProvider.interceptors.push('jwtInterceptor');
+}
+
+module.exports = JwtConfig;
+
+/***/ }),
+
+/***/ 119:
 /***/ (function(module, exports) {
 
 RouterConfig.$inject = ['$routeProvider', '$httpProvider', '$locationProvider'];
@@ -15,6 +34,15 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     controller : "signupCtrl"
   })
   .when("/", {
+    templateUrl : "dashboard.html",
+    controller : "dashboardCtrl",
+    resolve: {
+      data: ['dataStoreService', function(dataStoreService) {
+        return dataStoreService.get(['projects', 'options', 'timers']);
+      }]
+    }
+  })
+  .when("/projects", {
     templateUrl : "projects.html",
     controller : "projectsCtrl",
     resolve: {
@@ -48,7 +76,67 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
 module.exports = RouterConfig;
 
 /***/ }),
-/* 1 */
+
+/***/ 120:
+/***/ (function(module, exports) {
+
+function TranslationConfig($translateProvider) {
+  $translateProvider.translations('en', {
+    ACTIVE_PROJECTS: 'Active projects',
+    LAST_7_DAYS: 'last 7 days',
+    LATEST_TIMERS: 'Latest timers',
+  });
+  $translateProvider.preferredLanguage('en');
+}
+
+module.exports = TranslationConfig;
+
+/***/ }),
+
+/***/ 121:
+/***/ (function(module, exports) {
+
+DashboardController.$inject = ['$scope', 'lodash', 'moment', 'data'];
+
+function DashboardController($scope, _, moment, data) {
+  var numTimers = data.timers.length;
+  var sortedTimers = _.sortBy(data.timers, 'createdAt');
+  $scope.latestTimers = _.slice(sortedTimers, numTimers - 5);
+  var dateNow = moment().subtract(7, 'days');
+  // dateNow mo;
+  // .toDate();
+  console.log(dateNow.toDate(), new Date());
+  var recentTimers = _.filter(sortedTimers, function(t) {
+    return moment(t.createdAt).diff(dateNow, 'minutes') > 0;
+  });
+  var recentProjectIds = _.map(recentTimers, 'projectId');
+  $scope.activeProjects = _.filter(data.projects, function(p) {
+    return recentProjectIds.indexOf(p.id) !== -1;
+  });
+  console.log($scope.recentTimers, recentProjectIds);
+}
+
+module.exports = DashboardController;
+
+/***/ }),
+
+/***/ 122:
+/***/ (function(module, exports) {
+
+MainController.$inject = ['$rootScope', '$scope', '$location', 'authService'];
+
+function MainController($rootScope, $scope, $location, authService) {
+  $scope.logout = function() {
+    authService.signout();
+    $location.path('/signin');
+  }
+}
+
+module.exports = MainController;
+
+/***/ }),
+
+/***/ 123:
 /***/ (function(module, exports) {
 
 ProjectsController.$inject = ['$scope', '$http', 'lodash', 'flatUiColors', 'jsonapiUtils'];
@@ -97,7 +185,8 @@ ProjectsController.$inject = ['$scope', '$http', 'lodash', 'flatUiColors', 'json
 module.exports = ProjectsController;
 
 /***/ }),
-/* 2 */
+
+/***/ 124:
 /***/ (function(module, exports) {
 
 SigninController.$inject = ['$rootScope', '$scope', '$location', 'authService'];
@@ -117,7 +206,8 @@ function SigninController($rootScope, $scope, $location, authService) {
 module.exports = SigninController;
 
 /***/ }),
-/* 3 */
+
+/***/ 125:
 /***/ (function(module, exports) {
 
 SignupController.$inject = ['$rootScope', '$scope', 'authService'];
@@ -139,7 +229,8 @@ function SignupController($rootScope, $scope, authService) {
 module.exports = SignupController;
 
 /***/ }),
-/* 4 */
+
+/***/ 126:
 /***/ (function(module, exports) {
 
 StatsController.$inject = ['$scope', 'dataStoreService', 'lodash'];
@@ -233,7 +324,8 @@ function StatsController($scope, store, lodash) {
 module.exports = StatsController;
 
 /***/ }),
-/* 5 */
+
+/***/ 127:
 /***/ (function(module, exports) {
 
 const MYSQL_OFFSET = 7200;
@@ -278,7 +370,7 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
   // const IDLE = 0;
   // const RUNNING = 1;
   // $scope.timerStatus = IDLE;
-  console.log('timerCtrl', optionService.get('pomodoro'), currentUser);
+  // console.log('timerCtrl', optionService.get('pomodoro'), currentUser);
   // $scope.currentUser = currentUser;
   $scope.timer = null;
   $scope.timeRemaining = 0;
@@ -380,12 +472,13 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
 module.exports = TimersController;
 
 /***/ }),
-/* 6 */
+
+/***/ 128:
 /***/ (function(module, exports) {
 
-AuthService.$inject = ['$http', 'jwtHelper'];
+AuthService.$inject = ['$rootScope', '$http', 'jwtHelper'];
 
-function AuthService($http, jwtHelper) {
+function AuthService($rootScope, $http, jwtHelper) {
 
   let currentUser = null;
 
@@ -403,17 +496,18 @@ function AuthService($http, jwtHelper) {
 
   function init() {
     const token = getToken();
-    currentUser = jwtHelper.decodeToken(token);
+    if(token !== null) {
+      console.log(token, typeof token);
+      $rootScope.currentUser = currentUser = jwtHelper.decodeToken(token);
+    }
     console.log('AuthService.init currentUser: ', currentUser);
   }
 
+
   return {
     setToken,
-
     getToken,
-
     getCurrentUser,
-
     init,
 
     signup: function(attributes) {
@@ -444,12 +538,18 @@ function AuthService($http, jwtHelper) {
         console.log(user, token);
         // localStorage.getItem('id_token');
         setToken(token);
-        currentUser = user;
+        $rootScope.currentUser = currentUser = user;
         console.log(currentUser);
       });
       //   return { token: token, user: self.user };
       // });
-    }
+    },
+
+    signout: function() {
+      localStorage.removeItem('id_token');
+      $rootScope.currentUser = currentUser = null;
+    } 
+
   };
 }
 
@@ -457,7 +557,8 @@ module.exports = AuthService;
 
 
 /***/ }),
-/* 7 */
+
+/***/ 129:
 /***/ (function(module, exports) {
 
 /*----------------------------------------
@@ -514,7 +615,8 @@ function JsonapiUtils(_) {
 module.exports = JsonapiUtils;
 
 /***/ }),
-/* 8 */
+
+/***/ 130:
 /***/ (function(module, exports) {
 
 TokenCheckInterceptor.$inject = ['$q', '$location'];
@@ -535,7 +637,44 @@ function TokenCheckInterceptor($q, $location) {
 module.exports = TokenCheckInterceptor;
 
 /***/ }),
-/* 9 */
+
+/***/ 131:
+/***/ (function(module, exports) {
+
+/*----------------------------------------
+ | Lang related stuff
+ *----------------------------------------
+ |
+ */
+TranslationService.$inject = ['$rootScope', '$translate'];
+
+function TranslationService($rootScope, $translate) {
+
+  return {
+    init: function() {
+
+      // Get preferred language is set, and tell $translate to use it
+      var preferredLang = localStorage.getItem('preferred_lang');
+      if(preferredLang) {
+        $translate.use(preferredLang);
+      }
+
+      // Set preferred language and configure $translate,
+      // so that language pref is remembered on page reload
+      $rootScope.changeLanguage = function (key) {
+        localStorage.setItem('preferred_lang', key);
+        $translate.use(key);
+      };
+    }
+  }
+
+}
+
+module.exports = TranslationService;
+
+/***/ }),
+
+/***/ 132:
 /***/ (function(module, exports) {
 
 /**
@@ -558,7 +697,8 @@ module.exports = function() {
 };
 
 /***/ }),
-/* 10 */
+
+/***/ 133:
 /***/ (function(module, exports) {
 
 /*
@@ -666,17 +806,11 @@ angular.module('btford.socket-io', []).
   });
 
 /***/ }),
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */,
-/* 15 */,
-/* 16 */,
-/* 17 */,
-/* 18 */
+
+/***/ 142:
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(10);
+__webpack_require__(133);
 
 
 const DURATION_POMO = 1500;
@@ -738,7 +872,15 @@ function notifyMe(idleTime) {
 
 // Declare app
 var app = angular.module("myApp", [
-  "ngRoute", 'ngLodash', 'ngSanitize', 'markdown', 'nvd3', 'angular-jwt', 'btford.socket-io'
+  'ngRoute',
+  'ngLodash',
+  'ngSanitize',
+  'angularMoment',
+  'markdown',
+  'nvd3',
+  'angular-jwt',
+  'btford.socket-io',
+  'pascalprecht.translate'
 ]);
 // app.config(['$locationProvider', function($locationProvider) {
 //   $locationProvider.hashPrefix('');
@@ -759,32 +901,30 @@ app.directive('templateComment', function () {
 // });
 // angular.module('myApp', ['nvd3'])
 app
-.config(function Config($httpProvider, jwtOptionsProvider) {
-  // Please note we're annotating the function so that the $injector works when the file is minified
-  jwtOptionsProvider.config({
-    tokenGetter: ['authService', function(authService) {
-      return authService.getToken();
-    }]
-  });
-
-  $httpProvider.interceptors.push('jwtInterceptor');
-})
-.factory('authService', __webpack_require__(6))
-.factory('jsonapiUtils', __webpack_require__(7))
-.factory('tokenCheckInterceptor', __webpack_require__(8))
+.config(__webpack_require__(118))
+.config(__webpack_require__(119))
+.config(__webpack_require__(120))
+.factory('authService', __webpack_require__(128))
+.factory('translationService', __webpack_require__(131))
+.factory('jsonapiUtils', __webpack_require__(129))
+.factory('tokenCheckInterceptor', __webpack_require__(130))
 .config(['$httpProvider', function($httpProvider) {  
     $httpProvider.interceptors.push('tokenCheckInterceptor');
 }])
-.config(__webpack_require__(0))
-.controller('signinCtrl', __webpack_require__(2))
-.controller('signupCtrl', __webpack_require__(3))
-.controller('statsCtrl', __webpack_require__(4));
+.controller('mainCtrl', __webpack_require__(122))
+.controller('dashboardCtrl', __webpack_require__(121))
+.controller('signinCtrl', __webpack_require__(124))
+.controller('signupCtrl', __webpack_require__(125))
+.controller('statsCtrl', __webpack_require__(126));
 
-app.filter('formatTimer', __webpack_require__(9));
+app.filter('formatTimer', __webpack_require__(132));
 
-app.run(function(authService) {
-  authService.init();
-});
+app.run(['translationService', 'authService',
+  function(translationService, authService) {
+    translationService.init();
+    authService.init();
+  }
+]);
 app.run(function ($http, optionService) {
   $http.get('/api/v1/options').then(function (data) {
     let options = {};
@@ -812,6 +952,9 @@ app.service('optionService', function() {
 app.service('dataStoreService', ['$http', '$q', function($http, $q) {
   return {
     get: function(keys) {
+      if(typeof keys === 'string') {
+        keys = [keys];
+      }
       var promises = keys.map(
         key => $http.get('/api/v1/' + key)
           .then(response => (response.data.data))
@@ -842,13 +985,14 @@ app.service('notificationService', function() {
 
 
 // Projects controller
-app.controller("projectsCtrl", __webpack_require__(1));
+app.controller("projectsCtrl", __webpack_require__(123));
 
 // Timer controller
-app.controller("timerCtrl", __webpack_require__(5));
+app.controller("timerCtrl", __webpack_require__(127));
 
 
 
 
 /***/ })
-],[18]);
+
+},[142]);
