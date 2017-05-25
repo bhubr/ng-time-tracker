@@ -72,11 +72,11 @@ module.exports = {
       }
     },
     hooks: {
-      beforeSave: attributes => {
+      beforeCreate: attributes => {
         attributes.duration = parseInt(global.durations[attributes.type], 10);
         return Promise.resolve(attributes);
       },
-      afterSave: timerModel => {
+      afterCreate: timerModel => {
         // WEIRD. Gotta store timer id b/c it gets erased from timerModel later on!!!
         const timerId = timerModel.id;
         const durationMs = timerModel.duration * 1000;
