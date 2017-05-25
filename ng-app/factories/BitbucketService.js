@@ -19,9 +19,9 @@ function BitbucketService($rootScope, $location, $http) {
         method: 'GET',
         url: apiUrl + '/repositories/bhubr',
         skipAuthorization: true,
-        // headers: {
-        //   Authorization: 'Bearer ' + accessToken
-        // }
+        headers: {
+          Authorization: 'Bearer ' + accessToken
+        }
       });
     }
   };

@@ -13,8 +13,10 @@ function AccountsController($rootScope, $scope, $location, $routeParams, _, bitb
     var splitPerAmps = afterHash.split('&');
     var params = {};
     _.each(splitPerAmps, kv => {
-      const [key, value] = kv.split('=');
-      params[key] = value;
+      const bits = kv.split('=');
+      const key = bits.shift();
+      const value = bits.join('=');
+      params[key] = decodeURI(value);
     });
     console.log(params);
     localStorage.setItem('bb_at', params.access_token);
