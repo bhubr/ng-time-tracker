@@ -1,7 +1,7 @@
-AccountsController.$inject = ['$rootScope', '$scope', '$location', '$routeParams', 'lodash', 'bitbucketService', 'data'];
+AccountsController.$inject = ['$rootScope', '$scope', '$location', '$routeParams', 'lodash', 'bitbucketService', 'repoApis', 'data'];
 
 // https://www.liquidint.com/blog/angularjs-and-instagram-a-single-page-application-with-oauth2/
-function AccountsController($rootScope, $scope, $location, $routeParams, _, bitbucketService, data) {
+function AccountsController($rootScope, $scope, $location, $routeParams, _, bitbucketService, repoApis, data) {
   $rootScope.providers = {};
   _.each(data['client-ids'], entry => {
     $rootScope.providers[entry.provider] = entry.clientId;
@@ -20,6 +20,8 @@ function AccountsController($rootScope, $scope, $location, $routeParams, _, bitb
     });
     console.log(params);
     localStorage.setItem('bb_at', params.access_token);
+    // requestStrategy.setAuthToken(params.access_token);
+    repoApis.addAuthToken('bitbucket', params.access_token);
   }
 
   $scope.requestAuth = function() {

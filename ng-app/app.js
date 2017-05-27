@@ -1,6 +1,5 @@
 require("./vendor/socket.js");
 
-
 const DURATION_POMO = 1500;
 
 
@@ -68,7 +67,8 @@ var app = angular.module("myApp", [
   'nvd3',
   'angular-jwt',
   'btford.socket-io',
-  'pascalprecht.translate'
+  'pascalprecht.translate',
+  'ngCodeRepoApis'
 ]);
 // app.config(['$locationProvider', function($locationProvider) {
 //   $locationProvider.hashPrefix('');
@@ -93,10 +93,25 @@ app
 .config(require('./config/RouterConfig'))
 .config(require('./config/TranslationConfig'))
 .factory('authService', require('./factories/AuthService'))
+.factory('dataService', require('./factories/DataService'))
+.factory('optionService', require('./factories/OptionService'))
 .factory('translationService', require('./factories/TranslationService'))
 .factory('jsonapiUtils', require('./factories/JsonapiUtils'))
 .factory('tokenCheckInterceptor', require('./factories/TokenCheckInterceptor'))
 .factory('bitbucketService', require('./factories/BitbucketService'))
+.service('notificationService', function() {
+
+  console.log('init notificationService');
+
+  var socket = io();
+  socket.on('idle', function(idleTime){
+    console.log(idleTime);
+    notifyMe(idleTime);
+  });
+  socket.on('server ready', function(msg){
+    console.log(msg);
+  });
+})
 .config(['$httpProvider', function($httpProvider) {  
     $httpProvider.interceptors.push('tokenCheckInterceptor');
 }])
@@ -109,81 +124,11 @@ app
 .controller('projectsCtrl', require('./controllers/ProjectsController'))
 .controller('timerCtrl', require('./controllers/TimersController'))
 .controller('reposCtrl', require('./controllers/ReposController'))
-
-app.filter('formatTimer', require('./filters/formatTimer'));
-
-app.run(['translationService', 'authService',
+.filter('formatTimer', require('./filters/formatTimer'))
+.run(['translationService', 'authService',
   function(translationService, authService) {
     translationService.init();
     authService.init();
   }
-]);
-app.run(function ($http, optionService) {
-  $http.get('/api/v1/options').then(function (data) {
-    let options = {};
-    data.data.data.forEach(model => {
-      const { key, value } = model.attributes;
-      if( key.endsWith('Duration')) {
-        options[key.replace('Duration', '')] = value;
-      }
-    });
-
-    optionService.setData(options);
-  });
-});
-app.service('optionService', function() {
-  var myData = null;
-  return {
-    setData: function (data) {
-      myData = data;
-    },
-    get: function (key) {
-      return myData[key];
-    }
-  };
-});
-app.service('dataStoreService', ['$http', '$q', 'lodash', function($http, $q, _) {
-  return {
-    get: function(keys) {
-      if(typeof keys === 'string') {
-        keys = [keys];
-      }
-      var promises = keys.map(
-        key => $http.get('/api/v1/' + key)
-          .then(response => (response.data.data))
-      );
-      return $q.all(promises)
-      .then(results => results.reduce(
-        (dataSet, dataItems, index) => {
-          dataSet[keys[index]] = dataItems.map(mapAttributes);
-          return dataSet;
-        }, {}
-      ));
-    },
-
-    create: function(type, attributes, rawRelationships) {
-      const relationships = {};
-      _.forOwn(rawRelationships, (data, key) => {
-        relationships[key] = { data };
-      });
-      return $http.post('/api/v1/' + type, {
-        data: { type, attributes, relationships }
-      })
-      .then(response => (response.data));
-    }
-  };
-}]);
-app.service('notificationService', function() {
-
-  console.log('init notificationService');
-
-  var socket = io();
-  socket.on('idle', function(idleTime){
-    console.log(idleTime);
-    notifyMe(idleTime);
-  });
-  socket.on('server ready', function(msg){
-    console.log(msg);
-  });
-});
+])
 

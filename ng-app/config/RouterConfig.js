@@ -14,8 +14,8 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     templateUrl : "dashboard.html",
     controller : "dashboardCtrl",
     resolve: {
-      data: ['dataStoreService', function(dataStoreService) {
-        return dataStoreService.get(['projects', 'options', 'timers', 'dailyposts', 'client-ids']);
+      data: ['dataService', function(dataService) {
+        return dataService.get(['projects', 'options', 'timers', 'dailyposts', 'client-ids']);
       }]
     }
   })
@@ -23,8 +23,8 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     templateUrl : "accounts.html",
     controller : "accountsCtrl",
     resolve: {
-      data: ['dataStoreService', function(dataStoreService) {
-        return dataStoreService.get(['client-ids']);
+      data: ['dataService', function(dataService) {
+        return dataService.get(['client-ids']);
       }]
     }
   })
@@ -41,8 +41,8 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     templateUrl : "accounts.html",
     controller : "accountsCtrl",
     resolve: {
-      data: ['dataStoreService', function(dataStoreService) {
-        return dataStoreService.get(['client-ids']);
+      data: ['dataService', function(dataService) {
+        return dataService.get(['client-ids']);
       }]
     }
   })

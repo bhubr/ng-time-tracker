@@ -151,7 +151,7 @@
 /******/ 	__webpack_require__.oe = function(err) { console.error(err); throw err; };
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 154);
+/******/ 	return __webpack_require__(__webpack_require__.s = 159);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1987,7 +1987,7 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            __webpack_require__(151)("./" + name);
+            __webpack_require__(156)("./" + name);
             // because defineLocale currently also sets the global locale, we
             // want to undo that for lazy loaded locales
             getSetGlobalLocale(oldLocale);
@@ -4628,7 +4628,7 @@ return hooks;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(149);
+__webpack_require__(153);
 module.exports = angular;
 
 
@@ -15759,16 +15759,19 @@ module.exports = function(module) {
 /* 133 */,
 /* 134 */,
 /* 135 */,
-/* 136 */
+/* 136 */,
+/* 137 */,
+/* 138 */,
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(145);
+__webpack_require__(149);
 module.exports = 'angular-jwt';
 
 
 
 /***/ }),
-/* 137 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15794,7 +15797,7 @@ angular.module('markdown', [])
 
 
 /***/ }),
-/* 138 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* angular-moment.js / v1.0.1 / (c) 2013, 2014, 2015, 2016 Uri Shaked / MIT Licence */
@@ -16540,30 +16543,30 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 139 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(146);
+__webpack_require__(150);
 module.exports = 'nvd3';
 
 /***/ }),
-/* 140 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(147);
+__webpack_require__(151);
 module.exports = 'ngRoute';
 
 
 /***/ }),
-/* 141 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(148);
+__webpack_require__(152);
 module.exports = 'ngSanitize';
 
 
 /***/ }),
-/* 142 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20279,7 +20282,106 @@ return 'pascalprecht.translate';
 
 
 /***/ }),
-/* 143 */
+/* 146 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// your library here
+(function (root, factory) {
+  'use strict';
+  if (true) {
+    // AMD. Register as an anonymous module.
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(154)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if (typeof module !== 'undefined' && typeof module.exports === 'object') {
+    // CommonJS support (for us webpack/browserify/ComponentJS folks)
+    module.exports = factory(require('angular'), require('code-repositories-api-common'));
+  } else {
+    console.log('No module loading system');
+    // in the case of no module loading system
+    // then don't worry about creating a global
+    // variable like you would in normal UMD.
+    // It's not really helpful... Just call your factory
+    return factory(root.angular);
+  }
+}(this, function (angular, CodeRepoApis) {
+  'use strict';
+  // create your angular module and do stuff
+  var moduleName = 'ngCodeRepoApis';
+  var mod = angular.module(moduleName, []);
+
+
+  /**
+   * "Private class" that should not be seen from outside the module
+   */
+  var RequestStrategy = (function () {
+
+    /**
+     * Constructor
+     */
+    function RequestStrategy($http) {
+      this.headers = {};
+      this.relativePath = '';
+      this.baseUri = '';
+      this.get = function(overrideUrl, overrideHeaders) {
+        var url = overrideUrl || (this.baseUri + this.relativePath);
+        var headers = overrideHeaders || this.headers;
+        var options = { method: 'GET', headers, url };
+        console.log('RequestStrategy GET', options);
+        return $http(options);
+      };
+    }
+    RequestStrategy.prototype.setup = function(baseUri, relativePath, headers) {
+      console.log('requestStrategy.setup', baseUri, relativePath, headers);
+      this.baseUri = baseUri;
+      this.headers = headers;
+      this.relativePath = relativePath;
+    };
+    RequestStrategy.prototype.setHeaders = function(headers) {
+      console.log('requestStrategy.setHeaders', headers);
+      this.headers = headers;
+    };
+    RequestStrategy.prototype.setBaseUri = function(baseUri) {
+      console.log('requestStrategy.setBaseUri', baseUri);
+      this.baseUri = baseUri;
+    };
+    RequestStrategy.prototype.setPath = function(relativePath) {
+      console.log('requestStrategy.setPath', relativePath);
+      this.relativePath = relativePath;
+    };
+
+    RequestStrategy.$inject = ["$http"];
+    return RequestStrategy;
+  })();
+  // mod.run(['$injector', function ($injector) {
+  //   console.log('injector does work');
+  //     var p = $injector.instantiate(PrivateClass);
+  //     p.hello();
+  // }]);
+  mod.factory('repoApis', ['$injector', function($injector) {
+    var requestStrategy = $injector.instantiate(RequestStrategy);
+    var repoApi = new CodeRepoApis({type:'bitbucket'}, requestStrategy);
+    console.log(repoApi, repoApi.getVersion());
+    return {
+      getProjects: function(provider) {
+        repoApi.getProjects(provider)
+        // console.log('pouet', CodeRepoApis);
+      },
+      getUsername: function() {
+        repoApi.getUsername();
+      },
+      addAuthToken: function(provider, token) {
+        repoApi.addAuthToken(provider, token);
+      }
+    };
+  }]);
+
+  return moduleName; // the name of your module
+}));
+
+/***/ }),
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module, global) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -31381,11 +31483,11 @@ angular.module('ngLodash', []).constant('lodash', null).config([
     $provide.constant('lodash', _);
   }
 ]);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(117)(module), __webpack_require__(153)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(117)(module), __webpack_require__(158)))
 
 /***/ }),
-/* 144 */,
-/* 145 */
+/* 148 */,
+/* 149 */
 /***/ (function(module, exports) {
 
 (function() {
@@ -31784,7 +31886,7 @@ angular.module('angular-jwt.options', [])
 }());
 
 /***/ }),
-/* 146 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**************************************************************************
@@ -31799,7 +31901,7 @@ angular.module('angular-jwt.options', [])
     // Node.js or CommonJS
     if (true) {
         /* jshint -W020 */
-        nv = __webpack_require__(152);
+        nv = __webpack_require__(157);
         /* jshint +W020 */
     }
 
@@ -32443,7 +32545,7 @@ angular.module('angular-jwt.options', [])
 
 
 /***/ }),
-/* 147 */
+/* 151 */
 /***/ (function(module, exports) {
 
 /**
@@ -33440,7 +33542,7 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 
 /***/ }),
-/* 148 */
+/* 152 */
 /***/ (function(module, exports) {
 
 /**
@@ -34129,7 +34231,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 
 
 /***/ }),
-/* 149 */
+/* 153 */
 /***/ (function(module, exports) {
 
 /**
@@ -63791,7 +63893,321 @@ $provide.value("$locale", {
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
 
 /***/ }),
-/* 150 */
+/* 154 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// your library here
+(function (root, factory) {
+  'use strict';
+  if (true) {
+    // AMD. Register as an anonymous module.
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else if (typeof module !== 'undefined' && typeof module.exports === 'object') {
+    // CommonJS support (for us webpack/browserify/ComponentJS folks)
+    module.exports = factory();
+  } else {
+    // in the case of no module loading system
+    // then don't worry about creating a global
+    // variable like you would in normal UMD.
+    // It's not really helpful... Just call your factory
+    return factory();
+  }
+}(this, function () {
+  'use strict';
+
+
+  /*-----------------------*
+   | Bitbucket Strategy
+   *-----------------------*
+   |
+   */
+  var BitbucketStrategy = (function() {
+
+    /**
+     * Strategy for BitBucket
+     */
+    function Bitbucket(requestStrategy) {
+      this.requestStrategy = requestStrategy;
+      // this.username = cred.username;
+      // this.id = 'bitbucket-' + (1000000 * Math.random()).toString(36);
+      this.baseUri = 'https://api.bitbucket.org/2.0';
+      // this.uri = 'https://api.bitbucket.org/2.0/repositories/' + cred.username;
+      // this.options = {
+      //     // uri: this.uri,
+      //     headers: {
+      //       'Authorization': common.getAuthHeader(cred),
+      //       'User-Agent': 'MyProjects-js-App'
+      //     },
+      //     json: true
+      // };
+    }
+
+    Bitbucket.prototype.setToken = function(token) {
+      this.token = token;
+    }
+
+    Bitbucket.prototype.setPath = function(relativePath) {
+      // this.options.uri = this.baseUri + relativePath;
+      if(this.token === undefined) {
+        throw new Error('token undefined in Bitbucket strategy');
+      }
+      this.requestStrategy.setup(this.baseUri, relativePath, {
+        Authorization: 'Bearer ' + this.token
+      })
+      // this.requestStrategy.setPath(relativePath);
+    };
+
+    Bitbucket.prototype.get = function() {
+      return this.requestStrategy.get();
+    };
+
+    Bitbucket.prototype.getUsername = function() {
+      var self = this;
+      this.setPath('/user');
+      return this.get()
+      .then(user => {
+        console.log('Bitbucket.getUsername');
+        console.log(user);
+        self.username = user.username;
+        return user;
+      })
+    };
+
+    Bitbucket.prototype.getProjects = function() {
+      this.setPath('/repositories/' + this.username);
+      return this.get.call(this)
+      .then(res => this.seqLoopDescending.call(this, res, res.values));
+    };
+
+
+    Bitbucket.prototype.getCommitsFor = function(repoName) {
+      this.setPath('/repositories/' + this.username + '/' + repoName + '/commits');
+      return this.get()
+      .then(commits => { 
+        // console.log(commits);
+        return commits.values.map(commit => {
+        // console.log(commit);
+        // return commit;
+        return { sha: commit.hash, message: commit.message };
+      }); });
+    };
+
+    Bitbucket.prototype.getIssuesFor = function(repoName) {
+      this.setPath('/repositories/' + this.username + '/' + repoName + '/issues');
+      return this.get()
+      .then(response => (response.values))
+      // .then(commits => { return _.map(commits, commit => {
+      //   return { sha: commit.sha, message: commit.commit.message };
+      // }); });
+    };
+
+    Bitbucket.prototype.getNextPage = function(nextPageLink) {
+      this.options.uri = nextPageLink;
+      return this.get.call(this);
+    }
+    Bitbucket.prototype.seqLoopDescending = function (res, allRepos) {
+      var that = this;
+      return new Promise(function (resolve, reject) {
+        if(res.next === undefined) resolve(allRepos.concat(res.values));
+        else that.getNextPage(res.next).then(({ next, values }) => {
+          if(next === undefined) resolve(allRepos.concat(values));
+          else resolve(that.seqLoopDescending.call(that, { next, values }, allRepos.concat(values)));
+        })
+        .catch(err => {
+          console.error("#### STH WRONG", err);
+          reject(err);
+        })
+      });
+    }
+
+    return Bitbucket;
+
+  })();
+
+
+  /*-----------------------*
+   | GitHub Strategy
+   *-----------------------*
+   |
+   */
+  var GithubStrategy = (function() {
+
+    function Github(cred, requestStrategy) {
+      this.requestStrategy = requestStrategy;
+      this.username = cred.username;
+      this.baseUri = 'https://api.github.com';
+      // this.options = {
+      //   uri: 'https://api.github.com',
+      //   headers: {
+      //     'Authorization': common.getAuthHeader(cred),
+      //     'User-Agent': 'MyProjects-js-App'
+      //   },
+      //   json: true
+      // };
+    }
+
+    Github.prototype.setPath = function(relativePath) {
+      this.options.uri = this.baseUri + relativePath;
+    };
+
+    Github.prototype.get = function(relativePath) {
+      return this.requestStrategy.get();
+    };
+
+    Github.prototype.getProjects = function() {
+      this.setPath('/user/repos');
+      return this.get();
+    };
+
+    Github.prototype.getCommitsFor = function(repoName) {
+      this.setPath('/repos/' + this.username + '/' + repoName + '/commits');
+      return this.get()
+      .then(commits => { return commits.map(commit => {
+        return { sha: commit.sha, message: commit.commit.message };
+      }); });
+    };
+
+    Github.prototype.getIssuesFor = function(repoName) {
+      this.setPath('/repos/' + this.username + '/' + repoName + '/issues');
+      return this.get();
+    };
+
+    return Github;
+
+  })();
+
+
+  /*-----------------------*
+   | GitLab Strategy
+   *-----------------------*
+   |
+   */
+  var GitlabStrategy = (function() {
+
+    function Gitlab(cred, requestStrategy) {
+      this.requestStrategy = requestStrategy;
+      this.username = cred.username;
+      this.projects = cred.projects;
+      this.baseUri = 'https://gitlab.com/api/v4';
+      // this.options = {
+      //   uri: 'https://gitlab.com/api/v4',
+      //   headers: {
+      //     'PRIVATE-TOKEN': cred.password
+      //   },
+      //   json: true
+      // };
+    }
+
+    Gitlab.prototype.setPath = function(relativePath) {
+      this.options.uri = this.baseUri + relativePath;
+    };
+
+    Gitlab.prototype.get = function(relativePath) {
+      return this.requestStrategy.get();
+    };
+
+    Gitlab.prototype.getProjects = function() {
+      // return Promise.map(this.projects, projectName => {
+      //   this.setPath('/projects/' + projectName + '/repository/tree');
+      //   return this.get();
+      // });
+      return this.projects.map(name => ({ name }));
+    };
+
+    Gitlab.prototype.getCommitsFor = function(repoName) {
+      this.setPath('/repos/' + this.username + '/' + repoName + '/commits');
+      return this.get()
+      .then(commits => { return commits.map(commit => {
+        return { sha: commit.sha, message: commit.commit.message };
+      }); });
+    };
+
+
+    Gitlab.prototype.getIssuesFor = function(projectName) {
+      this.setPath('/projects/' + projectName + '/issues');
+      return this.get()
+      // .then(commits => { return _.map(commits, commit => {
+      //   return { sha: commit.sha, message: commit.commit.message };
+      // }); });
+    };
+
+    return Gitlab;
+  })();
+
+
+  function CodeRepositoriesApi(cred, request) {
+    var strategies = {
+      github: GithubStrategy,
+      gitlab: GitlabStrategy,
+      bitbucket: BitbucketStrategy
+    }
+    this.instances = {};
+    for (var k in strategies) {
+      this.instances[k] = new strategies[k](request);
+    } 
+    // this.strategy = new strategies[cred.type](cred, request);
+  }
+
+  CodeRepositoriesApi.prototype.getProjectsForAccount = function(cred) {
+    return this.strategy.getProjects();
+  };
+
+  CodeRepositoriesApi.prototype.getUsername = function() {
+    this.strategy.getUsername();
+  }
+
+  CodeRepositoriesApi.prototype.getProjects = function(provider) {
+    console.log('getProjects');
+    console.log(provider, this.instances, this.instances[provider]);
+    return this.instances[provider].getProjects();
+  };
+    // getProjects: function(creds) {
+    //   if( creds === undefined ) throw new Error("You must supply credentials to getProjects()");
+    //   var promises = [];
+    //   creds.forEach(cred => {
+    //     promises.push(getProjectsForAccount(cred));
+    //   })
+    //   return Promise.all(promises)
+    //   .then(results => {
+    //     var orderedResults = [];
+    //     creds.forEach((cred, index) => {
+    //       var { username, type } = cred;
+    //       orderedResults.push({
+    //         account: cred,
+    //         repositories: results[index]
+    //       });
+    //     });
+    //     return orderedResults;
+    //   });
+    // },
+
+  CodeRepositoriesApi.prototype.getCommitsForRepo = function(cred, repoSlug) {
+    return this.strategy.getCommitsFor(repoSlug);
+  };
+
+   CodeRepositoriesApi.prototype.getIssuesForRepo = function(cred, repoSlug) {
+    return this.strategy.getIssuesFor(repoSlug);
+  };
+
+  CodeRepositoriesApi.prototype.addAuthToken = function(provider, token) {
+    this.instances[provider].setToken(token);
+  }
+
+
+   CodeRepositoriesApi.prototype.getVersion = function() {
+    return '0.0.13';
+  };
+
+  return CodeRepositoriesApi; // the name of your module
+}));
+
+
+
+/***/ }),
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
@@ -73354,7 +73770,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
 }();
 
 /***/ }),
-/* 151 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -73603,10 +74019,10 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 151;
+webpackContext.id = 156;
 
 /***/ }),
-/* 152 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* nvd3 version 1.8.5 (https://github.com/novus/nvd3) 2016-12-01 */
@@ -73626,7 +74042,7 @@ nv.dom = {}; //DOM manipulation functions
 
 // Node/CommonJS - require D3
 if (typeof(module) !== 'undefined' && typeof(exports) !== 'undefined' && typeof(d3) == 'undefined') {
-    d3 = __webpack_require__(150);
+    d3 = __webpack_require__(155);
 }
 
 nv.dispatch = d3.dispatch('render_start', 'render_end');
@@ -89036,7 +89452,7 @@ nv.version = "1.8.5";
 //# sourceMappingURL=nv.d3.js.map
 
 /***/ }),
-/* 153 */
+/* 158 */
 /***/ (function(module, exports) {
 
 var g;
@@ -89063,18 +89479,19 @@ module.exports = g;
 
 
 /***/ }),
-/* 154 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-__webpack_require__(141);
-__webpack_require__(136);
-__webpack_require__(140);
-__webpack_require__(137);
-__webpack_require__(142);
-__webpack_require__(138);
+__webpack_require__(144);
 __webpack_require__(139);
-module.exports = __webpack_require__(143);
+__webpack_require__(143);
+__webpack_require__(140);
+__webpack_require__(145);
+__webpack_require__(141);
+__webpack_require__(142);
+__webpack_require__(147);
+module.exports = __webpack_require__(146);
 
 
 /***/ })

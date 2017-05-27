@@ -36,9 +36,8 @@ function AuthService($rootScope, $http, jwtHelper) {
      })
       .then(function(response) {
         // var token = response.data.token;
-        // self.
         // return { token: token, user: self.user };
-        console.log(response);
+        // console.log(response);
       });
     },
 
@@ -55,14 +54,10 @@ function AuthService($rootScope, $http, jwtHelper) {
         return response.data.data.attributes;
       })
       .then(user => {
-        console.log(user, token);
-        // localStorage.getItem('id_token');
         setToken(token);
         $rootScope.currentUser = currentUser = user;
         console.log(currentUser);
       });
-      //   return { token: token, user: self.user };
-      // });
     },
 
     signout: function() {

@@ -18,7 +18,8 @@ module.exports = {
       'angular-translate',
       'angular-moment',
       'angular-nvd3',
-      "ng-lodash"
+      'ng-lodash',
+      'code-repositories-api-angular'
     ]
   },
   output: {

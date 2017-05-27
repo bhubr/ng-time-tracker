@@ -1,9 +1,12 @@
-DashboardController.$inject = ['$rootScope', '$scope', 'lodash', 'moment', 'dataStoreService', 'data'];
+DashboardController.$inject = ['$rootScope', '$scope', 'lodash', 'moment', 'dataService', 'optionService', 'data'];
 
-function DashboardController($rootScope, $scope, _, moment, dataStoreService, data) {
+function DashboardController($rootScope, $scope, _, moment, dataService, optionService, data) {
   $scope.dailyPost = {
     markdown: ''
   };
+
+  // Populate options
+  optionService.populate(data.options);
 
   // 5 most recent timers
   var numTimers = data.timers.length;
@@ -27,7 +30,7 @@ function DashboardController($rootScope, $scope, _, moment, dataStoreService, da
       post.createdAt.substr(0, 10) === today;
   });
   if(dailyPost === undefined) {
-    dataStoreService.create('dailyposts', {
+    dataService.create('dailyposts', {
       markdown: '### Daily post for ' + today
     }, {
       user: { id: $rootScope.currentUser.userId, type: 'users' }
