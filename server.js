@@ -22,7 +22,7 @@ const app = express();
 const request = require('request-promise');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const RequestStrategy = require('./RequestStrategy');
+const RequestStrategy = require('code-repositories-api-node');
 const requestStrategy = new RequestStrategy;
 const repoApis = require('code-repositories-api-common')(requestStrategy);
 app.use(express.static('public'));
