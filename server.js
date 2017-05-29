@@ -60,7 +60,8 @@ app.post('/api/v1/got/:provider', (req, res) => {
     },
     headers: {
       Authorization: encodedCredentials
-    }
+    },
+    json: true
   };
   request(options)
   .then(response => {
