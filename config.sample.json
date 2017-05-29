@@ -12,6 +12,8 @@
       "public": "keys/public.key"
     },
     "whitelistedUrls": ["GET /api/v1/users*"],
-    "clientIds": []
+    "clientIds": {
+      "bitbucket": "client_id"
+    }
   }
 }

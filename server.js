@@ -19,8 +19,12 @@ process.on('uncaughtException', function (err) {
  * Setup Express
  */
 const app = express();
+const request = require('request-promise');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const RequestStrategy = require('code-repositories-api-node');
+const requestStrategy = new RequestStrategy;
+const repoApis = require('code-repositories-api-common')(requestStrategy);
 app.use(express.static('public'));
 app.use(bodyParser.json({ type: 'application/json' }));
 
@@ -30,19 +34,65 @@ app.use('/api/v1', middlewares.jsonApi);
 app.get('/api/v1/client-ids', (req, res) => {
   let id = 0;
   let clientIds = [];
-  _.forOwn(config.clientIds, (clientId, provider) => {
+  _.forOwn(config.clientIds, (params, provider) => {
     id++;
     clientIds.push({
       id,
       type: 'client-id',
       attributes: {
-        'client-id': clientId,
+        'client-id': params.clientId,
         provider
       }
     });
   });
   // res.json(clientIds);
   res.jsonApi(clientIds);
+});
+
+app.post('/api/v1/got/:provider', (req, res) => {
+  const params = config.clientIds[req.params.provider];
+  const rawCredentials = params.clientId + ':' + params.secret;
+  const encodedCredentials = new Buffer(rawCredentials).toString('base64');
+  console.log(params, rawCredentials, encodedCredentials);
+  const options = {
+    method: 'POST',
+    uri: 'https://bitbucket.org/site/oauth2/access_token',
+    form: {
+      grant_type: 'authorization_code',
+      code: req.body.code
+    },
+    headers: {
+      Authorization: 'Basic ' + encodedCredentials
+    },
+    // json: true
+  };
+  console.log(options);
+  request(options)
+  .then(response => {
+    const responseBody = JSON.parse(response);
+    console.log('## Access token', responseBody.access_token);
+    // repoApis.setAuthToken('bitbucket', responseBody.access_token);
+    repoApis.bitbucket.setToken(responseBody.access_token)
+    .then(user => {
+      console.log('## User', user);
+      repoApis.bitbucket.getProjects()
+      .then(projectsRes => {
+        res.json({
+          req: req.body,
+          responseBody,
+          projectsRes
+        });
+      })
+
+    });
+  })
+  .catch(err => {
+    console.log(err);
+    res.json({
+      err: err.message
+    })
+  });
+  
 });
 
 app.use('/api/v1', router);

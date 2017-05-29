@@ -14,12 +14,15 @@
     "chokidar": "^1.6.1",
     "code-repositories-api-angular": "0.0.33",
     "code-repositories-api-common": "0.0.41",
+    "code-repositories-api-node": "0.0.1",
     "express": "^4.14.1",
     "jsonapi-express-backend": "^0.4.5",
     "knex": "^0.12.6",
     "lodash": "^4.17.4",
     "lodash-inflection": "^1.5.0",
     "mysql": "^2.13.0",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.1",
     "socket.io": "^1.7.3"
   },
   "devDependencies": {
