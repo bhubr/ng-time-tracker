@@ -1,5 +1,12 @@
 const request = require('request-promise');
 
+function passLog(label) {
+  return function(val) {
+    console.log(label, val);
+    return val;
+  };
+}
+
 function RequestStrategy() {
   this.headers = {};
   this.relativePath = '';
