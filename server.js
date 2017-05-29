@@ -54,14 +54,14 @@ app.post('/api/v1/got/:provider', (req, res) => {
   const options = {
     method: 'POST',
     uri: 'https://bitbucket.org/site/oauth2/access_token',
-    body: {
+    form: {
       grant_type: 'authorization_code',
       code: req.body.code
     },
     headers: {
       Authorization: 'Basic ' + encodedCredentials
     },
-    json: true
+    // json: true
   };
   console.log(options);
   request(options)
