@@ -22,6 +22,9 @@ const app = express();
 const request = require('request-promise');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const RequestStrategy = require('./RequestStrategy');
+const requestStrategy = new RequestStrategy;
+const repoApis = require('code-repositories-api-common')(requestStrategy);
 app.use(express.static('public'));
 app.use(bodyParser.json({ type: 'application/json' }));
 
@@ -67,10 +70,16 @@ app.post('/api/v1/got/:provider', (req, res) => {
   request(options)
   .then(response => {
     const responseBody = JSON.parse(response);
-    res.json({
-      req: req.body,
-      res: responseBody
-    });
+    console.log('## Access token', responseBody.access_token);
+    repoApis.setAuthToken('bitbucket', responseBody.access_token);
+    repoApis.bitbucket.getProjects()
+    .then(projectsRes => {
+      res.json({
+        req: req.body,
+        responseBody,
+        projectsRes
+      });
+    })
   })
   .catch(err => {
     console.log(err);
