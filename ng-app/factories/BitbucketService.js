@@ -8,7 +8,7 @@ function BitbucketService($rootScope, $window, $http, repoApis) {
       console.log('BitbucketService', client_id);
       console.log('login');
       var url = "https://bitbucket.org/site/oauth2/authorize/?client_id=" + client_id +
-        "&response_type=token";
+        "&response_type=code";
       // var bbPopup = window.open(url, "bbPopup");
       $window.location.href = url;
       // repoApis.getUsername();
