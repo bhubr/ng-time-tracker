@@ -19,6 +19,7 @@ process.on('uncaughtException', function (err) {
  * Setup Express
  */
 const app = express();
+const request = require('request-promise');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 app.use(express.static('public'));
@@ -30,13 +31,13 @@ app.use('/api/v1', middlewares.jsonApi);
 app.get('/api/v1/client-ids', (req, res) => {
   let id = 0;
   let clientIds = [];
-  _.forOwn(config.clientIds, (clientId, provider) => {
+  _.forOwn(config.clientIds, (params, provider) => {
     id++;
     clientIds.push({
       id,
       type: 'client-id',
       attributes: {
-        'client-id': clientId,
+        'client-id': params.clientId,
         provider
       }
     });
@@ -46,7 +47,35 @@ app.get('/api/v1/client-ids', (req, res) => {
 });
 
 app.post('/api/v1/got/:provider', (req, res) => {
-  res.json(req.body);
+  const params = config.clientIds[req.params.provider];
+  const rawCredentials = params.clientId + ':' + params.secret;
+  const encodedCredentials = new Buffer(rawCredentials).toString('base64');
+  console.log(params, rawCredentials, encodedCredentials);
+  const options = {
+    method: 'POST',
+    uri: 'https://bitbucket.org/site/oauth2/access_token',
+    body: {
+      grant_type: 'authorization_code',
+      code: req.body.code
+    },
+    headers: {
+      Authorization: encodedCredentials
+    }
+  };
+  request(options)
+  .then(response => {
+    res.json({
+      req: req.body,
+      res: response
+    });
+  })
+  .catch(err => {
+    console.log(err);
+    res.json({
+      err: err.message
+    })
+  });
+  
 });
 
 app.use('/api/v1', router);
