@@ -66,9 +66,10 @@ app.post('/api/v1/got/:provider', (req, res) => {
   console.log(options);
   request(options)
   .then(response => {
+    const responseBody = JSON.parse(response);
     res.json({
       req: req.body,
-      res: response
+      res: responseBody
     });
   })
   .catch(err => {
