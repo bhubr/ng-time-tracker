@@ -1,4 +1,4 @@
-const notifier = require('node-notifier');
+// const notifier = require('node-notifier');
 
 var io;
 var socket;
@@ -27,7 +27,8 @@ function startIdleTimer() {
     }
     if( idleTimer.running % 300 === 0 ) {
       // console.log('idle', idleTimer.running);
-      notifier.notify('Idle for ' + idleTimer.running / 60 + ' minute(s)');
+      // notifier.notify('Idle for ' + idleTimer.running / 60 + ' minute(s)');
+      socket.emit('idle',  idleTimer.running / 60);
     }
   }, 1000 );
 }
