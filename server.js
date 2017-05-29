@@ -71,15 +71,20 @@ app.post('/api/v1/got/:provider', (req, res) => {
   .then(response => {
     const responseBody = JSON.parse(response);
     console.log('## Access token', responseBody.access_token);
-    repoApis.setAuthToken('bitbucket', responseBody.access_token);
-    repoApis.bitbucket.getProjects()
-    .then(projectsRes => {
-      res.json({
-        req: req.body,
-        responseBody,
-        projectsRes
-      });
-    })
+    // repoApis.setAuthToken('bitbucket', responseBody.access_token);
+    repoApi.bitbucket.setToken(token)
+    .then(user => {
+      console.log('## User', user);
+      repoApis.bitbucket.getProjects()
+      .then(projectsRes => {
+        res.json({
+          req: req.body,
+          responseBody,
+          projectsRes
+        });
+      })
+
+    });
   })
   .catch(err => {
     console.log(err);
