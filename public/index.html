@@ -51,8 +51,8 @@
     </div>
 
     <footer class="footer">
-      <div class="container">
-        <p class="text-muted">Place sticky footer content here.</p>
+      <div class="container" ng-controller="timerCtrl">
+        <p class="text-muted">{{ timeRemaining | formatTimer }}</p>
       </div>
     </footer>
 
