@@ -59,11 +59,11 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
   .when("/timer", {
     templateUrl : "timer.html",
     controller : "timerCtrl",
-    resolve: {
-      currentUser: ['authService', function(authService) {
-        return authService.getCurrentUser();
-      }]
-    }
+    // resolve: {
+    //   currentUser: ['authService', function(authService) {
+    //     return authService.getCurrentUser();
+    //   }]
+    // }
   })
   .when("/stats", {
     templateUrl : "stats.html",

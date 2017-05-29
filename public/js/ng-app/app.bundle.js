@@ -91,11 +91,11 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
   .when("/timer", {
     templateUrl : "timer.html",
     controller : "timerCtrl",
-    resolve: {
-      currentUser: ['authService', function(authService) {
-        return authService.getCurrentUser();
-      }]
-    }
+    // resolve: {
+    //   currentUser: ['authService', function(authService) {
+    //     return authService.getCurrentUser();
+    //   }]
+    // }
   })
   .when("/stats", {
     templateUrl : "stats.html",
@@ -449,7 +449,7 @@ module.exports = StatsController;
 
 const MYSQL_OFFSET = 7200;
 
-TimersController.$inject = ['$scope', '$http', 'lodash', 'optionService', 'notificationService', 'jsonapiUtils', 'currentUser'];
+TimersController.$inject = ['$scope', '$http', 'lodash', 'optionService', 'notificationService', 'jsonapiUtils'];
 
 function getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtils ) {
   // Get existing projects
@@ -483,14 +483,13 @@ function getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtil
   } );
 }
 
-function TimersController($scope, $http, lodash, optionService, notificationService, jsonapiUtils, currentUser) {
+function TimersController($scope, $http, lodash, optionService, notificationService, jsonapiUtils) {
 
   // const DURATION_POMO = 5;
   // const IDLE = 0;
   // const RUNNING = 1;
   // $scope.timerStatus = IDLE;
   // console.log('timerCtrl', optionService.get('pomodoro'), currentUser);
-  // $scope.currentUser = currentUser;
   $scope.timer = null;
   $scope.timeRemaining = 0;
   $scope.lastTimer = {};
@@ -548,7 +547,7 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
         type: 'timers',
         attributes: { type },
         relationships: {
-          owner: { data: { type: 'users', id: currentUser.userId } }
+          owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
         }
       }
     } )
