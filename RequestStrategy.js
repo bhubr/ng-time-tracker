@@ -2,7 +2,7 @@ const request = require('request-promise');
 
 function passLog(label) {
   return function(val) {
-    console.log(label, val);
+    console.log(label, typeof val, val);
     return val;
   };
 }
@@ -14,7 +14,7 @@ function RequestStrategy() {
   this.get = function(overrideUrl, overrideHeaders) {
     var uri = overrideUrl || (this.baseUri + this.relativePath);
     var headers = overrideHeaders || this.headers;
-    var options = { method: 'GET', headers, uri };
+    var options = { method: 'GET', headers, uri, json: true };
     console.log('RequestStrategy GET', overrideUrl, options);
     return request(options)
     .then(passLog('## result of GET ' + uri))
