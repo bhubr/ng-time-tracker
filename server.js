@@ -63,6 +63,7 @@ app.post('/api/v1/got/:provider', (req, res) => {
     },
     json: true
   };
+  console.log(options);
   request(options)
   .then(response => {
     res.json({
