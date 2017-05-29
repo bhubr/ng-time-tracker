@@ -17,7 +17,7 @@ function BitbucketService($rootScope, $window, $http, repoApis) {
     getRepos: function() {
       // const accessToken = localStorage.getItem('bb_at');
       console.log('BitbucketService.getRepos', repoApis);
-      return repoApis.getProjects('bitbucket');
+      return repoApis.bitbucket.getProjects();
       // console.log('Bearer ' + accessToken);
       // return $http({
       //   method: 'GET',

@@ -20305,7 +20305,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     // It's not really helpful... Just call your factory
     return factory(root.angular);
   }
-}(this, function (angular, CodeRepoApis) {
+}(this, function (angular, codeRepoApis) {
   'use strict';
   // create your angular module and do stuff
   var moduleName = 'ngCodeRepoApis';
@@ -20316,6 +20316,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
    * "Private class" that should not be seen from outside the module
    */
   var RequestStrategy = (function () {
+
+    function passLog(label) {
+      return function(val) {
+        console.log(label, val);
+        return val;
+      };
+    }
 
     /**
      * Constructor
@@ -20328,8 +20335,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         var url = overrideUrl || (this.baseUri + this.relativePath);
         var headers = overrideHeaders || this.headers;
         var options = { method: 'GET', headers, url };
-        console.log('RequestStrategy GET', options);
-        return $http(options);
+        console.log('RequestStrategy GET', overrideUrl, options);
+        return $http(options)
+        .then(passLog('## result of GET ' + url))
+        .then(response => (response.data))
+        .then(passLog('## result of GET extract data'));
       };
     }
     RequestStrategy.prototype.setup = function(baseUri, relativePath, headers) {
@@ -20361,20 +20371,36 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   // }]);
   mod.factory('repoApis', ['$injector', function($injector) {
     var requestStrategy = $injector.instantiate(RequestStrategy);
-    var repoApi = new CodeRepoApis({type:'bitbucket'}, requestStrategy);
-    console.log(repoApi, repoApi.getVersion());
-    return {
-      getProjects: function(provider) {
-        repoApi.getProjects(provider)
-        // console.log('pouet', CodeRepoApis);
-      },
-      getUsername: function() {
-        repoApi.getUsername();
-      },
-      addAuthToken: function(provider, token) {
-        repoApi.addAuthToken(provider, token);
+    var repoApi = codeRepoApis(requestStrategy);
+    // new CodeRepoApis({type:'bitbucket'}, requestStrategy);
+    // console.log(repoApi, repoApi.getVersion());
+    var providers = ['bitbucket'];
+
+    providers.forEach(provider => {
+      var tokenName = 'access_token_' + provider;
+      var token;
+      if((token = localStorage.getItem(tokenName)) !== null) {
+        console.log('Initialize provider ' + provider + ' with access_token ' + token);
+        repoApi[provider].setToken(token);
       }
-    };
+    })
+
+    return Object.assign(repoApi, {
+      setAuthToken: function(provider, token) {
+        localStorage.setItem('access_token_' + provider, token)
+        repoApi[provider].setToken(token);
+      }
+    });
+
+    // return {
+    //   getProjects: function(provider) {
+    //     return repoApi.getProjects(provider)
+    //     // console.log('pouet', CodeRepoApis);
+    //   },
+    //   getUsername: function() {
+    //     repoApi.getUsername();
+    //   },
+    // };
   }]);
 
   return moduleName; // the name of your module
@@ -63918,6 +63944,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 }(this, function () {
   'use strict';
 
+  function passLog(val) {
+    console.log('\n## passLog', val); return val;
+  }
 
   /*-----------------------*
    | Bitbucket Strategy
@@ -63934,6 +63963,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // this.username = cred.username;
       // this.id = 'bitbucket-' + (1000000 * Math.random()).toString(36);
       this.baseUri = 'https://api.bitbucket.org/2.0';
+      // this.baseUri = 'http://api.bitbucket.tls';
       // this.uri = 'https://api.bitbucket.org/2.0/repositories/' + cred.username;
       // this.options = {
       //     // uri: this.uri,
@@ -63946,7 +63976,23 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
 
     Bitbucket.prototype.setToken = function(token) {
+      var self = this;
       this.token = token;
+      this.headers = {
+        Authorization: 'Bearer ' + this.token
+      };
+      this.setPath('/user')
+      console.log('Bitbucket query logged-in user');
+      return this.requestStrategy.get()
+      .then(user => {
+        console.log('GET /user response', user);
+        self.username = user.username;
+        return user;
+      })
+      .catch(err => {
+        console.error('GET /user failed', error);
+        throw err;
+      })
     }
 
     Bitbucket.prototype.setPath = function(relativePath) {
@@ -63960,8 +64006,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // this.requestStrategy.setPath(relativePath);
     };
 
-    Bitbucket.prototype.get = function() {
-      return this.requestStrategy.get();
+    Bitbucket.prototype.get = function(url, headers) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          return this.requestStrategy.get(url, headers);  
+        }, 1000);
+      });
     };
 
     Bitbucket.prototype.getUsername = function() {
@@ -63977,9 +64027,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     };
 
     Bitbucket.prototype.getProjects = function() {
+      // this.counter = 0;
       this.setPath('/repositories/' + this.username);
-      return this.get.call(this)
-      .then(res => this.seqLoopDescending.call(this, res, res.values));
+      return this.promiseLoop({
+        next: this.baseUri + '/repositories/' + this.username,
+        values: []
+      });
+      // return this.get.call(this)
+      // .then(res => { console.log('getProjects res', res); return res; })
+      // .then(res => this.seqLoopDescending.call(this, res, res.values));
     };
 
 
@@ -64005,11 +64061,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     };
 
     Bitbucket.prototype.getNextPage = function(nextPageLink) {
-      this.options.uri = nextPageLink;
-      return this.get.call(this);
+      // this.options.uri = nextPageLink;
+      console.log('getNextPage', nextPageLink, this.headers);
+      return this.requestStrategy.get.call(this.requestStrategy, nextPageLink, this.headers);
     }
     Bitbucket.prototype.seqLoopDescending = function (res, allRepos) {
       var that = this;
+      this.counter++;
+      console.log('after ' + this.counter + ' requests: ', allRepos, allRepos.length);
       return new Promise(function (resolve, reject) {
         if(res.next === undefined) resolve(allRepos.concat(res.values));
         else that.getNextPage(res.next).then(({ next, values }) => {
@@ -64021,6 +64080,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           reject(err);
         })
       });
+    }
+
+    Bitbucket.prototype.promiseLoop = function(res) {
+      var that = this;
+      console.log('\npromiseLoop, next/values', res.next, res.values);
+      // return new Promise((resolve, reject) => {
+        if(res.next) {
+          return this.requestStrategy.get(res.next, this.requestStrategy.headers)
+          .then(passLog)
+          .then(_res => that.promiseLoop.call(that, { next: _res.next, values: res.values.concat(_res.values) }));
+        }
+        else {
+          console.log('has no more, res/values:', res, res.values);
+          return Promise.resolve(res);
+        }
+      // });
     }
 
     return Bitbucket;
@@ -64138,70 +64213,85 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   })();
 
 
-  function CodeRepositoriesApi(cred, request) {
-    var strategies = {
+  return function(requestStrategy) {
+    const strategies = {
       github: GithubStrategy,
       gitlab: GitlabStrategy,
       bitbucket: BitbucketStrategy
     }
-    this.instances = {};
-    for (var k in strategies) {
-      this.instances[k] = new strategies[k](request);
-    } 
-    // this.strategy = new strategies[cred.type](cred, request);
-  }
+    let instances = {};
+    for (let k in strategies) {
+      instances[k] = new strategies[k](requestStrategy);
+    }
+    instances.getVersion = function() {
+      return '0.0.13';
+    }
 
-  CodeRepositoriesApi.prototype.getProjectsForAccount = function(cred) {
-    return this.strategy.getProjects();
-  };
+    return instances;
 
-  CodeRepositoriesApi.prototype.getUsername = function() {
-    this.strategy.getUsername();
-  }
-
-  CodeRepositoriesApi.prototype.getProjects = function(provider) {
-    console.log('getProjects');
-    console.log(provider, this.instances, this.instances[provider]);
-    return this.instances[provider].getProjects();
-  };
-    // getProjects: function(creds) {
-    //   if( creds === undefined ) throw new Error("You must supply credentials to getProjects()");
-    //   var promises = [];
-    //   creds.forEach(cred => {
-    //     promises.push(getProjectsForAccount(cred));
-    //   })
-    //   return Promise.all(promises)
-    //   .then(results => {
-    //     var orderedResults = [];
-    //     creds.forEach((cred, index) => {
-    //       var { username, type } = cred;
-    //       orderedResults.push({
-    //         account: cred,
-    //         repositories: results[index]
-    //       });
-    //     });
-    //     return orderedResults;
-    //   });
-    // },
-
-  CodeRepositoriesApi.prototype.getCommitsForRepo = function(cred, repoSlug) {
-    return this.strategy.getCommitsFor(repoSlug);
-  };
-
-   CodeRepositoriesApi.prototype.getIssuesForRepo = function(cred, repoSlug) {
-    return this.strategy.getIssuesFor(repoSlug);
-  };
-
-  CodeRepositoriesApi.prototype.addAuthToken = function(provider, token) {
-    this.instances[provider].setToken(token);
   }
 
 
-   CodeRepositoriesApi.prototype.getVersion = function() {
-    return '0.0.13';
-  };
+  // function CodeRepositoriesApi(cred, request) {
+  //   var strategies = {
+  //     github: GithubStrategy,
+  //     gitlab: GitlabStrategy,
+  //     bitbucket: BitbucketStrategy
+  //   }
+  //   // this.strategy = new strategies[cred.type](cred, request);
+  // }
 
-  return CodeRepositoriesApi; // the name of your module
+  // CodeRepositoriesApi.prototype.getProjectsForAccount = function(cred) {
+  //   return this.strategy.getProjects();
+  // };
+
+  // CodeRepositoriesApi.prototype.getUsername = function() {
+  //   this.strategy.getUsername();
+  // }
+
+  // CodeRepositoriesApi.prototype.getProjects = function(provider) {
+  //   console.log('getProjects');
+  //   console.log(provider, this.instances, this.instances[provider]);
+  //   return this.instances[provider].getProjects();
+  // };
+  //   // getProjects: function(creds) {
+  //   //   if( creds === undefined ) throw new Error("You must supply credentials to getProjects()");
+  //   //   var promises = [];
+  //   //   creds.forEach(cred => {
+  //   //     promises.push(getProjectsForAccount(cred));
+  //   //   })
+  //   //   return Promise.all(promises)
+  //   //   .then(results => {
+  //   //     var orderedResults = [];
+  //   //     creds.forEach((cred, index) => {
+  //   //       var { username, type } = cred;
+  //   //       orderedResults.push({
+  //   //         account: cred,
+  //   //         repositories: results[index]
+  //   //       });
+  //   //     });
+  //   //     return orderedResults;
+  //   //   });
+  //   // },
+
+  // CodeRepositoriesApi.prototype.getCommitsForRepo = function(cred, repoSlug) {
+  //   return this.strategy.getCommitsFor(repoSlug);
+  // };
+
+  //  CodeRepositoriesApi.prototype.getIssuesForRepo = function(cred, repoSlug) {
+  //   return this.strategy.getIssuesFor(repoSlug);
+  // };
+
+  // CodeRepositoriesApi.prototype.addAuthToken = function(provider, token) {
+  //   this.instances[provider].setToken(token);
+  // }
+
+
+  //  CodeRepositoriesApi.prototype.getVersion = function() {
+  //   return '0.0.13';
+  // };
+
+  // return CodeRepositoriesApi; // the name of your module
 }));
 
 

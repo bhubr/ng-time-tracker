@@ -21,7 +21,7 @@ function AccountsController($rootScope, $scope, $location, $routeParams, _, bitb
     console.log(params);
     localStorage.setItem('bb_at', params.access_token);
     // requestStrategy.setAuthToken(params.access_token);
-    repoApis.addAuthToken('bitbucket', params.access_token);
+    repoApis.setAuthToken('bitbucket', params.access_token);
   }
 
   $scope.requestAuth = function() {
