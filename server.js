@@ -59,7 +59,7 @@ app.post('/api/v1/got/:provider', (req, res) => {
       code: req.body.code
     },
     headers: {
-      Authorization: encodedCredentials
+      Authorization: 'Basic ' + encodedCredentials
     },
     json: true
   };
