@@ -1,97 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<!--   <script src="js/angular-1.6.2.min.js"></script>
-  <script src="js/angular-route-1.6.2.min.js"></script>
-  <script src="js/ng-lodash.min.js"></script>
-  
-  <script src="components/d3/d3.js"></script>
-  <script src="components/nvd3/build/nv.d3.js"></script> 
-  <script src="components/angular-nvd3/dist/angular-nvd3.js"></script>
-  <script src="js/angular-sanitize.min.js"></script>
-  <script src="components/angular-markdown-filter/markdown.js"></script>
-  
-   -->
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="js/vendor/showdown.min.js"></script>
-  <link rel="stylesheet" href="css/vendor/nv.d3.css">
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-  <title>AngularTracker</title>
 
-  <!-- CSS  -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-  <style>
-  textarea {
-    height: 10rem;
-    font-size: 13px;
-  }
-  div.browser-default ul {
-    padding-left: 20px;
-  }
-  div.browser-default ul li {
-    list-style-type: disc;
-  }
-  footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-  }
-  footer.page-footer {
-    padding-top: 0;
-  }
-  </style>
+  <head>
 
-  <base href="/" />
-</head>
-<body ng-app="myApp">
-  <nav class="teal lighten-1" role="navigation">
-    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Logo</a>
-      <ul class="right hide-on-med-and-down">
-        <li><a href="/">Projects</a></li>
-        <li><a href="/timer">Timer</a></li>
-        <li><a href="/stats">Stats</a></li>
-      </ul>
+    <title>AngularTracker</title>
 
-      <ul id="nav-mobile" class="side-nav">
-        <li><a href="#">Navbar Link</a></li>
-      </ul>
-      <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
-    </div>
-  </nav>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+
+    <!-- CSS  -->
+    <!-- Bootstrap core CSS -->
+    <link href="/css/vendor/nv.d3.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+    <base href="/" />
+  </head>
 
 
-  <div class="container">
-    <div class="section">
+  <body ng-app="myApp" ng-controller="mainCtrl">
+
+    <!-- Fixed navbar -->
+    <nav ng-if="currentUser" class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">ngTracker</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/projects">Projects</a></li>
+            <li><a href="/timer">Timer</a></li>
+            <li><a href="/accounts">Accounts</a></li>
+            <li><a href="/repos">Repos</a></li>
+            <li><a href="/stats">Stats</a></li>
+            <li><a href="#" ng-click="logout()">Logout</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+
+    <div class="container-fluid main">
       <div ng-view></div>
     </div>
-  </div>
-    </div>
 
-  </div>
-
-  <footer class="page-footer purple">
-    <div class="footer-copyright">
-      <div class="container">
-      Made by <a target="_blank" class="purple-text text-lighten-3" href="https://bhubr.eu">Benoît Hubert</a>
-      with <a target="_blank" class="purple-text text-lighten-3" href="http://expressjs.com">Express</a>,
-      <a target="_blank" class="purple-text text-lighten-3" href="https://angularjs.org/">AngularJS</a> and
-      <a target="_blank" class="purple-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+    <footer class="footer">
+      <div class="container" ng-controller="timerCtrl">
+        <p class="text-muted">{{ timeRemaining | formatTimer }}</p>
       </div>
-    </div>
-  </footer>
+    </footer>
 
-
-  <!--  Scripts-->
-<!-- 
-  <script src="js/materialize.js"></script>
-  <script src="js/init.js"></script>
-  <script src="js/ng-app.js"></script>
- -->
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
- <script src="js/ng-app/vendor.bundle.js"></script>
- <script src="js/ng-app/app.bundle.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/vendor/showdown.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/ng-app/vendor.bundle.js"></script>
+    <script src="/js/ng-app/app.bundle.js"></script>
   </body>
 </html>

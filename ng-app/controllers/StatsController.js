@@ -1,4 +1,4 @@
-StatsController.$inject = ['$scope', 'dataStoreService', 'lodash'];
+StatsController.$inject = ['$scope', 'dataService', 'lodash'];
 
 function StatsController($scope, store, lodash) {
 

@@ -11,6 +11,7 @@
       "private": "keys/private.key",
       "public": "keys/public.key"
     },
-    "whitelistedUrls": ["GET /api/v1/users*"]
+    "whitelistedUrls": ["GET /api/v1/users*"],
+    "clientIds": []
   }
 }

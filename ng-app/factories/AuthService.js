@@ -1,6 +1,6 @@
-AuthService.$inject = ['$http', 'jwtHelper'];
+AuthService.$inject = ['$rootScope', '$http', 'jwtHelper'];
 
-function AuthService($http, jwtHelper) {
+function AuthService($rootScope, $http, jwtHelper) {
 
   let currentUser = null;
 
@@ -18,17 +18,16 @@ function AuthService($http, jwtHelper) {
 
   function init() {
     const token = getToken();
-    currentUser = jwtHelper.decodeToken(token);
-    console.log('AuthService.init currentUser: ', currentUser);
+    if(token !== null) {
+      $rootScope.currentUser = currentUser = jwtHelper.decodeToken(token);
+    }
   }
+
 
   return {
     setToken,
-
     getToken,
-
     getCurrentUser,
-
     init,
 
     signup: function(attributes) {
@@ -37,9 +36,8 @@ function AuthService($http, jwtHelper) {
      })
       .then(function(response) {
         // var token = response.data.token;
-        // self.
         // return { token: token, user: self.user };
-        console.log(response);
+        // console.log(response);
       });
     },
 
@@ -56,15 +54,17 @@ function AuthService($http, jwtHelper) {
         return response.data.data.attributes;
       })
       .then(user => {
-        console.log(user, token);
-        // localStorage.getItem('id_token');
         setToken(token);
-        currentUser = user;
+        $rootScope.currentUser = currentUser = user;
         console.log(currentUser);
       });
-      //   return { token: token, user: self.user };
-      // });
-    }
+    },
+
+    signout: function() {
+      localStorage.removeItem('id_token');
+      $rootScope.currentUser = currentUser = null;
+    } 
+
   };
 }
 

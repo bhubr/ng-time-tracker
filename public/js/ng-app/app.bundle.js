@@ -1,5 +1,33 @@
-webpackJsonp([0],[
-/* 0 */
+webpackJsonp([0],{
+
+/***/ 118:
+/***/ (function(module, exports) {
+
+function JwtConfig($httpProvider, jwtOptionsProvider) {
+  // Please note we're annotating the function so that the $injector works when the file is minified
+  jwtOptionsProvider.config({
+    whiteListedDomains: 'bitbucket.org',
+    tokenGetter: ['authService', 'options', function(authService, options) {
+
+      if (options.url.indexOf('https://api.bitbucket.org') === 0) {
+        return localStorage.getItem('bb_at');
+      } else {
+        return localStorage.getItem('id_token');
+      }
+
+      return authService.getToken();
+    }]
+
+  });
+
+  $httpProvider.interceptors.push('jwtInterceptor');
+}
+
+module.exports = JwtConfig;
+
+/***/ }),
+
+/***/ 119:
 /***/ (function(module, exports) {
 
 RouterConfig.$inject = ['$routeProvider', '$httpProvider', '$locationProvider'];
@@ -15,6 +43,42 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     controller : "signupCtrl"
   })
   .when("/", {
+    templateUrl : "dashboard.html",
+    controller : "dashboardCtrl",
+    resolve: {
+      data: ['dataService', function(dataService) {
+        return dataService.get(['projects', 'options', 'timers', 'dailyposts', 'client-ids']);
+      }]
+    }
+  })
+  .when("/accounts", {
+    templateUrl : "accounts.html",
+    controller : "accountsCtrl",
+    resolve: {
+      data: ['dataService', function(dataService) {
+        return dataService.get(['client-ids']);
+      }]
+    }
+  })
+  .when("/repos", {
+    templateUrl : "repositories.html",
+    controller : "reposCtrl",
+    resolve: {
+      data: ['bitbucketService', function(bitbucketService) {
+        return bitbucketService.getRepos();
+      }]
+    }
+  })
+  .when("/cb/:provider", {
+    templateUrl : "accounts.html",
+    controller : "accountsCtrl",
+    resolve: {
+      data: ['dataService', function(dataService) {
+        return dataService.get(['client-ids']);
+      }]
+    }
+  })
+  .when("/projects", {
     templateUrl : "projects.html",
     controller : "projectsCtrl",
     resolve: {
@@ -27,11 +91,11 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
   .when("/timer", {
     templateUrl : "timer.html",
     controller : "timerCtrl",
-    resolve: {
-      currentUser: ['authService', function(authService) {
-        return authService.getCurrentUser();
-      }]
-    }
+    // resolve: {
+    //   currentUser: ['authService', function(authService) {
+    //     return authService.getCurrentUser();
+    //   }]
+    // }
   })
   .when("/stats", {
     templateUrl : "stats.html",
@@ -48,7 +112,135 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
 module.exports = RouterConfig;
 
 /***/ }),
-/* 1 */
+
+/***/ 120:
+/***/ (function(module, exports) {
+
+function TranslationConfig($translateProvider) {
+  $translateProvider.translations('en', {
+    ACTIVE_PROJECTS: 'Active projects',
+    LAST_7_DAYS: 'last 7 days',
+    LATEST_TIMERS: 'Latest timers',
+    SOURCE_CODE_HOST: 'Source code host',
+    ACTIVE_ACCOUNTS: 'Active accounts',
+    EDIT_ACCOUNT: 'Edit account',
+    REQUEST_AUTHORIZATION: 'Request authorization'
+  });
+  $translateProvider.preferredLanguage('en');
+}
+
+module.exports = TranslationConfig;
+
+/***/ }),
+
+/***/ 121:
+/***/ (function(module, exports) {
+
+AccountsController.$inject = ['$rootScope', '$scope', '$location', '$routeParams', 'lodash', 'bitbucketService', 'repoApis', 'data'];
+
+// https://www.liquidint.com/blog/angularjs-and-instagram-a-single-page-application-with-oauth2/
+function AccountsController($rootScope, $scope, $location, $routeParams, _, bitbucketService, repoApis, data) {
+  $rootScope.providers = {};
+  _.each(data['client-ids'], entry => {
+    $rootScope.providers[entry.provider] = entry.clientId;
+  });
+  // console.log($rootScope.providers);
+
+  if($routeParams.provider) {
+    var afterHash = $location.hash();
+    var splitPerAmps = afterHash.split('&');
+    var params = {};
+    _.each(splitPerAmps, kv => {
+      const bits = kv.split('=');
+      const key = bits.shift();
+      const value = bits.join('=');
+      params[key] = decodeURI(value);
+    });
+    console.log(params);
+    localStorage.setItem('bb_at', params.access_token);
+    // requestStrategy.setAuthToken(params.access_token);
+    repoApis.setAuthToken('bitbucket', params.access_token);
+  }
+
+  $scope.requestAuth = function() {
+    bitbucketService.login();
+  }
+}
+
+module.exports = AccountsController;
+
+/***/ }),
+
+/***/ 122:
+/***/ (function(module, exports) {
+
+DashboardController.$inject = ['$rootScope', '$scope', 'lodash', 'moment', 'dataService', 'optionService', 'data'];
+
+function DashboardController($rootScope, $scope, _, moment, dataService, optionService, data) {
+  $scope.dailyPost = {
+    markdown: ''
+  };
+
+  // Populate options
+  optionService.populate(data.options);
+
+  // 5 most recent timers
+  var numTimers = data.timers.length;
+  var sortedTimers = _.sortBy(data.timers, 'createdAt');
+  $scope.latestTimers = _.slice(sortedTimers, numTimers - 5);
+
+  // Projects for which there have been timers in the last 7 days
+  var oneWeekAgo = moment().subtract(7, 'days');
+  var recentTimers = _.filter(sortedTimers, function(t) {
+    return moment(t.createdAt).diff(oneWeekAgo, 'minutes') > 0;
+  });
+  var recentProjectIds = _.map(recentTimers, 'projectId');
+  $scope.activeProjects = _.filter(data.projects, function(p) {
+    return recentProjectIds.indexOf(p.id) !== -1;
+  });
+
+  // Daily posts
+  var today = moment().format('YYYY-MM-DD');
+  var dailyPost = _.find(data.dailyposts, function(post) {
+    return post.userId === $rootScope.currentUser.userId &&
+      post.createdAt.substr(0, 10) === today;
+  });
+  if(dailyPost === undefined) {
+    dataService.create('dailyposts', {
+      markdown: '### Daily post for ' + today
+    }, {
+      user: { id: $rootScope.currentUser.userId, type: 'users' }
+    })
+    .then(post => {
+      $scope.dailyPost = post;
+    });
+  }
+  else {
+    $scope.dailyPost = dailyPost;
+  }
+}
+
+module.exports = DashboardController;
+
+/***/ }),
+
+/***/ 123:
+/***/ (function(module, exports) {
+
+MainController.$inject = ['$rootScope', '$scope', '$location', 'authService'];
+
+function MainController($rootScope, $scope, $location, authService) {
+  $scope.logout = function() {
+    authService.signout();
+    $location.path('/signin');
+  }
+}
+
+module.exports = MainController;
+
+/***/ }),
+
+/***/ 124:
 /***/ (function(module, exports) {
 
 ProjectsController.$inject = ['$scope', '$http', 'lodash', 'flatUiColors', 'jsonapiUtils'];
@@ -97,7 +289,23 @@ ProjectsController.$inject = ['$scope', '$http', 'lodash', 'flatUiColors', 'json
 module.exports = ProjectsController;
 
 /***/ }),
-/* 2 */
+
+/***/ 125:
+/***/ (function(module, exports) {
+
+ReposController.$inject = ['$rootScope', '$scope', '$location', '$routeParams', 'repoApis', 'lodash', 'bitbucketService', 'data'];
+
+// https://www.liquidint.com/blog/angularjs-and-instagram-a-single-page-application-with-oauth2/
+function ReposController($rootScope, $scope, $location, $routeParams, repoApis, _, bitbucketService, data) {
+  console.log('ReposController data', data);
+  $scope.repos = data.values;
+}
+
+module.exports = ReposController;
+
+/***/ }),
+
+/***/ 126:
 /***/ (function(module, exports) {
 
 SigninController.$inject = ['$rootScope', '$scope', '$location', 'authService'];
@@ -117,7 +325,8 @@ function SigninController($rootScope, $scope, $location, authService) {
 module.exports = SigninController;
 
 /***/ }),
-/* 3 */
+
+/***/ 127:
 /***/ (function(module, exports) {
 
 SignupController.$inject = ['$rootScope', '$scope', 'authService'];
@@ -139,10 +348,11 @@ function SignupController($rootScope, $scope, authService) {
 module.exports = SignupController;
 
 /***/ }),
-/* 4 */
+
+/***/ 128:
 /***/ (function(module, exports) {
 
-StatsController.$inject = ['$scope', 'dataStoreService', 'lodash'];
+StatsController.$inject = ['$scope', 'dataService', 'lodash'];
 
 function StatsController($scope, store, lodash) {
 
@@ -233,12 +443,13 @@ function StatsController($scope, store, lodash) {
 module.exports = StatsController;
 
 /***/ }),
-/* 5 */
+
+/***/ 129:
 /***/ (function(module, exports) {
 
 const MYSQL_OFFSET = 7200;
 
-TimersController.$inject = ['$scope', '$http', 'lodash', 'optionService', 'notificationService', 'jsonapiUtils', 'currentUser'];
+TimersController.$inject = ['$scope', '$http', 'lodash', 'optionService', 'notificationService', 'jsonapiUtils'];
 
 function getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtils ) {
   // Get existing projects
@@ -272,14 +483,13 @@ function getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtil
   } );
 }
 
-function TimersController($scope, $http, lodash, optionService, notificationService, jsonapiUtils, currentUser) {
+function TimersController($scope, $http, lodash, optionService, notificationService, jsonapiUtils) {
 
   // const DURATION_POMO = 5;
   // const IDLE = 0;
   // const RUNNING = 1;
   // $scope.timerStatus = IDLE;
-  console.log('timerCtrl', optionService.get('pomodoro'), currentUser);
-  // $scope.currentUser = currentUser;
+  // console.log('timerCtrl', optionService.get('pomodoro'), currentUser);
   $scope.timer = null;
   $scope.timeRemaining = 0;
   $scope.lastTimer = {};
@@ -337,7 +547,7 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
         type: 'timers',
         attributes: { type },
         relationships: {
-          owner: { data: { type: 'users', id: currentUser.userId } }
+          owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
         }
       }
     } )
@@ -380,12 +590,13 @@ function TimersController($scope, $http, lodash, optionService, notificationServ
 module.exports = TimersController;
 
 /***/ }),
-/* 6 */
+
+/***/ 130:
 /***/ (function(module, exports) {
 
-AuthService.$inject = ['$http', 'jwtHelper'];
+AuthService.$inject = ['$rootScope', '$http', 'jwtHelper'];
 
-function AuthService($http, jwtHelper) {
+function AuthService($rootScope, $http, jwtHelper) {
 
   let currentUser = null;
 
@@ -403,17 +614,16 @@ function AuthService($http, jwtHelper) {
 
   function init() {
     const token = getToken();
-    currentUser = jwtHelper.decodeToken(token);
-    console.log('AuthService.init currentUser: ', currentUser);
+    if(token !== null) {
+      $rootScope.currentUser = currentUser = jwtHelper.decodeToken(token);
+    }
   }
+
 
   return {
     setToken,
-
     getToken,
-
     getCurrentUser,
-
     init,
 
     signup: function(attributes) {
@@ -422,9 +632,8 @@ function AuthService($http, jwtHelper) {
      })
       .then(function(response) {
         // var token = response.data.token;
-        // self.
         // return { token: token, user: self.user };
-        console.log(response);
+        // console.log(response);
       });
     },
 
@@ -441,15 +650,17 @@ function AuthService($http, jwtHelper) {
         return response.data.data.attributes;
       })
       .then(user => {
-        console.log(user, token);
-        // localStorage.getItem('id_token');
         setToken(token);
-        currentUser = user;
+        $rootScope.currentUser = currentUser = user;
         console.log(currentUser);
       });
-      //   return { token: token, user: self.user };
-      // });
-    }
+    },
+
+    signout: function() {
+      localStorage.removeItem('id_token');
+      $rootScope.currentUser = currentUser = null;
+    } 
+
   };
 }
 
@@ -457,7 +668,95 @@ module.exports = AuthService;
 
 
 /***/ }),
-/* 7 */
+
+/***/ 131:
+/***/ (function(module, exports) {
+
+BitbucketService.$inject = ['$rootScope', '$window', '$http', 'repoApis'];
+
+function BitbucketService($rootScope, $window, $http, repoApis) {
+  var apiUrl = 'https://api.bitbucket.org/2.0';
+  var service = {
+    login: function () {
+      var client_id = $rootScope.providers.bitbucket;
+      console.log('BitbucketService', client_id);
+      console.log('login');
+      var url = "https://bitbucket.org/site/oauth2/authorize/?client_id=" + client_id +
+        "&response_type=token";
+      // var bbPopup = window.open(url, "bbPopup");
+      $window.location.href = url;
+      // repoApis.getUsername();
+    },
+
+    getRepos: function() {
+      // const accessToken = localStorage.getItem('bb_at');
+      console.log('BitbucketService.getRepos', repoApis);
+      return repoApis.bitbucket.getProjects();
+      // console.log('Bearer ' + accessToken);
+      // return $http({
+      //   method: 'GET',
+      //   url: apiUrl + '/repositories/bhubr',
+      //   // skipAuthorization: true,
+      //   headers: {
+      //     Authorization: 'Bearer ' + accessToken
+      //   }
+      // });
+    }
+  };
+  return service;
+}
+
+module.exports = BitbucketService;
+
+/***/ }),
+
+/***/ 132:
+/***/ (function(module, exports) {
+
+/*----------------------------------------
+ | Data service
+ *----------------------------------------
+ |
+ */
+DataService.$inject = ['$http', '$q', 'lodash', 'jsonapiUtils'];
+
+function DataService($http, $q, _, jsonapiUtils) {
+  return {
+    get: function(keys) {
+      if(typeof keys === 'string') {
+        keys = [keys];
+      }
+      var promises = keys.map(
+        key => $http.get('/api/v1/' + key)
+          .then(response => (response.data.data))
+      );
+      return $q.all(promises)
+      .then(results => results.reduce(
+        (dataSet, dataItems, index) => {
+          dataSet[keys[index]] = jsonapiUtils.unmapRecords(dataItems);
+          return dataSet;
+        }, {}
+      ));
+    },
+
+    create: function(type, attributes, rawRelationships) {
+      const relationships = {};
+      _.forOwn(rawRelationships, (data, key) => {
+        relationships[key] = { data };
+      });
+      return $http.post('/api/v1/' + type, {
+        data: { type, attributes, relationships }
+      })
+      .then(response => (response.data));
+    }
+  };
+}
+
+module.exports = DataService;
+
+/***/ }),
+
+/***/ 133:
 /***/ (function(module, exports) {
 
 /*----------------------------------------
@@ -514,7 +813,57 @@ function JsonapiUtils(_) {
 module.exports = JsonapiUtils;
 
 /***/ }),
-/* 8 */
+
+/***/ 134:
+/***/ (function(module, exports) {
+
+OptionService.$inject = ['dataService'];
+
+function OptionService(dataService) {
+
+  var options = {};
+
+  /**
+   * Set an option value
+   */
+  function set(key, value) {
+    options[key] = value;
+  }
+
+  /**
+   * Get an option value
+   */
+  function get(key) {
+    return options[key];
+  }
+
+  /**
+   * Fetch options from backend and populate data
+   */
+  function populate(records) {
+    records.forEach(record => {
+      let { key, value } = record;
+      if( key.endsWith('Duration')) {
+        key = key.replace('Duration', '');
+        value = parseInt(value, 10);
+      }
+      set(key, value);
+    });
+  }
+
+  /**
+   * Expose functions
+   */
+  return {
+    set, get, populate
+  };
+}
+
+module.exports = OptionService;
+
+/***/ }),
+
+/***/ 135:
 /***/ (function(module, exports) {
 
 TokenCheckInterceptor.$inject = ['$q', '$location'];
@@ -535,7 +884,44 @@ function TokenCheckInterceptor($q, $location) {
 module.exports = TokenCheckInterceptor;
 
 /***/ }),
-/* 9 */
+
+/***/ 136:
+/***/ (function(module, exports) {
+
+/*----------------------------------------
+ | Lang related stuff
+ *----------------------------------------
+ |
+ */
+TranslationService.$inject = ['$rootScope', '$translate'];
+
+function TranslationService($rootScope, $translate) {
+
+  return {
+    init: function() {
+
+      // Get preferred language is set, and tell $translate to use it
+      var preferredLang = localStorage.getItem('preferred_lang');
+      if(preferredLang) {
+        $translate.use(preferredLang);
+      }
+
+      // Set preferred language and configure $translate,
+      // so that language pref is remembered on page reload
+      $rootScope.changeLanguage = function (key) {
+        localStorage.setItem('preferred_lang', key);
+        $translate.use(key);
+      };
+    }
+  }
+
+}
+
+module.exports = TranslationService;
+
+/***/ }),
+
+/***/ 137:
 /***/ (function(module, exports) {
 
 /**
@@ -558,7 +944,8 @@ module.exports = function() {
 };
 
 /***/ }),
-/* 10 */
+
+/***/ 138:
 /***/ (function(module, exports) {
 
 /*
@@ -666,18 +1053,11 @@ angular.module('btford.socket-io', []).
   });
 
 /***/ }),
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */,
-/* 15 */,
-/* 16 */,
-/* 17 */,
-/* 18 */
+
+/***/ 148:
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(10);
-
+__webpack_require__(138);
 
 const DURATION_POMO = 1500;
 
@@ -738,7 +1118,16 @@ function notifyMe(idleTime) {
 
 // Declare app
 var app = angular.module("myApp", [
-  "ngRoute", 'ngLodash', 'ngSanitize', 'markdown', 'nvd3', 'angular-jwt', 'btford.socket-io'
+  'ngRoute',
+  'ngLodash',
+  'ngSanitize',
+  'angularMoment',
+  'markdown',
+  'nvd3',
+  'angular-jwt',
+  'btford.socket-io',
+  'pascalprecht.translate',
+  'ngCodeRepoApis'
 ]);
 // app.config(['$locationProvider', function($locationProvider) {
 //   $locationProvider.hashPrefix('');
@@ -759,74 +1148,17 @@ app.directive('templateComment', function () {
 // });
 // angular.module('myApp', ['nvd3'])
 app
-.config(function Config($httpProvider, jwtOptionsProvider) {
-  // Please note we're annotating the function so that the $injector works when the file is minified
-  jwtOptionsProvider.config({
-    tokenGetter: ['authService', function(authService) {
-      return authService.getToken();
-    }]
-  });
-
-  $httpProvider.interceptors.push('jwtInterceptor');
-})
-.factory('authService', __webpack_require__(6))
-.factory('jsonapiUtils', __webpack_require__(7))
-.factory('tokenCheckInterceptor', __webpack_require__(8))
-.config(['$httpProvider', function($httpProvider) {  
-    $httpProvider.interceptors.push('tokenCheckInterceptor');
-}])
-.config(__webpack_require__(0))
-.controller('signinCtrl', __webpack_require__(2))
-.controller('signupCtrl', __webpack_require__(3))
-.controller('statsCtrl', __webpack_require__(4));
-
-app.filter('formatTimer', __webpack_require__(9));
-
-app.run(function(authService) {
-  authService.init();
-});
-app.run(function ($http, optionService) {
-  $http.get('/api/v1/options').then(function (data) {
-    let options = {};
-    data.data.data.forEach(model => {
-      const { key, value } = model.attributes;
-      if( key.endsWith('Duration')) {
-        options[key.replace('Duration', '')] = value;
-      }
-    });
-
-    optionService.setData(options);
-  });
-});
-app.service('optionService', function() {
-  var myData = null;
-  return {
-    setData: function (data) {
-      myData = data;
-    },
-    get: function (key) {
-      return myData[key];
-    }
-  };
-});
-app.service('dataStoreService', ['$http', '$q', function($http, $q) {
-  return {
-    get: function(keys) {
-      var promises = keys.map(
-        key => $http.get('/api/v1/' + key)
-          .then(response => (response.data.data))
-      );
-      return $q.all(promises)
-      .then(results => results.reduce(
-        (dataSet, dataItems, index) => {
-          dataSet[keys[index]] = dataItems.map(mapAttributes);
-          return dataSet;
-        }, {}
-      ));
-    }
-  };
-}]);
-app.service('notificationService', function() {
+.config(__webpack_require__(118))
+.config(__webpack_require__(119))
+.config(__webpack_require__(120))
+.factory('authService', __webpack_require__(130))
+.factory('dataService', __webpack_require__(132))
+.factory('optionService', __webpack_require__(134))
+.factory('translationService', __webpack_require__(136))
+.factory('jsonapiUtils', __webpack_require__(133))
+.factory('tokenCheckInterceptor', __webpack_require__(135))
+.factory('bitbucketService', __webpack_require__(131))
+.service('notificationService', function() {
 
   console.log('init notificationService');
 
@@ -838,17 +1170,29 @@ app.service('notificationService', function() {
   socket.on('server ready', function(msg){
     console.log(msg);
   });
-});
-
-
-// Projects controller
-app.controller("projectsCtrl", __webpack_require__(1));
-
-// Timer controller
-app.controller("timerCtrl", __webpack_require__(5));
-
+})
+.config(['$httpProvider', function($httpProvider) {  
+    $httpProvider.interceptors.push('tokenCheckInterceptor');
+}])
+.controller('mainCtrl', __webpack_require__(123))
+.controller('dashboardCtrl', __webpack_require__(122))
+.controller('signinCtrl', __webpack_require__(126))
+.controller('signupCtrl', __webpack_require__(127))
+.controller('accountsCtrl', __webpack_require__(121))
+.controller('statsCtrl', __webpack_require__(128))
+.controller('projectsCtrl', __webpack_require__(124))
+.controller('timerCtrl', __webpack_require__(129))
+.controller('reposCtrl', __webpack_require__(125))
+.filter('formatTimer', __webpack_require__(137))
+.run(['translationService', 'authService',
+  function(translationService, authService) {
+    translationService.init();
+    authService.init();
+  }
+])
 
 
 
 /***/ })
-],[18]);
+
+},[148]);

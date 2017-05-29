@@ -11,6 +11,42 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     controller : "signupCtrl"
   })
   .when("/", {
+    templateUrl : "dashboard.html",
+    controller : "dashboardCtrl",
+    resolve: {
+      data: ['dataService', function(dataService) {
+        return dataService.get(['projects', 'options', 'timers', 'dailyposts', 'client-ids']);
+      }]
+    }
+  })
+  .when("/accounts", {
+    templateUrl : "accounts.html",
+    controller : "accountsCtrl",
+    resolve: {
+      data: ['dataService', function(dataService) {
+        return dataService.get(['client-ids']);
+      }]
+    }
+  })
+  .when("/repos", {
+    templateUrl : "repositories.html",
+    controller : "reposCtrl",
+    resolve: {
+      data: ['bitbucketService', function(bitbucketService) {
+        return bitbucketService.getRepos();
+      }]
+    }
+  })
+  .when("/cb/:provider", {
+    templateUrl : "accounts.html",
+    controller : "accountsCtrl",
+    resolve: {
+      data: ['dataService', function(dataService) {
+        return dataService.get(['client-ids']);
+      }]
+    }
+  })
+  .when("/projects", {
     templateUrl : "projects.html",
     controller : "projectsCtrl",
     resolve: {
@@ -23,11 +59,11 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
   .when("/timer", {
     templateUrl : "timer.html",
     controller : "timerCtrl",
-    resolve: {
-      currentUser: ['authService', function(authService) {
-        return authService.getCurrentUser();
-      }]
-    }
+    // resolve: {
+    //   currentUser: ['authService', function(authService) {
+    //     return authService.getCurrentUser();
+    //   }]
+    // }
   })
   .when("/stats", {
     templateUrl : "stats.html",

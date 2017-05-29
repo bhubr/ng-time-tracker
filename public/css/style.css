@@ -1,14 +1,41 @@
 /* Custom Stylesheet */
-/**
- * Use this file to override Materialize files so you can update
- * the core Materialize files in the future
- *
- * Made By MaterializeCSS.com
- */
+.mainbox {
+  margin-top: 120px;
+}
+.main {
+  margin-top: 70px;
+}
 
-.icon-block {
+/* From https://getbootstrap.com/examples/sticky-footer/sticky-footer.css */
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+.container {
+  width: auto;
+  max-width: 680px;
   padding: 0 15px;
 }
-.icon-block .material-icons {
-	font-size: inherit;
+.container .text-muted {
+  margin: 20px 0;
 }
