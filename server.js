@@ -45,7 +45,7 @@ app.get('/api/v1/client-ids', (req, res) => {
   res.jsonApi(clientIds);
 });
 
-app.post('api/v1/got/:provider', (req, res) => {
+app.post('/api/v1/got/:provider', (req, res) => {
   res.json(req.body);
 });
 
