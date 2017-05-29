@@ -17,7 +17,7 @@ function RequestStrategy() {
     var options = { method: 'GET', headers, uri };
     console.log('RequestStrategy GET', overrideUrl, options);
     return request(options)
-    .then(passLog('## result of GET ' + url))
+    .then(passLog('## result of GET ' + uri))
     // .then(response => (response.data))
     // .then(passLog('## result of GET extract data'));
   };
