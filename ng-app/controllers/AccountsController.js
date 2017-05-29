@@ -23,7 +23,7 @@ function AccountsController($rootScope, $scope, $http, $location, $routeParams, 
     $http({
       method: 'POST',
       url: '/api/v1/got/' + $routeParams.provider,
-      code: params.code
+      data: { code: params.code }
     })
     .then(res => {
       console.log('Server returned', res.data);
