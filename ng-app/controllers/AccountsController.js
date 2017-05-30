@@ -44,7 +44,7 @@ function AccountsController($rootScope, $scope, $http, $location, $routeParams, 
   $scope.syncRepos = function() {
     $http({
       method: 'POST',
-      url: '/api/v1/sync/repos/8',
+      url: '/api/v1/sync/repos/9',
       data: {}
     })
     .then(res => {

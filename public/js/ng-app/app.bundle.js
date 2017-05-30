@@ -178,6 +178,18 @@ function AccountsController($rootScope, $scope, $http, $location, $routeParams, 
   $scope.requestAuth = function() {
     bitbucketService.login();
   }
+
+  $scope.syncRepos = function() {
+    $http({
+      method: 'POST',
+      url: '/api/v1/sync/repos/9',
+      data: {}
+    })
+    .then(res => {
+      console.log('Server returned', res.data);
+      notificationService.notify('info', JSON.stringify(res.data));
+    })
+  }
 }
 
 module.exports = AccountsController;
