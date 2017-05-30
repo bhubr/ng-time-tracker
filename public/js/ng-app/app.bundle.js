@@ -148,7 +148,8 @@ AccountsController.$inject = ['$rootScope', '$scope', '$http', '$location', '$ro
 
 // https://www.liquidint.com/blog/angularjs-and-instagram-a-single-page-application-with-oauth2/
 function AccountsController($rootScope, $scope, $http, $location, $routeParams, _, notificationService, bitbucketService, repoApis, data) {
-  console.log('AccountsController log data', data);
+  // console.log('AccountsController log data', data);
+  $scope.accounts = data.accounts;
   $rootScope.providers = {};
   _.each(data['client-ids'], entry => {
     $rootScope.providers[entry.provider] = entry.clientId;
@@ -187,10 +188,10 @@ function AccountsController($rootScope, $scope, $http, $location, $routeParams, 
     bitbucketService.login();
   }
 
-  $scope.syncRepos = function() {
+  $scope.syncRepos = function(accountId) {
     $http({
       method: 'POST',
-      url: '/api/v1/sync/repos/9',
+      url: '/api/v1/sync/repos/' + accountId,
       data: {}
     })
     .then(res => {
