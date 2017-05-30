@@ -43,7 +43,7 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
       attributes: { name, description, color },
       relationships: {
         owner: { data: { type: 'users', id: $rootScope.currentUser.userId } },
-        remoteProject: { data: { type: 'remoteprojects', id: remoteProjectId } }
+        'remote-project': { data: { type: 'remoteprojects', id: remoteProjectId } }
       }
     } } )
     .then(function(response) {
@@ -65,7 +65,7 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
     { data: { type: 'projects', id,
       attributes: { name, description, color } },
       relationships: {
-        remoteProject: { data: { type: 'remoteprojects', id: remoteProjectId } }
+        'remote-project': { data: { type: 'remoteprojects', id: remoteProjectId } }
       }
     } )
     .then(function(response) {
