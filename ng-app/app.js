@@ -92,6 +92,7 @@ app
 .config(require('./config/JwtConfig'))
 .config(require('./config/RouterConfig'))
 .config(require('./config/TranslationConfig'))
+.factory('notificationService', require('./factories/NotificationService'))
 .factory('authService', require('./factories/AuthService'))
 .factory('dataService', require('./factories/DataService'))
 .factory('optionService', require('./factories/OptionService'))
@@ -116,6 +117,7 @@ app
     $httpProvider.interceptors.push('tokenCheckInterceptor');
 }])
 .controller('mainCtrl', require('./controllers/MainController'))
+.controller('alertCtrl', require('./controllers/AlertController'))
 .controller('dashboardCtrl', require('./controllers/DashboardController'))
 .controller('signinCtrl', require('./controllers/SigninController'))
 .controller('signupCtrl', require('./controllers/SignupController'))

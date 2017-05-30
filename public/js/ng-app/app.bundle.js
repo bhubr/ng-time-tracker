@@ -136,10 +136,10 @@ module.exports = TranslationConfig;
 /***/ 121:
 /***/ (function(module, exports) {
 
-AccountsController.$inject = ['$rootScope', '$scope', '$http', '$location', '$routeParams', 'lodash', 'bitbucketService', 'repoApis', 'data'];
+AccountsController.$inject = ['$rootScope', '$scope', '$http', '$location', '$routeParams', 'lodash', 'notificationService', 'bitbucketService', 'repoApis', 'data'];
 
 // https://www.liquidint.com/blog/angularjs-and-instagram-a-single-page-application-with-oauth2/
-function AccountsController($rootScope, $scope, $http, $location, $routeParams, _, bitbucketService, repoApis, data) {
+function AccountsController($rootScope, $scope, $http, $location, $routeParams, _,notificationService, bitbucketService, repoApis, data) {
   $rootScope.providers = {};
   _.each(data['client-ids'], entry => {
     $rootScope.providers[entry.provider] = entry.clientId;
@@ -165,6 +165,7 @@ function AccountsController($rootScope, $scope, $http, $location, $routeParams, 
     })
     .then(res => {
       console.log('Server returned', res.data);
+      notificationService.notify('info', JSON.stringify(res.data));
     })
     // $scope.code = params.code;
     // localStorage.setItem('bb_at', params.access_token);
@@ -183,6 +184,28 @@ module.exports = AccountsController;
 /***/ }),
 
 /***/ 122:
+/***/ (function(module, exports) {
+
+AlertController.$inject = ['$rootScope', '$scope', '$timeout'];
+
+// https://www.liquidint.com/blog/angularjs-and-instagram-a-single-page-application-with-oauth2/
+function AlertController($rootScope, $scope, $timeout) {
+  $rootScope.$on('alert', data => {
+    console.log('received alert', data);
+    $scope.alertClass = 'alert-' + data.alertClass;
+    $scope.message = data.message;
+    $timeout(() => {
+      $scope.alertClass = 'hidden';
+      $scope.message = '';
+    }, 3000);
+  });
+}
+
+module.exports = AlertController;
+
+/***/ }),
+
+/***/ 123:
 /***/ (function(module, exports) {
 
 DashboardController.$inject = ['$rootScope', '$scope', 'lodash', 'moment', 'dataService', 'optionService', 'data'];
@@ -235,7 +258,7 @@ module.exports = DashboardController;
 
 /***/ }),
 
-/***/ 123:
+/***/ 124:
 /***/ (function(module, exports) {
 
 MainController.$inject = ['$rootScope', '$scope', '$location', 'authService'];
@@ -251,7 +274,7 @@ module.exports = MainController;
 
 /***/ }),
 
-/***/ 124:
+/***/ 125:
 /***/ (function(module, exports) {
 
 ProjectsController.$inject = ['$scope', '$http', 'lodash', 'flatUiColors', 'jsonapiUtils'];
@@ -301,7 +324,7 @@ module.exports = ProjectsController;
 
 /***/ }),
 
-/***/ 125:
+/***/ 126:
 /***/ (function(module, exports) {
 
 ReposController.$inject = ['$rootScope', '$scope', '$location', '$routeParams', 'repoApis', 'lodash', 'bitbucketService', 'data'];
@@ -316,7 +339,7 @@ module.exports = ReposController;
 
 /***/ }),
 
-/***/ 126:
+/***/ 127:
 /***/ (function(module, exports) {
 
 SigninController.$inject = ['$rootScope', '$scope', '$location', 'authService'];
@@ -337,7 +360,7 @@ module.exports = SigninController;
 
 /***/ }),
 
-/***/ 127:
+/***/ 128:
 /***/ (function(module, exports) {
 
 SignupController.$inject = ['$rootScope', '$scope', 'authService'];
@@ -360,7 +383,7 @@ module.exports = SignupController;
 
 /***/ }),
 
-/***/ 128:
+/***/ 129:
 /***/ (function(module, exports) {
 
 StatsController.$inject = ['$scope', 'dataService', 'lodash'];
@@ -455,7 +478,7 @@ module.exports = StatsController;
 
 /***/ }),
 
-/***/ 129:
+/***/ 130:
 /***/ (function(module, exports) {
 
 const MYSQL_OFFSET = 7200;
@@ -602,7 +625,7 @@ module.exports = TimersController;
 
 /***/ }),
 
-/***/ 130:
+/***/ 131:
 /***/ (function(module, exports) {
 
 AuthService.$inject = ['$rootScope', '$http', 'jwtHelper'];
@@ -680,7 +703,7 @@ module.exports = AuthService;
 
 /***/ }),
 
-/***/ 131:
+/***/ 132:
 /***/ (function(module, exports) {
 
 BitbucketService.$inject = ['$rootScope', '$window', '$http', 'repoApis'];
@@ -721,7 +744,7 @@ module.exports = BitbucketService;
 
 /***/ }),
 
-/***/ 132:
+/***/ 133:
 /***/ (function(module, exports) {
 
 /*----------------------------------------
@@ -767,7 +790,7 @@ module.exports = DataService;
 
 /***/ }),
 
-/***/ 133:
+/***/ 134:
 /***/ (function(module, exports) {
 
 /*----------------------------------------
@@ -825,7 +848,26 @@ module.exports = JsonapiUtils;
 
 /***/ }),
 
-/***/ 134:
+/***/ 135:
+/***/ (function(module, exports) {
+
+NotificationService.$inject = ['$rootScope'];
+
+function NotificationService($rootScope) {
+  return {
+    notify: function(alertClass, message) {
+      $rootScope.$emit('alert', {
+        alertClass, message
+      });
+    }
+  }
+}
+
+module.exports = NotificationService;
+
+/***/ }),
+
+/***/ 136:
 /***/ (function(module, exports) {
 
 OptionService.$inject = ['dataService'];
@@ -874,7 +916,7 @@ module.exports = OptionService;
 
 /***/ }),
 
-/***/ 135:
+/***/ 137:
 /***/ (function(module, exports) {
 
 TokenCheckInterceptor.$inject = ['$q', '$location'];
@@ -896,7 +938,7 @@ module.exports = TokenCheckInterceptor;
 
 /***/ }),
 
-/***/ 136:
+/***/ 138:
 /***/ (function(module, exports) {
 
 /*----------------------------------------
@@ -932,7 +974,7 @@ module.exports = TranslationService;
 
 /***/ }),
 
-/***/ 137:
+/***/ 139:
 /***/ (function(module, exports) {
 
 /**
@@ -956,7 +998,7 @@ module.exports = function() {
 
 /***/ }),
 
-/***/ 138:
+/***/ 140:
 /***/ (function(module, exports) {
 
 /*
@@ -1065,10 +1107,10 @@ angular.module('btford.socket-io', []).
 
 /***/ }),
 
-/***/ 148:
+/***/ 150:
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(138);
+__webpack_require__(140);
 
 const DURATION_POMO = 1500;
 
@@ -1162,13 +1204,14 @@ app
 .config(__webpack_require__(118))
 .config(__webpack_require__(119))
 .config(__webpack_require__(120))
-.factory('authService', __webpack_require__(130))
-.factory('dataService', __webpack_require__(132))
-.factory('optionService', __webpack_require__(134))
-.factory('translationService', __webpack_require__(136))
-.factory('jsonapiUtils', __webpack_require__(133))
-.factory('tokenCheckInterceptor', __webpack_require__(135))
-.factory('bitbucketService', __webpack_require__(131))
+.factory('notificationService', __webpack_require__(135))
+.factory('authService', __webpack_require__(131))
+.factory('dataService', __webpack_require__(133))
+.factory('optionService', __webpack_require__(136))
+.factory('translationService', __webpack_require__(138))
+.factory('jsonapiUtils', __webpack_require__(134))
+.factory('tokenCheckInterceptor', __webpack_require__(137))
+.factory('bitbucketService', __webpack_require__(132))
 .service('notificationService', function() {
 
   console.log('init notificationService');
@@ -1185,16 +1228,17 @@ app
 .config(['$httpProvider', function($httpProvider) {  
     $httpProvider.interceptors.push('tokenCheckInterceptor');
 }])
-.controller('mainCtrl', __webpack_require__(123))
-.controller('dashboardCtrl', __webpack_require__(122))
-.controller('signinCtrl', __webpack_require__(126))
-.controller('signupCtrl', __webpack_require__(127))
+.controller('mainCtrl', __webpack_require__(124))
+.controller('alertCtrl', __webpack_require__(122))
+.controller('dashboardCtrl', __webpack_require__(123))
+.controller('signinCtrl', __webpack_require__(127))
+.controller('signupCtrl', __webpack_require__(128))
 .controller('accountsCtrl', __webpack_require__(121))
-.controller('statsCtrl', __webpack_require__(128))
-.controller('projectsCtrl', __webpack_require__(124))
-.controller('timerCtrl', __webpack_require__(129))
-.controller('reposCtrl', __webpack_require__(125))
-.filter('formatTimer', __webpack_require__(137))
+.controller('statsCtrl', __webpack_require__(129))
+.controller('projectsCtrl', __webpack_require__(125))
+.controller('timerCtrl', __webpack_require__(130))
+.controller('reposCtrl', __webpack_require__(126))
+.filter('formatTimer', __webpack_require__(139))
 .run(['translationService', 'authService',
   function(translationService, authService) {
     translationService.init();
@@ -1206,4 +1250,4 @@ app
 
 /***/ })
 
-},[148]);
+},[150]);
