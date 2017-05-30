@@ -96,6 +96,25 @@ function passLog(label) {
   };
 }
 
+app.post('/api/v1/sync/repos/:accountId', (req, res) => {
+  objWrapper.findById('accounts', req.params.accountId)
+  .then(account => {
+    if(account.userId !== req.jwt.userId) {
+      return res.status(403).json({ error: "You don't have access rights to access this resource" });
+    }
+    return objWrapper.findById('api_tokens', account.tokenId);
+  })
+  .then(token => repoApis.bitbucket.setToken(token.access_token))
+  .then(() => repoApis.bitbucket.getProjects())
+  .then(projectsRes => {
+    console.log(projectsRes);
+    res.json({
+      projectsRes
+    });
+  });
+
+});
+
 app.post('/api/v1/got/:provider', (req, res) => {
 
   // Get params
@@ -152,7 +171,7 @@ app.post('/api/v1/got/:provider', (req, res) => {
     });
   })
   .set('account')
-  .get(passLog('## store chain content'))
+  // .get(passLog('## store chain content'))
   .get(({ token, apiUser, account }) => {
     return getToken(account.id)
     .then(tokenRecord => {
@@ -167,20 +186,16 @@ app.post('/api/v1/got/:provider', (req, res) => {
         return objWrapper.update('api_tokens', tokenRecord.id, tokenAttrs);
       }
       tokenAttrs.accountId = account.id;
-      return objWrapper.create('api_tokens', tokenAttrs);
+      return objWrapper.create('api_tokens', tokenAttrs)
+      .then(record => {
+        return objWrapper.update('accounts', account.id, { tokenId: record.id })
+        .then(() => (record));
+      });
     });
   })
-  .then(passLog('## tokenRecord'))
+  // .then(passLog('## tokenRecord'))
 
-    // console.log('## User', user);
-    // repoApis.bitbucket.getProjects()
-    // .then(projectsRes => {
-    //   res.json({
-    //     req: req.body,
-    //     responseBody,
-    //     projectsRes
-    //   });
-    // })
+
 
   // .get(({ account, token }) => ({
   //   accountId: account.id,
