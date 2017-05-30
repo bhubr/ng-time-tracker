@@ -11,14 +11,25 @@ function DataService($http, $q, _, jsonapiUtils) {
       if(typeof keys === 'string') {
         keys = [keys];
       }
-      var promises = keys.map(
-        key => $http.get('/api/v1/' + key)
+      var urlsWithQs = keys.map(key => {
+        const bits = key.split('?');
+        let entry = {
+          url: bits[0]
+        };
+        if(bits.length > 1) {
+          entry.qs = bits[1];
+        }
+        return entry;
+      });
+      console.log(urlsWithQs);
+      var promises = urlsWithQs.map(
+        entry => $http.get('/api/v1/' + entry.url + (entry.qs ? ('?' + entry.qs) : ''))
           .then(response => (response.data.data))
       );
       return $q.all(promises)
       .then(results => results.reduce(
         (dataSet, dataItems, index) => {
-          dataSet[keys[index]] = jsonapiUtils.unmapRecords(dataItems);
+          dataSet[urlsWithQs[index].url] = jsonapiUtils.unmapRecords(dataItems);
           return dataSet;
         }, {}
       ));

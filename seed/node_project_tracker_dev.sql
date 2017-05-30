@@ -171,3 +171,53 @@ CREATE TABLE `dailyposts` (
 
 ALTER TABLE `dailyposts`
   ADD CONSTRAINT `dailyposts_ibfk_1` FOREIGN KEY(`userId`) REFERENCES `users`(`id`) ON DELETE CASCADE;
+
+
+-- 05.29.2017
+
+
+CREATE TABLE `accounts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `username` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `userId` int(11) DEFAULT NULL,
+  `tokenId` int(11) DEFAULT NULL,
+  `type` enum('file','github','bitbucket','gitlab') COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `accounts`
+  ADD CONSTRAINT `accounts_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+CREATE TABLE `api_tokens` (
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `expiresAt` datetime DEFAULT NULL,
+  `accountId` int(11) NOT NULL,
+  `access_token` varchar(160) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `refresh_token` varchar(160) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `api_tokens`
+  ADD CONSTRAINT `api_tokens_ibfk_1` FOREIGN KEY (`accountId`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- 05.30.2017
+
+CREATE TABLE `remoteprojects` (
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `userId` int(11) NOT NULL,
+  `accountId` int(11) NOT NULL,
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `remoteUuid` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fullName` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `htmlUrl` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+ALTER TABLE `remoteprojects`
+  ADD CONSTRAINT `remoteprojects_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `remoteprojects_ibfk_2` FOREIGN KEY (`accountId`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;

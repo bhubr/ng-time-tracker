@@ -1,6 +1,6 @@
 const MYSQL_OFFSET = 7200;
 
-TimersController.$inject = ['$scope', '$http', 'lodash', 'optionService', 'notificationService', 'jsonapiUtils'];
+TimersController.$inject = ['$scope', '$rootScope', '$http', 'lodash', 'optionService', 'notificationService', 'jsonapiUtils'];
 
 function getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtils ) {
   // Get existing projects
@@ -34,7 +34,7 @@ function getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtil
   } );
 }
 
-function TimersController($scope, $http, lodash, optionService, notificationService, jsonapiUtils) {
+function TimersController($scope, $rootScope, $http, lodash, optionService, notificationService, jsonapiUtils) {
 
   // const DURATION_POMO = 5;
   // const IDLE = 0;

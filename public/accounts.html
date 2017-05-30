@@ -3,7 +3,18 @@
 	  <div class="panel panel-default">
 	    <div class="panel-heading" translate>ACTIVE_ACCOUNTS</div>
 	    <div class="panel-body">
-	      Panel content
+	      <table class="table table-striped">
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th></th>
+          </tr>
+          <tr ng-repeat="account in accounts">
+            <td>{{ account.id }}</td>
+            <td>{{ account.name }}</td>
+            <td><button type="button" class="btn btn-default" ng-click="syncRepos(account.id)">Sync repos</button></td>
+          </tr>
+        </table>
 	    </div>
 	  </div>
   </div>

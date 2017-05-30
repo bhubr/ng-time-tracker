@@ -47,6 +47,10 @@
 
 
     <div class="container-fluid main">
+      <div class="alert" ng-class="alertClass" role="alert" ng-controller="alertCtrl">
+        {{ message }}
+      </div>
+
       <div ng-view></div>
     </div>
 
