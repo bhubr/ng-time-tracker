@@ -1,17 +1,39 @@
-ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodash', 'flatUiColors', 'jsonapiUtils', 'notificationService'];
+ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodash', 'jsonapiUtils', 'notificationService', 'flatUiColors', 'data'];
 
- function ProjectsController($scope, $rootScope, $window, $http, _, flatUiColors, jsonapiUtils, notificationService) {
+ function ProjectsController($scope, $rootScope, $window, $http, _, jsonapiUtils, notificationService, flatUiColors, data) {
 
-  $scope.projects = [];
-  var newProject = {
+
+  /*-------------------*
+   | Private variables
+   *-------------------*
+   |
+   */
+  var blankProject = {
     name: '',
     description: '',
     color: '#fff'
   };
-  $scope.project = angular.copy(newProject);
-  $scope.colors = flatUiColors;
-  console.log($scope.colors);
 
+
+  /*-------------------*
+   | Scope variables
+   *-------------------*
+   |
+   */
+  $scope.projects = data.projects;
+  $scope.project = angular.copy(blankProject);
+  $scope.colors = flatUiColors;
+
+
+  /*-------------------*
+   | CRUD
+   *-------------------*
+   |
+   */
+
+  /**
+   * Create a project
+   */
   $scope.createProject = function() {
     const { name, description, color } = $scope.project;
     $scope.newProject();
@@ -33,6 +55,9 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
     });
   }
 
+  /**
+   * Update a project
+   */
   $scope.updateProject = function(id) {
     const { name, description, color } = $scope.project;
     $http.put("/api/v1/projects/" + id,
@@ -48,16 +73,10 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
       notificationService.notify('danger', 'Project could not be updated: ' + err);
     });
   }
-  $scope.pickColor = function( evt ) {
-    $scope.project.color = $( evt.target ).data( 'color' );
-  }
 
-  $scope.selectProject = function( id ) {
-    const project = _.find($scope.projects, { id });
-    console.log('select project', id, project);
-    $scope.project = angular.copy(project);
-  }
-
+  /**
+   * Delete a project
+   */
   $scope.deleteProject = function( project ) {
     if($window.confirm('Are you sure you want to delete "' + project.name + '"?')) {
       $http.delete('/api/v1/projects/' + project.id)
@@ -71,19 +90,35 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
     }
   }
 
-  $scope.newProject = function() {
-    $scope.project = angular.copy(newProject);
+
+  /*-------------------*
+   | Misc
+   *-------------------*
+   |
+   */
+
+  /**
+   * Assign a color to project
+   */
+  $scope.pickColor = function( evt ) {
+    $scope.project.color = $( evt.target ).data( 'color' );
   }
 
-  // Get existing projects
-  $http.get("/api/v1/projects")
-  .then(function(response) {
-    // $scope.projects = response.data.data.map( mapAttributes );
-    $scope.projects = jsonapiUtils.unmapRecords(response.data.data);
-  })
-  .catch(err => {
-    $scope.statustext = err;
-  } );
+  /**
+   * Select project in list
+   */
+  $scope.selectProject = function( id ) {
+    const project = _.find($scope.projects, { id });
+    console.log('select project', id, project);
+    $scope.project = angular.copy(project);
+  }
+
+  /**
+   * Reset project
+   */
+  $scope.newProject = function() {
+    $scope.project = angular.copy(blankProject);
+  }
 
 }
 
