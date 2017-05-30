@@ -52,11 +52,8 @@ process.on('uncaughtException', function (err) {
  * Setup Express
  */
 const app = express();
-<<<<<<< HEAD
-=======
 const Promise = require('bluebird');
 const querystring = require('querystring');
->>>>>>> oauth2-code-grant-flow
 const request = require('request-promise');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
@@ -71,13 +68,8 @@ app.use('/api/v1', middlewares.jsonApi);
 
 app.get('/api/v1/client-ids', (req, res) => {
   let id = 0;
-<<<<<<< HEAD
-  let clientIds = [];
-  _.forOwn(config.clientIds, (params, provider) => {
-=======
   let clients = [];
   _.forOwn(config.OAuthClients, (params, provider) => {
->>>>>>> oauth2-code-grant-flow
     id++;
     let client = {
       id,
