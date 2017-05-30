@@ -197,9 +197,11 @@ app.post('/api/v1/got/:provider',
       const accountAttrs = {
         type: provider, username, userId, name 
       };
+      console.log('## Creating account', accountAttrs);
       return objWrapper.create('accounts', accountAttrs)
     });
   })
+  .then(passLog('## Created account'))
   .set('account')
   // .get(passLog('## store chain content'))
   .get(({ token, apiUser, account }) => {
@@ -216,24 +218,15 @@ app.post('/api/v1/got/:provider',
         return objWrapper.update('api_tokens', tokenRecord.id, tokenAttrs);
       }
       tokenAttrs.accountId = account.id;
+      console.log('## Creating token', tokenAttrs);
       return objWrapper.create('api_tokens', tokenAttrs)
+      .then(passLog('## Created token'))
       .then(record => {
         return objWrapper.update('accounts', account.id, { tokenId: record.id })
         .then(() => (record));
       });
     });
   })
-  // .then(passLog('## tokenRecord'))
-
-
-
-  // .get(({ account, token }) => ({
-  //   accountId: account.id,
-  //   access_token: token.access_token,
-  //   refresh_token: token.refresh_token
-  // }))
-  // .then(attrs => { console.log('token attrs', attrs); return attrs; })
-  // .then(tokenAttrs => objWrapper.create('api_tokens', tokenAttrs))
   .set('tokenRecord')
   .get(data => {
     const payload = Object.assign(data, {
