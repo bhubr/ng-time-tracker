@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const chain = require('store-chain');
 const express = require('express');
 const bodyParser = require('body-parser');
 const configs = require(__dirname + '/config.json');
@@ -9,6 +10,16 @@ const { router, middlewares, queryBuilder, queryAsync } = require('jsonapi-expre
 // const { router, middlewares, queryBuilder, queryAsync } = require('../jsonapi-reference/index')(__dirname, config, models);
 
 const port = config.port || 3001;
+
+const objWrapper = {
+  createOne: function(table, attributes) {
+    const insertQuery = queryBuilder.insert(table, attributes);
+    return queryAsync(insertQuery)
+    .then(res => queryBuilder.selectOne(table, res.insertId))
+    .then(queryAsync)
+    .then(records => Object.assign({}, records[0]));
+  }
+}
 
 process.on('uncaughtException', function (err) {
   console.error(err.stack);
@@ -50,7 +61,9 @@ app.get('/api/v1/client-ids', (req, res) => {
 });
 
 app.post('/api/v1/got/:provider', (req, res) => {
-  const params = config.clientIds[req.params.provider];
+  const { provider } = req.params;
+  const { userId } = req.jwt;
+  const params = config.clientIds[provider];
   const rawCredentials = params.clientId + ':' + params.secret;
   const encodedCredentials = new Buffer(rawCredentials).toString('base64');
   console.log(params, rawCredentials, encodedCredentials);
@@ -67,24 +80,44 @@ app.post('/api/v1/got/:provider', (req, res) => {
     // json: true
   };
   console.log(options);
-  request(options)
-  .then(response => {
-    const responseBody = JSON.parse(response);
+  chain(request(options))
+  .then(response => JSON.parse(response))
+  .set('token')
+  .then(responseBody => {
     console.log('## Access token', responseBody.access_token);
-    // repoApis.setAuthToken('bitbucket', responseBody.access_token);
-    repoApis.bitbucket.setToken(responseBody.access_token)
-    .then(user => {
-      console.log('## User', user);
-      repoApis.bitbucket.getProjects()
-      .then(projectsRes => {
-        res.json({
-          req: req.body,
-          responseBody,
-          projectsRes
-        });
-      })
+    return repoApis.bitbucket.setToken(responseBody.access_token);
+  })
+  .set('apiUser')
+  .then(user => {
+    const { username } = user;
+    const name = username + '@' + provider;
+    const accountAttrs = {
+      type: provider, username, userId, name 
+    };
+    return objWrapper.createOne('accounts', accountAttrs)
+    // console.log('## User', user);
+    // repoApis.bitbucket.getProjects()
+    // .then(projectsRes => {
+    //   res.json({
+    //     req: req.body,
+    //     responseBody,
+    //     projectsRes
+    //   });
+    // })
 
-    });
+  })
+  .then(attrs => { console.log('account attrs', attrs); return attrs; })
+  .set('account')
+  .get(({ account, token }) => ({
+    accountId: account.id,
+    access_token: token.access_token,
+    refresh_token: token.refresh_token
+  }))
+  .then(attrs => { console.log('token attrs', attrs); return attrs; })
+  .then(tokenAttrs => objWrapper.createOne('api_tokens', tokenAttrs))
+  .set('tokenRecord')
+  .get(data => {
+    res.json(data);    
   })
   .catch(err => {
     console.log(err);

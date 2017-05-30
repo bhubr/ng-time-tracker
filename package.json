@@ -23,6 +23,7 @@
     "mysql": "^2.13.0",
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
+    "store-chain": "^2.0.3",
     "socket.io": "^1.7.3"
   },
   "devDependencies": {
