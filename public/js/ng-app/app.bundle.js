@@ -354,7 +354,8 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
     { data: { type: 'projects',
       attributes: { name, description, color },
       relationships: {
-        owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
+        owner: { data: { type: 'users', id: $rootScope.currentUser.userId } },
+        remoteProject: { data: { type: 'remoteprojects', id: remoteProjectId } }
       }
     } } )
     .then(function(response) {
@@ -371,9 +372,14 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
    * Update a project
    */
   $scope.updateProject = function(id) {
-    const { name, description, color } = $scope.project;
+    const { name, description, color, remoteProjectId } = $scope.project;
     $http.put("/api/v1/projects/" + id,
-    { data: { type: 'projects', id, attributes: { name, description, color } } } )
+    { data: { type: 'projects', id,
+      attributes: { name, description, color } },
+      relationships: {
+        remoteProject: { data: { type: 'remoteprojects', id: remoteProjectId } }
+      }
+    } )
     .then(function(response) {
       const existingProject = _.find($scope.projects, { id });
       const indexInProjects = $scope.projects.indexOf(existingProject);
