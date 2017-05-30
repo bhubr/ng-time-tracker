@@ -1,10 +1,12 @@
-AccountsController.$inject = ['$rootScope', '$scope', '$http', '$location', '$routeParams', 'lodash', 'bitbucketService', 'repoApis', 'data'];
+AccountsController.$inject = ['$rootScope', '$scope', '$http', '$location', '$routeParams', 'lodash', 'notificationService', 'bitbucketService', 'repoApis', 'data'];
 
 // https://www.liquidint.com/blog/angularjs-and-instagram-a-single-page-application-with-oauth2/
-function AccountsController($rootScope, $scope, $http, $location, $routeParams, _, bitbucketService, repoApis, data) {
+function AccountsController($rootScope, $scope, $http, $location, $routeParams, _, notificationService, bitbucketService, repoApis, data) {
+  console.log('AccountsController log data', data);
+  $scope.accounts = data.accounts;
   $rootScope.providers = {};
   _.each(data['client-ids'], entry => {
-    $rootScope.providers[entry.provider] = entry.clientId;
+    $rootScope.providers[entry.provider] = entry;
   });
   // console.log($rootScope.providers);
 
@@ -27,6 +29,7 @@ function AccountsController($rootScope, $scope, $http, $location, $routeParams, 
     })
     .then(res => {
       console.log('Server returned', res.data);
+      notificationService.notify('info', JSON.stringify(res.data));
     })
     // $scope.code = params.code;
     // localStorage.setItem('bb_at', params.access_token);
@@ -35,8 +38,20 @@ function AccountsController($rootScope, $scope, $http, $location, $routeParams, 
 
   }
 
-  $scope.requestAuth = function() {
-    bitbucketService.login();
+  $scope.requestAuth = function(provider) {
+    bitbucketService.authorize(provider);
+  }
+
+  $scope.syncRepos = function(accountId) {
+    $http({
+      method: 'POST',
+      url: '/api/v1/sync/repos/' + accountId,
+      data: {}
+    })
+    .then(res => {
+      console.log('Server returned', res.data);
+      notificationService.notify('info', JSON.stringify(res.data));
+    })
   }
 }
 

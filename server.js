@@ -303,52 +303,6 @@ app.post('/api/v1/got/:provider',
   
 });
 
-app.post('/api/v1/got/:provider', (req, res) => {
-  const params = config.clientIds[req.params.provider];
-  const rawCredentials = params.clientId + ':' + params.secret;
-  const encodedCredentials = new Buffer(rawCredentials).toString('base64');
-  console.log(params, rawCredentials, encodedCredentials);
-  const options = {
-    method: 'POST',
-    uri: 'https://bitbucket.org/site/oauth2/access_token',
-    form: {
-      grant_type: 'authorization_code',
-      code: req.body.code
-    },
-    headers: {
-      Authorization: 'Basic ' + encodedCredentials
-    },
-    // json: true
-  };
-  console.log(options);
-  request(options)
-  .then(response => {
-    const responseBody = JSON.parse(response);
-    console.log('## Access token', responseBody.access_token);
-    // repoApis.setAuthToken('bitbucket', responseBody.access_token);
-    repoApis.bitbucket.setToken(responseBody.access_token)
-    .then(user => {
-      console.log('## User', user);
-      repoApis.bitbucket.getProjects()
-      .then(projectsRes => {
-        res.json({
-          req: req.body,
-          responseBody,
-          projectsRes
-        });
-      })
-
-    });
-  })
-  .catch(err => {
-    console.log(err);
-    res.json({
-      err: err.message
-    })
-  });
-  
-});
-
 app.use('/api/v1', router);
 
 

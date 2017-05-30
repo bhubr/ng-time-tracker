@@ -12,8 +12,20 @@
       "public": "keys/public.key"
     },
     "whitelistedUrls": ["GET /api/v1/users*"],
-    "clientIds": {
-      "bitbucket": "client_id"
+    "OAuthClients": {
+      "bitbucket": {
+        "clientId": "bitbucket_client_id",
+        "secret": "secret"
+      },
+      "github": {
+        "clientId": "github_client_id",
+        "secret": "github_secret"
+      },
+      "gitlab": {
+        "clientId": "gitlab_client_id",
+        "secret": "gitlab_secret",
+        "redirectUri": "gitlab_authorize_needs_callback_uri"
+      }
     }
   }
 }
