@@ -160,6 +160,12 @@ app.post('/api/v1/got/:provider',
       extract: function(response) {
         return querystring.parse(response);
       }
+    },
+    gitlab: {
+      uri: 'https://gitlab.com/oauth/token',
+      extract: function(response) {
+        return JSON.parse(response);
+      }
     }
   };
 
