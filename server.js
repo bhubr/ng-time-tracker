@@ -67,16 +67,20 @@ app.use('/api/v1', middlewares.jsonApi);
 app.get('/api/v1/client-ids', (req, res) => {
   let id = 0;
   let clientIds = [];
-  _.forOwn(config.clientIds, (params, provider) => {
+  _.forOwn(config.OAuthClients, (params, provider) => {
     id++;
-    clientIds.push({
+    let client = {
       id,
       type: 'client-id',
       attributes: {
         'client-id': params.clientId,
         provider
       }
-    });
+    };
+    if(params.redirectUri) {
+      client.attributes['redirect-uri'] = params.redirectUri;
+    }
+    clientIds.push(client);
   });
   // res.json(clientIds);
   res.jsonApi(clientIds);

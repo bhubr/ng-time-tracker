@@ -6,7 +6,7 @@ function AccountsController($rootScope, $scope, $http, $location, $routeParams, 
   $scope.accounts = data.accounts;
   $rootScope.providers = {};
   _.each(data['client-ids'], entry => {
-    $rootScope.providers[entry.provider] = entry.clientId;
+    $rootScope.providers[entry.provider] = entry;
   });
   // console.log($rootScope.providers);
 

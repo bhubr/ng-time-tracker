@@ -64150,7 +64150,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     Github.prototype.setPath = function(relativePath) {
       // this.options.uri = this.baseUri + relativePath;
       if(this.token === undefined) {
-        throw new Error('token undefined in Bitbucket strategy');
+        throw new Error('token undefined in Github strategy');
       }
       this.requestStrategy.setup(this.baseUri, relativePath, {
         Authorization: 'Bearer ' + this.token,
@@ -64196,10 +64196,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
    */
   var GitlabStrategy = (function() {
 
-    function Gitlab(cred, requestStrategy) {
+    function Gitlab(requestStrategy) {
       this.requestStrategy = requestStrategy;
-      this.username = cred.username;
-      this.projects = cred.projects;
+      // this.username = cred.username;
+      // this.projects = cred.projects;
       this.baseUri = 'https://gitlab.com/api/v4';
       // this.options = {
       //   uri: 'https://gitlab.com/api/v4',
@@ -64210,10 +64210,36 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // };
     }
 
-    Gitlab.prototype.setPath = function(relativePath) {
-      this.options.uri = this.baseUri + relativePath;
-    };
+    Gitlab.prototype.setToken = function(token) {
+      var self = this;
+      this.token = token;
+      this.headers = {
+        Authorization: 'Bearer ' + this.token
+      };
+      this.setPath('/user')
+      console.log('Gitlab query logged-in user');
+      return this.requestStrategy.get()
+      .then(user => {
+        console.log('GET /user response', user);
+        self.username = user.username;
+        return user;
+      })
+      .catch(err => {
+        console.error('GET /user failed', error);
+        throw err;
+      })
+    }
 
+    Gitlab.prototype.setPath = function(relativePath) {
+      // this.options.uri = this.baseUri + relativePath;
+      if(this.token === undefined) {
+        throw new Error('token undefined in Gitlab strategy');
+      }
+      this.requestStrategy.setup(this.baseUri, relativePath, {
+        Authorization: 'Bearer ' + this.token
+      })
+      // this.requestStrategy.setPath(relativePath);
+    };
     Gitlab.prototype.get = function(relativePath) {
       return this.requestStrategy.get();
     };

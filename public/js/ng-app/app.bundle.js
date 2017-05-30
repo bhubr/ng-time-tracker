@@ -149,7 +149,7 @@ function AccountsController($rootScope, $scope, $http, $location, $routeParams, 
   $scope.accounts = data.accounts;
   $rootScope.providers = {};
   _.each(data['client-ids'], entry => {
-    $rootScope.providers[entry.provider] = entry.clientId;
+    $rootScope.providers[entry.provider] = entry;
   });
   // console.log($rootScope.providers);
 
@@ -737,9 +737,12 @@ function BitbucketService($rootScope, $window, $http, repoApis) {
   console.log('BitbucketService providers', $rootScope.providers);
   var service = {
     authorize: function (provider) {
-      var clientId = $rootScope.providers[provider];
+      var providerParams = $rootScope.providers[provider];
+      console.log('provider entry', providerParams);
+      var clientId = providerParams.clientId;
       var authorizeUrl = authorizeUrls[provider];
-      var url = authorizeUrl + "?client_id=" + clientId + "&response_type=code";
+      var url = authorizeUrl + "?client_id=" + clientId + "&response_type=code" +
+        providerParams.redirectUri ? ('&redirect_uri=' + providerParams.redirectUri) : '';
       $window.location.href = url;
     },
 
