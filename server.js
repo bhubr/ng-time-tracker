@@ -210,9 +210,11 @@ app.post('/api/v1/got/:provider',
       mustCreateToken = tokenRecord === false;
       console.log('mustCreateToken', mustCreateToken ? 'yes' : 'no');
       let tokenAttrs = {
-        access_token: token.access_token,
-        refresh_token: token.refresh_token
+        access_token: token.access_token
       };
+      if(tokens.refresh_token) {
+        tokenAttrs.refresh_token = token.refresh_token;
+      }
       // If a token already exists for this account, update it
       if(! mustCreateToken) {
         return objWrapper.update('api_tokens', tokenRecord.id, tokenAttrs);
