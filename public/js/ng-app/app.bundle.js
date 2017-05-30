@@ -55,7 +55,7 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     templateUrl : "accounts.html",
     controller : "accountsCtrl",
     resolve: {
-      data: ['$rootScope', '$http', '$q', 'dataService', function($rootScope, dataService, $http, $q) {
+      data: ['$rootScope', '$http', '$q', 'dataService', function($rootScope, $http, $q, dataService) {
         console.log('/accounts data resolution', $rootScope.currentUser);
         return $q.all([
           dataService.get(['client-ids']),
