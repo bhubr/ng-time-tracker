@@ -226,3 +226,7 @@ ALTER TABLE `projects` ADD COLUMN `ownerId` int(11) NOT NULL;
 
 ALTER TABLE `projects`
   ADD CONSTRAINT `projects_ibfk_1` FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- 05.31.2017
+ALTER TABLE `projects` ADD COLUMN `remoteProjectId` int(11) NOT NULL;
+ALTER TABLE `remoteprojects` ADD COLUMN `localProjectId` int(11) NOT NULL;

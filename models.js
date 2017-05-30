@@ -66,6 +66,20 @@ module.exports = {
         table: 'users',
         type: 'belongsTo',
         reverse: 'timers'
+      },
+      remoteProject: {
+        table: 'remoteprojects',
+        type: 'belongsTo',
+        reverse: 'localProject'
+      }
+    }
+  },
+  remoteprojects: {
+    relationships: {
+      localProject: {
+        table: 'projects',
+        type: 'belongsTo',
+        reverse: 'remoteProject'
       }
     }
   },
