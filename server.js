@@ -89,6 +89,13 @@ function getToken(accountId) {
   return objWrapper.findBy('api_tokens', { accountId });
 }
 
+function passLog(label) {
+  return function(val) {
+    console.log(label, val);
+    return val;
+  };
+}
+
 app.post('/api/v1/got/:provider', (req, res) => {
 
   // Get params
@@ -128,9 +135,11 @@ app.post('/api/v1/got/:provider', (req, res) => {
   .set('apiUser')
   .then(({ username }) => {
     return getAccount(userId, provider, username)
+    .then(passLog('## getAccount result'))
     .then(account => {
       // Bypass if an account already exists
       mustCreateAccount = account === false;
+      console.log('mustCreateAccount', mustCreateAccount ? 'yes' : 'no');
       if(! mustCreateAccount) {
         return account;
       }
@@ -143,7 +152,8 @@ app.post('/api/v1/got/:provider', (req, res) => {
     });
   })
   .set('account')
-  .then(({ token, apiUser, account }) => {
+  .get(passLog('## store chain content'))
+  .get(({ token, apiUser, account }) => {
     return getToken(account.id)
     .then(tokenRecord => {
       mustCreateToken = tokenRecord === false;
