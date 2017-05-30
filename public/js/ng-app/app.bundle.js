@@ -55,8 +55,16 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     templateUrl : "accounts.html",
     controller : "accountsCtrl",
     resolve: {
-      data: ['dataService', function(dataService) {
-        return dataService.get(['client-ids']);
+      data: ['$rootScope', '$http', '$q', 'dataService', function($rootScope, dataService, $http, $q) {
+        console.log('/accounts data resolution', $rootScope.currentUser);
+        return $q.all([
+          dataService.get(['client-ids']),
+          $http.get('/api/v1/accounts?userId=' + $rootScope.currentUser.userId)
+        ])
+        .then(responses => ({
+          'client-ids': responses[0]['client-ids'],
+          accounts: responses[1].data
+        }));
       }]
     }
   })
@@ -140,7 +148,7 @@ AccountsController.$inject = ['$rootScope', '$scope', '$http', '$location', '$ro
 
 // https://www.liquidint.com/blog/angularjs-and-instagram-a-single-page-application-with-oauth2/
 function AccountsController($rootScope, $scope, $http, $location, $routeParams, _, notificationService, bitbucketService, repoApis, data) {
-  console.log('AccountsController log notificationService', notificationService);
+  console.log('AccountsController log data', data);
   $rootScope.providers = {};
   _.each(data['client-ids'], entry => {
     $rootScope.providers[entry.provider] = entry.clientId;

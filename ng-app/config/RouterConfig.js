@@ -23,8 +23,16 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     templateUrl : "accounts.html",
     controller : "accountsCtrl",
     resolve: {
-      data: ['dataService', function(dataService) {
-        return dataService.get(['client-ids']);
+      data: ['$rootScope', '$http', '$q', 'dataService', function($rootScope, dataService, $http, $q) {
+        console.log('/accounts data resolution', $rootScope.currentUser);
+        return $q.all([
+          dataService.get(['client-ids']),
+          $http.get('/api/v1/accounts?userId=' + $rootScope.currentUser.userId)
+        ])
+        .then(responses => ({
+          'client-ids': responses[0]['client-ids'],
+          accounts: responses[1].data
+        }));
       }]
     }
   })
