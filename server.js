@@ -51,6 +51,7 @@ process.on('uncaughtException', function (err) {
  * Setup Express
  */
 const app = express();
+const querystring = require('querystring');
 const request = require('request-promise');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
@@ -141,11 +142,22 @@ app.post('/api/v1/got/:provider',
 
   let mustCreateAccount;
   let mustCreateToken;
-  const accessTokenUrls = {
-    bitbucket: 'https://bitbucket.org/site/oauth2/access_token',
-    github: 'https://github.com/login/oauth/access_token'
-  }
-  const uri = accessTokenUrls[provider];
+  const paramsPerProvider = {
+    bitbucket: {
+      uri: 'https://bitbucket.org/site/oauth2/access_token',
+      extract: function(response) {
+        return JSON.parse(response);
+      }
+    },
+    github: {
+      uri: 'https://github.com/login/oauth/access_token',
+      extract: function(response) {
+        return querystring.parse(response);
+      }
+    }
+  };
+
+  const { uri } = paramsPerProvider[provider];
   // Prepare request to provider's access token route
   const options = {
     method: 'POST',
@@ -162,7 +174,9 @@ app.post('/api/v1/got/:provider',
   // Fire request, store parsed JSON response
   chain(request(options))
   .then(passLog('## server response from ' + provider))
-  .then(response => JSON.parse(response))
+  // .then(response => JSON.parse(response))
+  .then(paramsPerProvider[provider].extract)
+  .then(passLog('## parsed response'))
   .set('token')
   // Setup the provider strategy with freshly got access token
   .then(token => repoApis[provider].setToken(token.access_token))
