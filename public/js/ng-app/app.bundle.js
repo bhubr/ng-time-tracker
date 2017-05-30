@@ -139,7 +139,8 @@ module.exports = TranslationConfig;
 AccountsController.$inject = ['$rootScope', '$scope', '$http', '$location', '$routeParams', 'lodash', 'notificationService', 'bitbucketService', 'repoApis', 'data'];
 
 // https://www.liquidint.com/blog/angularjs-and-instagram-a-single-page-application-with-oauth2/
-function AccountsController($rootScope, $scope, $http, $location, $routeParams, _,notificationService, bitbucketService, repoApis, data) {
+function AccountsController($rootScope, $scope, $http, $location, $routeParams, _, notificationService, bitbucketService, repoApis, data) {
+  console.log('AccountsController log notificationService', notificationService);
   $rootScope.providers = {};
   _.each(data['client-ids'], entry => {
     $rootScope.providers[entry.provider] = entry.clientId;
