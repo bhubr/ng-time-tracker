@@ -138,6 +138,7 @@ function TranslationConfig($translateProvider) {
     NEW: 'New',
     CREATE: 'Create',
     UPDATE: 'Update',
+    DELETE: 'Delete',
     PROJECT_COLORS: 'Color (colors by <a href="https://flatuicolors.com/" target="_blank">https://flatuicolors.com/</a>)'
   });
   $translateProvider.preferredLanguage('en');
@@ -305,9 +306,9 @@ module.exports = MainController;
 /***/ 125:
 /***/ (function(module, exports) {
 
-ProjectsController.$inject = ['$scope', '$http', 'lodash', 'flatUiColors', 'jsonapiUtils', 'notificationService'];
+ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodash', 'flatUiColors', 'jsonapiUtils', 'notificationService'];
 
- function ProjectsController($scope, $http, _, flatUiColors, jsonapiUtils, notificationService) {
+ function ProjectsController($scope, $rootScope, $window, $http, _, flatUiColors, jsonapiUtils, notificationService) {
 
   $scope.projects = [];
   var newProject = {
@@ -324,7 +325,12 @@ ProjectsController.$inject = ['$scope', '$http', 'lodash', 'flatUiColors', 'json
     $scope.newProject();
     
     $http.post("/api/v1/projects",
-    { data: { attributes: { name, description, color } } } )
+    { data: { type: 'projects',
+      attributes: { name, description, color },
+      relationships: {
+        owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
+      }
+    } } )
     .then(function(response) {
       const newRecord = jsonapiUtils.unmapRecord( response.data.data );
       $scope.projects.push( newRecord );
@@ -344,7 +350,6 @@ ProjectsController.$inject = ['$scope', '$http', 'lodash', 'flatUiColors', 'json
       const indexInProjects = $scope.projects.indexOf(existingProject);
       const updatedProject = jsonapiUtils.unmapRecord( response.data.data );
       $scope.projects[indexInProjects] = updatedProject;
-      $scope.newProject();
       notificationService.notify('success', 'Project updated');
     })
     .catch(err => {
@@ -359,6 +364,19 @@ ProjectsController.$inject = ['$scope', '$http', 'lodash', 'flatUiColors', 'json
     const project = _.find($scope.projects, { id });
     console.log('select project', id, project);
     $scope.project = angular.copy(project);
+  }
+
+  $scope.deleteProject = function( project ) {
+    if($window.confirm('Are you sure you want to delete "' + project.name + '"?')) {
+      $http.delete('/api/v1/projects/' + project.id)
+      .then(function(response) {
+        _.remove($scope.projects, project);
+        notificationService.notify('success', 'Project deleted');
+      })
+      .catch(err => {
+        notificationService.notify('danger', 'Project could not be deleted: ' + err);
+      });
+    }
   }
 
   $scope.newProject = function() {

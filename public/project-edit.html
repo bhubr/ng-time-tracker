@@ -1,6 +1,7 @@
 <div class="panel panel-default">
   <div ng-if="project.id" class="panel-heading">
-  <span class="pull-right"><button class="btn btn-xs btn-info" ng-click="newProject()" translate>NEW</button></span>
+  <span class="pull-right"><button style="margin-left: 5px;" class="btn btn-xs btn-info" ng-click="newProject()" translate>NEW</button></span>
+  <span class="pull-right"><button class="btn btn-xs btn-danger" ng-click="deleteProject(project)" translate>DELETE</button></span>
   {{ 'EDIT_PROJECT' | translate }}
   </div>
   <div ng-if="! project.id" class="panel-heading" translate>CREATE_PROJECT</div>

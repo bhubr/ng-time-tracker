@@ -15,6 +15,7 @@ function TranslationConfig($translateProvider) {
     NEW: 'New',
     CREATE: 'Create',
     UPDATE: 'Update',
+    DELETE: 'Delete',
     PROJECT_COLORS: 'Color (colors by <a href="https://flatuicolors.com/" target="_blank">https://flatuicolors.com/</a>)'
   });
   $translateProvider.preferredLanguage('en');
