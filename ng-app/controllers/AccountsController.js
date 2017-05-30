@@ -2,7 +2,7 @@ AccountsController.$inject = ['$rootScope', '$scope', '$http', '$location', '$ro
 
 // https://www.liquidint.com/blog/angularjs-and-instagram-a-single-page-application-with-oauth2/
 function AccountsController($rootScope, $scope, $http, $location, $routeParams, _, notificationService, bitbucketService, repoApis, data) {
-  // console.log('AccountsController log data', data);
+  console.log('AccountsController log data', data);
   $scope.accounts = data.accounts;
   $rootScope.providers = {};
   _.each(data['client-ids'], entry => {

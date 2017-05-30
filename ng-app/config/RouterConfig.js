@@ -25,14 +25,11 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     resolve: {
       data: ['$rootScope', '$http', '$q', 'dataService', function($rootScope, $http, $q, dataService) {
         console.log('/accounts data resolution', $rootScope.currentUser);
-        return $q.all([
-          dataService.get(['client-ids']),
-          $http.get('/api/v1/accounts?userId=' + $rootScope.currentUser.userId)
-        ])
-        .then(responses => ({
-          'client-ids': responses[0]['client-ids'],
-          accounts: responses[1].data
-        }));
+        return dataService.get(['client-ids', 'accounts?userId=' + $rootScope.currentUser.userId]);
+        // .then(responses => ({
+        //   'client-ids': responses[0]['client-ids'],
+        //   accounts: responses[1].data
+        // }));
       }]
     }
   })

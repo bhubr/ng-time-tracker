@@ -57,14 +57,11 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     resolve: {
       data: ['$rootScope', '$http', '$q', 'dataService', function($rootScope, $http, $q, dataService) {
         console.log('/accounts data resolution', $rootScope.currentUser);
-        return $q.all([
-          dataService.get(['client-ids']),
-          $http.get('/api/v1/accounts?userId=' + $rootScope.currentUser.userId)
-        ])
-        .then(responses => ({
-          'client-ids': responses[0]['client-ids'],
-          accounts: responses[1].data
-        }));
+        return dataService.get(['client-ids', 'accounts?userId=' + $rootScope.currentUser.userId]);
+        // .then(responses => ({
+        //   'client-ids': responses[0]['client-ids'],
+        //   accounts: responses[1].data
+        // }));
       }]
     }
   })
@@ -148,7 +145,7 @@ AccountsController.$inject = ['$rootScope', '$scope', '$http', '$location', '$ro
 
 // https://www.liquidint.com/blog/angularjs-and-instagram-a-single-page-application-with-oauth2/
 function AccountsController($rootScope, $scope, $http, $location, $routeParams, _, notificationService, bitbucketService, repoApis, data) {
-  // console.log('AccountsController log data', data);
+  console.log('AccountsController log data', data);
   $scope.accounts = data.accounts;
   $rootScope.providers = {};
   _.each(data['client-ids'], entry => {
@@ -782,14 +779,25 @@ function DataService($http, $q, _, jsonapiUtils) {
       if(typeof keys === 'string') {
         keys = [keys];
       }
-      var promises = keys.map(
-        key => $http.get('/api/v1/' + key)
+      var urlsWithQs = keys.map(key => {
+        const bits = key.split('?');
+        let entry = {
+          url: bits[0]
+        };
+        if(bits.length > 1) {
+          entry.qs = bits[1];
+        }
+        return entry;
+      });
+      console.log(urlsWithQs);
+      var promises = urlsWithQs.map(
+        entry => $http.get('/api/v1/' + entry.url + (entry.qs ? ('?' + entry.qs) : ''))
           .then(response => (response.data.data))
       );
       return $q.all(promises)
       .then(results => results.reduce(
         (dataSet, dataItems, index) => {
-          dataSet[keys[index]] = jsonapiUtils.unmapRecords(dataItems);
+          dataSet[urlsWithQs[index].url] = jsonapiUtils.unmapRecords(dataItems);
           return dataSet;
         }, {}
       ));
