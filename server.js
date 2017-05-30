@@ -104,12 +104,14 @@ function passLog(label) {
 
 app.post('/api/v1/sync/repos/:accountId', (req, res) => {
   let apiStrategy;
+  let apiAccount;
   let toto;
   objWrapper.findById('accounts', req.params.accountId)
   .then(account => {
     if(account.userId !== req.jwt.userId) {
       return res.status(403).json({ error: "You don't have access rights to access this resource" });
     }
+    apiAccount = account;
 toto = account.name.replace('@', '-');
     apiStrategy = repoApis[account.type];
     return objWrapper.findById('api_tokens', account.tokenId);
@@ -117,12 +119,35 @@ toto = account.name.replace('@', '-');
   .then(token => apiStrategy.setToken(token.access_token))
   .then(() => apiStrategy.getProjects())
   .then(projectsRes => {
-    console.log(projectsRes);
+    // console.log(projectsRes);
     const dump = __dirname + '/repos-' + toto + '-' + (new Date()).getTime() + '.json';
     fs.writeFileSync(dump, JSON.stringify(projectsRes));
-    res.json({
-      projectsRes
-    });
+
+    Promise.map(projectsRes, entry => {
+      console.log('\n# ' + toto, entry);
+      const { uuid, name, fullName, htmlUrl } = entry;
+      const attrs = {
+        userId: req.jwt.userId,
+        accountId: apiAccount.id,
+        remoteUuid: uuid,
+        name,
+        fullName,
+        htmlUrl
+      };
+      return objWrapper.findBy('remoteprojects', {
+        remoteUuid: uuid
+      })
+      .then(existing => ( existing ?
+        Object.assign( existing, { isNew: false } ) :
+        objWrapper.create('remoteprojects', attrs)
+        .then(record => Object.assign( record, { isNew: true } ))
+      ) );
+    })
+    .then(records => {
+      res.json({
+        records
+      });
+    })
   });
 
 });

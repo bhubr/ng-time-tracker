@@ -203,4 +203,21 @@ CREATE TABLE `api_tokens` (
 ALTER TABLE `api_tokens`
   ADD CONSTRAINT `api_tokens_ibfk_1` FOREIGN KEY (`accountId`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
---
+-- 05.30.2017
+
+CREATE TABLE `remoteprojects` (
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `userId` int(11) NOT NULL,
+  `accountId` int(11) NOT NULL,
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `remoteUuid` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fullName` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `htmlUrl` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+ALTER TABLE `remoteprojects`
+  ADD CONSTRAINT `remoteprojects_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `remoteprojects_ibfk_2` FOREIGN KEY (`accountId`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
