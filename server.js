@@ -161,6 +161,7 @@ app.post('/api/v1/got/:provider',
 
   // Fire request, store parsed JSON response
   chain(request(options))
+  .then(passLog('## server response from ' + provider))
   .then(response => JSON.parse(response))
   .set('token')
   // Setup the provider strategy with freshly got access token
