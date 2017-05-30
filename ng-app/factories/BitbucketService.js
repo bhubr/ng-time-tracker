@@ -1,17 +1,18 @@
 BitbucketService.$inject = ['$rootScope', '$window', '$http', 'repoApis'];
 
 function BitbucketService($rootScope, $window, $http, repoApis) {
-  var apiUrl = 'https://api.bitbucket.org/2.0';
+  // var apiUrl = 'https://api.bitbucket.org/2.0';
+  var authorizeUrls = {
+    bitbucket: "https://bitbucket.org/site/oauth2/authorize",
+    github: "https://github.com/login/oauth/authorize"
+  }
+  console.log('BitbucketService providers', $rootScope.providers);
   var service = {
-    login: function () {
-      var client_id = $rootScope.providers.bitbucket;
-      console.log('BitbucketService', client_id);
-      console.log('login');
-      var url = "https://bitbucket.org/site/oauth2/authorize/?client_id=" + client_id +
-        "&response_type=code";
-      // var bbPopup = window.open(url, "bbPopup");
+    authorize: function (provider) {
+      var clientId = $rootScope.providers[provider];
+      var authorizeUrl = authorizeUrls[provider];
+      var url = authorizeUrl + "?client_id=" + clientId + "&response_type=code";
       $window.location.href = url;
-      // repoApis.getUsername();
     },
 
     getRepos: function() {

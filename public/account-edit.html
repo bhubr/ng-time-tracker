@@ -1,12 +1,3 @@
-<form ng-submit="requestAuth()">
-  <div class="form-group">
-    <label for="selectProvider" translate>SOURCE_CODE_HOST</label>
-    <select id="selectProvider" class="form-control">
-      <option value="github">GitHub</option>
-      <option value="gitlab">GitLab</option>
-      <option value="bitbucket">BitBucket</option>
-    </select>
-  </div>
-  <button type="submit" class="btn btn-default" translate>REQUEST_AUTHORIZATION</button>
-</form>
-
+<button type="button" class="btn btn-default" ng-click="requestAuth('bitbucket')">BitBucket {{'REQUEST_AUTHORIZATION' | translate}}</button>
+<button type="button" class="btn btn-default" ng-click="requestAuth('github')">GitHub {{'REQUEST_AUTHORIZATION' | translate}}</button>
+<button type="button" class="btn btn-default" ng-click="requestAuth('gitlab')">GitLab {{'REQUEST_AUTHORIZATION' | translate}}</button>

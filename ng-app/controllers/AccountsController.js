@@ -38,8 +38,8 @@ function AccountsController($rootScope, $scope, $http, $location, $routeParams, 
 
   }
 
-  $scope.requestAuth = function() {
-    bitbucketService.login();
+  $scope.requestAuth = function(provider) {
+    bitbucketService.authorize(provider);
   }
 
   $scope.syncRepos = function(accountId) {
