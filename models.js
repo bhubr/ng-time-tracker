@@ -61,7 +61,13 @@ module.exports = {
 
   },
   projects: {
-
+    relationships: {
+      owner: {
+        table: 'users',
+        type: 'belongsTo',
+        reverse: 'timers'
+      }
+    }
   },
   timers: {
     relationships: {
@@ -125,6 +131,11 @@ module.exports = {
     relationships: {
       timers: {
         table: 'timers',
+        type: 'hasMany',
+        reverse: 'owner'
+      },
+      projects: {
+        table: 'projects',
         type: 'hasMany',
         reverse: 'owner'
       },
