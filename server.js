@@ -98,15 +98,17 @@ function passLog(label) {
 }
 
 app.post('/api/v1/sync/repos/:accountId', (req, res) => {
+  let apiStrategy;
   objWrapper.findById('accounts', req.params.accountId)
   .then(account => {
     if(account.userId !== req.jwt.userId) {
       return res.status(403).json({ error: "You don't have access rights to access this resource" });
     }
+    apiStrategy = repoApis[account.type];
     return objWrapper.findById('api_tokens', account.tokenId);
   })
-  .then(token => repoApis.bitbucket.setToken(token.access_token))
-  .then(() => repoApis.bitbucket.getProjects())
+  .then(token => apiStrategy.setToken(token.access_token))
+  .then(() => apiStrategy.getProjects())
   .then(projectsRes => {
     console.log(projectsRes);
     res.json({
