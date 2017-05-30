@@ -157,6 +157,7 @@ app.post('/api/v1/got/:provider', (req, res) => {
     return getToken(account.id)
     .then(tokenRecord => {
       mustCreateToken = tokenRecord === false;
+      console.log('mustCreateToken', mustCreateToken ? 'yes' : 'no');
       let tokenAttrs = {
         access_token: token.access_token,
         refresh_token: token.refresh_token
@@ -169,6 +170,7 @@ app.post('/api/v1/got/:provider', (req, res) => {
       return objWrapper.create('api_tokens', tokenAttrs);
     });
   })
+  .then(passLog('## tokenRecord'))
 
     // console.log('## User', user);
     // repoApis.bitbucket.getProjects()
@@ -189,9 +191,11 @@ app.post('/api/v1/got/:provider', (req, res) => {
   // .then(tokenAttrs => objWrapper.create('api_tokens', tokenAttrs))
   .set('tokenRecord')
   .get(data => {
-    res.json(Object.assign(data, {
+    const payload = Object.assign(data, {
       mustCreateAccount, mustCreateToken
-    }));    
+    });
+    console.log('## return payload', payload);
+    res.json(payload);
   })
   .catch(err => {
     console.log(err);
