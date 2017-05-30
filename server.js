@@ -66,7 +66,7 @@ app.use('/api/v1', middlewares.jsonApi);
 
 app.get('/api/v1/client-ids', (req, res) => {
   let id = 0;
-  let clientIds = [];
+  let clients = [];
   _.forOwn(config.OAuthClients, (params, provider) => {
     id++;
     let client = {
@@ -80,10 +80,10 @@ app.get('/api/v1/client-ids', (req, res) => {
     if(params.redirectUri) {
       client.attributes['redirect-uri'] = params.redirectUri;
     }
-    clientIds.push(client);
+    clients.push(client);
   });
   // res.json(clientIds);
-  res.jsonApi(clientIds);
+  res.jsonApi(clients);
 });
 
 function getAccount(userId, provider, username) {
@@ -140,7 +140,7 @@ app.post('/api/v1/got/:provider',
   //   * From config: Client ID (key) and secret for provider
   const { provider } = req.params;
   const { userId } = req.jwt;
-  const params = config.clientIds[provider];
+  const params = config.OAuthClients[provider];
 
   // Encode provider credentials to base64
   const rawCredentials = params.clientId + ':' + params.secret;
