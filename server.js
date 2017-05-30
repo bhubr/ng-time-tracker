@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const fs = require('fs');
 const chain = require('store-chain');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -103,11 +104,13 @@ function passLog(label) {
 
 app.post('/api/v1/sync/repos/:accountId', (req, res) => {
   let apiStrategy;
+  let toto;
   objWrapper.findById('accounts', req.params.accountId)
   .then(account => {
     if(account.userId !== req.jwt.userId) {
       return res.status(403).json({ error: "You don't have access rights to access this resource" });
     }
+toto = account.name.replace('@', '-');
     apiStrategy = repoApis[account.type];
     return objWrapper.findById('api_tokens', account.tokenId);
   })
@@ -115,6 +118,8 @@ app.post('/api/v1/sync/repos/:accountId', (req, res) => {
   .then(() => apiStrategy.getProjects())
   .then(projectsRes => {
     console.log(projectsRes);
+    const dump = __dirname + '/repos-' + toto + '-' + (new Date()).getTime() + '.json';
+    fs.writeFileSync(dump, JSON.stringify(projectsRes));
     res.json({
       projectsRes
     });
