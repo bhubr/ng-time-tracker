@@ -23,7 +23,8 @@
       },
       "gitlab": {
         "clientId": "gitlab_client_id",
-        "secret": "gitlab_secret"
+        "secret": "gitlab_secret",
+        "redirectUri": "gitlab_authorize_needs_callback_uri"
       }
     }
   }

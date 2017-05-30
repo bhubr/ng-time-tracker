@@ -153,34 +153,44 @@ app.post('/api/v1/got/:provider',
       uri: 'https://bitbucket.org/site/oauth2/access_token',
       extract: function(response) {
         return JSON.parse(response);
+      },
+      form: {},
+      headers: {
+        Authorization: 'Basic ' + encodedCredentials
       }
     },
     github: {
       uri: 'https://github.com/login/oauth/access_token',
       extract: function(response) {
         return querystring.parse(response);
-      }
+      },
+      form: {},
+      headers: {}
     },
     gitlab: {
       uri: 'https://gitlab.com/oauth/token',
       extract: function(response) {
         return JSON.parse(response);
-      }
+      },
+      form: {
+        client_id: params.clientId,
+        client_secret: params.secret,
+        redirect_uri: params.redirectUri
+      },
+      headers: {}
     }
   };
 
-  const { uri } = paramsPerProvider[provider];
+  const { uri, headers, form } = paramsPerProvider[provider];
   // Prepare request to provider's access token route
   const options = {
     method: 'POST',
     uri,
-    form: {
+    form: Object.assign(form, {
       grant_type: 'authorization_code',
       code: req.body.code
-    },
-    headers: {
-      Authorization: 'Basic ' + encodedCredentials
-    }
+    }),
+    headers
   };
 
   // Fire request, store parsed JSON response
