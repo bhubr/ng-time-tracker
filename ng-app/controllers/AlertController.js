@@ -2,8 +2,8 @@ AlertController.$inject = ['$rootScope', '$scope', '$timeout'];
 
 // https://www.liquidint.com/blog/angularjs-and-instagram-a-single-page-application-with-oauth2/
 function AlertController($rootScope, $scope, $timeout) {
-  $rootScope.$on('alert', data => {
-    console.log('received alert', data);
+  $rootScope.$on('alert', (event, data) => {
+    console.log('received alert', event, data);
     $scope.alertClass = 'alert-' + data.alertClass;
     $scope.message = data.message;
     $timeout(() => {
