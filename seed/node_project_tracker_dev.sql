@@ -221,3 +221,8 @@ CREATE TABLE `remoteprojects` (
 ALTER TABLE `remoteprojects`
   ADD CONSTRAINT `remoteprojects_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `remoteprojects_ibfk_2` FOREIGN KEY (`accountId`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `projects` ADD COLUMN `ownerId` int(11) NOT NULL;
+
+ALTER TABLE `projects`
+  ADD CONSTRAINT `projects_ibfk_1` FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
