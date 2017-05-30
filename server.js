@@ -52,6 +52,7 @@ process.on('uncaughtException', function (err) {
  * Setup Express
  */
 const app = express();
+const Promise = require('bluebird');
 const querystring = require('querystring');
 const request = require('request-promise');
 const http = require('http').Server(app);
@@ -119,9 +120,9 @@ toto = account.name.replace('@', '-');
   .then(token => apiStrategy.setToken(token.access_token))
   .then(() => apiStrategy.getProjects())
   .then(projectsRes => {
-    // console.log(projectsRes);
-    const dump = __dirname + '/repos-' + toto + '-' + (new Date()).getTime() + '.json';
-    fs.writeFileSync(dump, JSON.stringify(projectsRes));
+    console.log('\n\n###### RETURNED FROM REPOS QUERY\n', projectsRes);
+    // const dump = __dirname + '/repos-' + toto + '-' + (new Date()).getTime() + '.json';
+    // fs.writeFileSync(dump, JSON.stringify(projectsRes));
 
     Promise.map(projectsRes, entry => {
       console.log('\n# ' + toto, entry);
@@ -148,6 +149,10 @@ toto = account.name.replace('@', '-');
         records
       });
     })
+  })
+  .catch(err => {
+    console.log('\n## Fatal', err);
+    res.json({ error: err.message });
   });
 
 });
