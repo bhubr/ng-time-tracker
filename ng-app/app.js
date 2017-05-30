@@ -100,19 +100,6 @@ app
 .factory('jsonapiUtils', require('./factories/JsonapiUtils'))
 .factory('tokenCheckInterceptor', require('./factories/TokenCheckInterceptor'))
 .factory('bitbucketService', require('./factories/BitbucketService'))
-.service('notificationService', function() {
-
-  console.log('init notificationService');
-
-  var socket = io();
-  socket.on('idle', function(idleTime){
-    console.log(idleTime);
-    notifyMe(idleTime);
-  });
-  socket.on('server ready', function(msg){
-    console.log(msg);
-  });
-})
 .config(['$httpProvider', function($httpProvider) {  
     $httpProvider.interceptors.push('tokenCheckInterceptor');
 }])
@@ -127,10 +114,11 @@ app
 .controller('timerCtrl', require('./controllers/TimersController'))
 .controller('reposCtrl', require('./controllers/ReposController'))
 .filter('formatTimer', require('./filters/formatTimer'))
-.run(['translationService', 'authService',
-  function(translationService, authService) {
+.run(['translationService', 'authService', 'notificationService',
+  function(translationService, authService, notificationService) {
     translationService.init();
     authService.init();
+    notificationService.init();
   }
 ])
 

@@ -855,12 +855,29 @@ module.exports = JsonapiUtils;
 NotificationService.$inject = ['$rootScope'];
 
 function NotificationService($rootScope) {
+  
+  function notify(alertClass, message) {
+    $rootScope.$emit('alert', {
+      alertClass, message
+    });
+  }
+
+  function init() {
+    console.log('init notificationService');
+
+    var socket = io();
+    socket.on('idle', function(idleTime){
+      console.log(idleTime);
+      notifyMe(idleTime);
+    });
+    socket.on('server ready', function(msg){
+      console.log(msg);
+    });
+  }
+
   return {
-    notify: function(alertClass, message) {
-      $rootScope.$emit('alert', {
-        alertClass, message
-      });
-    }
+    notify,
+    init
   }
 }
 
@@ -1213,19 +1230,6 @@ app
 .factory('jsonapiUtils', __webpack_require__(134))
 .factory('tokenCheckInterceptor', __webpack_require__(137))
 .factory('bitbucketService', __webpack_require__(132))
-.service('notificationService', function() {
-
-  console.log('init notificationService');
-
-  var socket = io();
-  socket.on('idle', function(idleTime){
-    console.log(idleTime);
-    notifyMe(idleTime);
-  });
-  socket.on('server ready', function(msg){
-    console.log(msg);
-  });
-})
 .config(['$httpProvider', function($httpProvider) {  
     $httpProvider.interceptors.push('tokenCheckInterceptor');
 }])
@@ -1240,10 +1244,11 @@ app
 .controller('timerCtrl', __webpack_require__(130))
 .controller('reposCtrl', __webpack_require__(126))
 .filter('formatTimer', __webpack_require__(139))
-.run(['translationService', 'authService',
-  function(translationService, authService) {
+.run(['translationService', 'authService', 'notificationService',
+  function(translationService, authService, notificationService) {
     translationService.init();
     authService.init();
+    notificationService.init();
   }
 ])
 
