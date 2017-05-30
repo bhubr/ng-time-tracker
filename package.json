@@ -13,7 +13,7 @@
     "bookshelf": "^0.10.3",
     "chokidar": "^1.6.1",
     "code-repositories-api-angular": "0.0.33",
-    "code-repositories-api-common": "0.0.41",
+    "code-repositories-api-common": "0.0.42",
     "code-repositories-api-node": "0.0.1",
     "express": "^4.14.1",
     "jsonapi-express-backend": "^0.4.5",
@@ -23,8 +23,8 @@
     "mysql": "^2.13.0",
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
-    "store-chain": "^2.0.3",
-    "socket.io": "^1.7.3"
+    "socket.io": "^1.7.3",
+    "store-chain": "^2.0.3"
   },
   "devDependencies": {
     "angular-jwt": "^0.1.9",

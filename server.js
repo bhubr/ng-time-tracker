@@ -115,7 +115,17 @@ app.post('/api/v1/sync/repos/:accountId', (req, res) => {
 
 });
 
-app.post('/api/v1/got/:provider', (req, res) => {
+function checkProvider(req, res, next) {
+  const { provider } = req.params;
+  if(['bitbucket', 'github', 'gitlab'].indexOf(provider) === -1) {
+    return res.status(404).json({ error: 'Not found (unknown provider: ' + provider + ')' });
+  }
+  next();
+}
+
+app.post('/api/v1/got/:provider', 
+  checkProvider,
+  (req, res) => {
 
   // Get params
   //   * From request: provider (bitbucket, github, etc.)
@@ -150,7 +160,8 @@ app.post('/api/v1/got/:provider', (req, res) => {
   .then(response => JSON.parse(response))
   .set('token')
   // Setup the provider strategy with freshly got access token
-  .then(token => repoApis.bitbucket.setToken(token.access_token))
+  .then(token => repoApis[provider].setToken(token.access_token))
+  .then(passLog('## setToken / getUser result'))
   .set('apiUser')
   .then(({ username }) => {
     return getAccount(userId, provider, username)
