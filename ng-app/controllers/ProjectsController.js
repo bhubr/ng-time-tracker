@@ -23,7 +23,7 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
   $scope.projects = data.projects;
   $scope.project = angular.copy(blankProject);
   $scope.colors = flatUiColors;
-
+  $scope.remoteProjects = data.remoteprojects;
 
   /*-------------------*
    | CRUD

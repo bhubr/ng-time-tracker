@@ -138,11 +138,12 @@ function TranslationConfig($translateProvider) {
     PROJECT_LIST: 'Project list',
     PROJECT_NAME: 'Project name',
     PROJECT_DESC: 'Project description',
+    PROJECT_COLORS: 'Color (colors by <a href="https://flatuicolors.com/" target="_blank">https://flatuicolors.com/</a>)',
+    PROJECT_REMOTE: 'Associated remote repo',
     NEW: 'New',
     CREATE: 'Create',
     UPDATE: 'Update',
-    DELETE: 'Delete',
-    PROJECT_COLORS: 'Color (colors by <a href="https://flatuicolors.com/" target="_blank">https://flatuicolors.com/</a>)'
+    DELETE: 'Delete'
   });
   $translateProvider.preferredLanguage('en');
 }
@@ -334,7 +335,7 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
   $scope.projects = data.projects;
   $scope.project = angular.copy(blankProject);
   $scope.colors = flatUiColors;
-
+  $scope.remoteProjects = data.remoteprojects;
 
   /*-------------------*
    | CRUD
