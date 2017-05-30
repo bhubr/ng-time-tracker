@@ -731,7 +731,8 @@ function BitbucketService($rootScope, $window, $http, repoApis) {
   // var apiUrl = 'https://api.bitbucket.org/2.0';
   var authorizeUrls = {
     bitbucket: "https://bitbucket.org/site/oauth2/authorize",
-    github: "https://github.com/login/oauth/authorize"
+    github: "https://github.com/login/oauth/authorize",
+    gitlab: "https://gitlab.com/oauth/authorize"
   }
   console.log('BitbucketService providers', $rootScope.providers);
   var service = {

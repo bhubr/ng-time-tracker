@@ -64112,9 +64112,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
    */
   var GithubStrategy = (function() {
 
-    function Github(cred, requestStrategy) {
+    function Github(requestStrategy) {
       this.requestStrategy = requestStrategy;
-      this.username = cred.username;
+      // this.username = cred.username;
       this.baseUri = 'https://api.github.com';
       // this.options = {
       //   uri: 'https://api.github.com',
@@ -64126,9 +64126,41 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // };
     }
 
+    Github.prototype.setToken = function(token) {
+      var self = this;
+      this.token = token;
+      this.headers = {
+        Authorization: 'Bearer ' + this.token,
+        'User-Agent': 'bhubr.titang.server'
+      };
+      this.setPath('/user')
+      console.log('Github query logged-in user');
+      return this.requestStrategy.get()
+      .then(user => {
+        console.log('GET /user response', user);
+        self.username = user.username;
+        return { username: user.login };
+      })
+      .catch(err => {
+        console.error('GET /user failed', err);
+        throw err;
+      })
+    }
+
     Github.prototype.setPath = function(relativePath) {
-      this.options.uri = this.baseUri + relativePath;
+      // this.options.uri = this.baseUri + relativePath;
+      if(this.token === undefined) {
+        throw new Error('token undefined in Bitbucket strategy');
+      }
+      this.requestStrategy.setup(this.baseUri, relativePath, {
+        Authorization: 'Bearer ' + this.token,
+        'User-Agent': 'bhubr.titang.server'
+      })
+      // this.requestStrategy.setPath(relativePath);
     };
+    // Github.prototype.setPath = function(relativePath) {
+    //   this.options.uri = this.baseUri + relativePath;
+    // };
 
     Github.prototype.get = function(relativePath) {
       return this.requestStrategy.get();
@@ -64136,7 +64168,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
     Github.prototype.getProjects = function() {
       this.setPath('/user/repos');
-      return this.get();
+      return this.requestStrategy.get();
     };
 
     Github.prototype.getCommitsFor = function(repoName) {
