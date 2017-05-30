@@ -742,7 +742,7 @@ function BitbucketService($rootScope, $window, $http, repoApis) {
       var clientId = providerParams.clientId;
       var authorizeUrl = authorizeUrls[provider];
       var url = authorizeUrl + "?client_id=" + clientId + "&response_type=code" +
-        providerParams.redirectUri ? ('&redirect_uri=' + providerParams.redirectUri) : '';
+        (providerParams.redirectUri ? ('&redirect_uri=' + providerParams.redirectUri) : '');
       $window.location.href = url;
     },
 
