@@ -30,7 +30,7 @@ function DashboardController($rootScope, $scope, _, moment, dataService, optionS
       post.createdAt.substr(0, 10) === today;
   });
   if(dailyPost === undefined) {
-    dataService.create('dailyposts', {
+    dataService.create('daily-posts', {
       markdown: '### Daily post for ' + today
     }, {
       user: { id: $rootScope.currentUser.userId, type: 'users' }

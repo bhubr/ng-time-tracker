@@ -47,7 +47,7 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     controller : "dashboardCtrl",
     resolve: {
       data: ['dataService', function(dataService) {
-        return dataService.get(['projects', 'options', 'timers', 'dailyposts', 'client-ids']);
+        return dataService.get(['projects', 'options', 'timers', 'daily-posts', 'client-ids']);
       }]
     }
   })
@@ -92,7 +92,7 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
         .then(response => (response.data));
       }],
       data: ['dataService', function(dataService) {
-        return dataService.get(['projects', 'remoteprojects']);
+        return dataService.get(['projects', 'remote-projects']);
       }]
     }
   })
@@ -273,7 +273,7 @@ function DashboardController($rootScope, $scope, _, moment, dataService, optionS
       post.createdAt.substr(0, 10) === today;
   });
   if(dailyPost === undefined) {
-    dataService.create('dailyposts', {
+    dataService.create('daily-posts', {
       markdown: '### Daily post for ' + today
     }, {
       user: { id: $rootScope.currentUser.userId, type: 'users' }
@@ -332,10 +332,11 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
    *-------------------*
    |
    */
+console.log('ProjectsController', data);
   $scope.projects = data.projects;
   $scope.project = angular.copy(blankProject);
   $scope.colors = flatUiColors;
-  $scope.remoteProjects = data.remoteprojects;
+  $scope.remoteProjects = data['remote-projects'];
 
   /*-------------------*
    | CRUD
@@ -347,7 +348,7 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
    * Create a project
    */
   $scope.createProject = function() {
-    const { name, description, color } = $scope.project;
+    const { name, description, color, remoteProjectId } = $scope.project;
     $scope.newProject();
     
     $http.post("/api/v1/projects",
@@ -355,7 +356,7 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
       attributes: { name, description, color },
       relationships: {
         owner: { data: { type: 'users', id: $rootScope.currentUser.userId } },
-        'remote-project': { data: { type: 'remoteprojects', id: remoteProjectId } }
+        'remote-project': { data: { type: 'remote-projects', id: remoteProjectId } }
       }
     } } )
     .then(function(response) {
