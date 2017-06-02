@@ -47,7 +47,7 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     controller : "dashboardCtrl",
     resolve: {
       data: ['dataService', function(dataService) {
-        return dataService.get(['projects', 'options', 'timers', 'dailyposts', 'client-ids']);
+        return dataService.get(['projects', 'options', 'timers', 'daily-posts', 'client-ids']);
       }]
     }
   })
@@ -90,6 +90,9 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
       flatUiColors: ['$http', function($http) {
         return $http.get('/flat-ui-colors.json')
         .then(response => (response.data));
+      }],
+      data: ['dataService', function(dataService) {
+        return dataService.get(['projects', 'remote-projects']);
       }]
     }
   })
@@ -135,11 +138,12 @@ function TranslationConfig($translateProvider) {
     PROJECT_LIST: 'Project list',
     PROJECT_NAME: 'Project name',
     PROJECT_DESC: 'Project description',
+    PROJECT_COLORS: 'Color (colors by <a href="https://flatuicolors.com/" target="_blank">https://flatuicolors.com/</a>)',
+    PROJECT_REMOTE: 'Associated remote repo',
     NEW: 'New',
     CREATE: 'Create',
     UPDATE: 'Update',
-    DELETE: 'Delete',
-    PROJECT_COLORS: 'Color (colors by <a href="https://flatuicolors.com/" target="_blank">https://flatuicolors.com/</a>)'
+    DELETE: 'Delete'
   });
   $translateProvider.preferredLanguage('en');
 }
@@ -269,7 +273,7 @@ function DashboardController($rootScope, $scope, _, moment, dataService, optionS
       post.createdAt.substr(0, 10) === today;
   });
   if(dailyPost === undefined) {
-    dataService.create('dailyposts', {
+    dataService.create('daily-posts', {
       markdown: '### Daily post for ' + today
     }, {
       user: { id: $rootScope.currentUser.userId, type: 'users' }
@@ -306,29 +310,53 @@ module.exports = MainController;
 /***/ 125:
 /***/ (function(module, exports) {
 
-ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodash', 'flatUiColors', 'jsonapiUtils', 'notificationService'];
+ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodash', 'jsonapiUtils', 'notificationService', 'flatUiColors', 'data'];
 
- function ProjectsController($scope, $rootScope, $window, $http, _, flatUiColors, jsonapiUtils, notificationService) {
+ function ProjectsController($scope, $rootScope, $window, $http, _, jsonapiUtils, notificationService, flatUiColors, data) {
 
-  $scope.projects = [];
-  var newProject = {
+
+  /*-------------------*
+   | Private variables
+   *-------------------*
+   |
+   */
+  var blankProject = {
     name: '',
     description: '',
     color: '#fff'
   };
-  $scope.project = angular.copy(newProject);
-  $scope.colors = flatUiColors;
-  console.log($scope.colors);
 
+
+  /*-------------------*
+   | Scope variables
+   *-------------------*
+   |
+   */
+console.log('ProjectsController', data);
+  $scope.projects = data.projects;
+  $scope.project = angular.copy(blankProject);
+  $scope.colors = flatUiColors;
+  $scope.remoteProjects = data['remote-projects'];
+
+  /*-------------------*
+   | CRUD
+   *-------------------*
+   |
+   */
+
+  /**
+   * Create a project
+   */
   $scope.createProject = function() {
-    const { name, description, color } = $scope.project;
+    const { name, description, color, remoteProjectId } = $scope.project;
     $scope.newProject();
     
     $http.post("/api/v1/projects",
     { data: { type: 'projects',
       attributes: { name, description, color },
       relationships: {
-        owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
+        owner: { data: { type: 'users', id: $rootScope.currentUser.userId } },
+        'remote-project': { data: { type: 'remote-projects', id: remoteProjectId } }
       }
     } } )
     .then(function(response) {
@@ -341,10 +369,18 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
     });
   }
 
+  /**
+   * Update a project
+   */
   $scope.updateProject = function(id) {
-    const { name, description, color } = $scope.project;
+    const { name, description, color, remoteProjectId } = $scope.project;
     $http.put("/api/v1/projects/" + id,
-    { data: { type: 'projects', id, attributes: { name, description, color } } } )
+    { data: { type: 'projects', id,
+      attributes: { name, description, color } },
+      relationships: {
+        'remote-project': { data: { type: 'remoteprojects', id: remoteProjectId } }
+      }
+    } )
     .then(function(response) {
       const existingProject = _.find($scope.projects, { id });
       const indexInProjects = $scope.projects.indexOf(existingProject);
@@ -356,16 +392,10 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
       notificationService.notify('danger', 'Project could not be updated: ' + err);
     });
   }
-  $scope.pickColor = function( evt ) {
-    $scope.project.color = $( evt.target ).data( 'color' );
-  }
 
-  $scope.selectProject = function( id ) {
-    const project = _.find($scope.projects, { id });
-    console.log('select project', id, project);
-    $scope.project = angular.copy(project);
-  }
-
+  /**
+   * Delete a project
+   */
   $scope.deleteProject = function( project ) {
     if($window.confirm('Are you sure you want to delete "' + project.name + '"?')) {
       $http.delete('/api/v1/projects/' + project.id)
@@ -379,19 +409,35 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
     }
   }
 
-  $scope.newProject = function() {
-    $scope.project = angular.copy(newProject);
+
+  /*-------------------*
+   | Misc
+   *-------------------*
+   |
+   */
+
+  /**
+   * Assign a color to project
+   */
+  $scope.pickColor = function( evt ) {
+    $scope.project.color = $( evt.target ).data( 'color' );
   }
 
-  // Get existing projects
-  $http.get("/api/v1/projects")
-  .then(function(response) {
-    // $scope.projects = response.data.data.map( mapAttributes );
-    $scope.projects = jsonapiUtils.unmapRecords(response.data.data);
-  })
-  .catch(err => {
-    $scope.statustext = err;
-  } );
+  /**
+   * Select project in list
+   */
+  $scope.selectProject = function( id ) {
+    const project = _.find($scope.projects, { id });
+    console.log('select project', id, project);
+    $scope.project = angular.copy(project);
+  }
+
+  /**
+   * Reset project
+   */
+  $scope.newProject = function() {
+    $scope.project = angular.copy(blankProject);
+  }
 
 }
 

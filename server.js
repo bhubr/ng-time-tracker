@@ -7,8 +7,8 @@ const configs = require(__dirname + '/config.json');
 const env = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
 const config = configs[env];
 const models = require('./models');
-const { router, middlewares, queryBuilder, queryAsync } = require('jsonapi-express-backend')(__dirname, config, models);
-// const { router, middlewares, queryBuilder, queryAsync } = require('../jsonapi-reference/index')(__dirname, config, models);
+// const { router, middlewares, queryBuilder, queryAsync } = require('jsonapi-express-backend')(__dirname, config, models);
+const { router, middlewares, queryBuilder, queryAsync } = require('../jsonapi-express-backend/index')(__dirname, config, models);
 
 const port = config.port || 3001;
 

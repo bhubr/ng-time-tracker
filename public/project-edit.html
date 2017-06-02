@@ -16,12 +16,21 @@
         <textarea ng-model="project.description" class="form-control" id="inputProjectDesc" placeholder="{{ 'PROJECT_DESC' | translate }}"></textarea>
       </div>
       <div class="form-group">
+        <label for="inputProjectRemote" translate>PROJECT_REMOTE</label>
+        <select id="inputProjectRemote" class="form-control" data-ng-model="project.remoteProjectId"
+            data-ng-options="remote.id as remote.fullName for remote in remoteProjects">
+          <option value="0">default...</option>
+        </select>
+      </div>
+      <div class="form-group">
         <label for="inputProjectColor" translate>PROJECT_COLORS</label>
         <input ng-model="project.color" id="inputProjectColor" class="form-control" style="background-color: {{ project.color }}; margin-bottom: 8px;" />
         <div class="row" style="margin: 0 0;">
           <div ng-click="pickColor($event)" data-color="{{ c.color }}" class="col-md-4 col-sm-6 col-xs-6" ng-repeat="c in colors" style="background-color: {{ c.color }}">{{ c.name }}</div>
         </div>
       </div>
+
+      
       <button ng-if="project.id" type="button" class="btn btn-primary" ng-click="updateProject(project.id)" translate>UPDATE</button>
       <button ng-if="! project.id" type="button" class="btn btn-primary" ng-click="createProject()" translate>CREATE</button>
     </form>

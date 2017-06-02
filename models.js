@@ -57,22 +57,36 @@ var timer = {
 // module.exports = { Project, Timer, Option };
 
 module.exports = {
-  options: {
-
+  option: {
+    relationships: {}
   },
-  projects: {
+  project: {
     relationships: {
       owner: {
-        table: 'users',
+        model: 'user',
         type: 'belongsTo',
         reverse: 'timers'
+      },
+      remoteProject: {
+        model: 'remoteProject',
+        type: 'belongsTo',
+        reverse: 'localProject'
       }
     }
   },
-  timers: {
+  remoteProject: {
+    relationships: {
+      localProject: {
+        model: 'project',
+        type: 'belongsTo',
+        reverse: 'remoteProject'
+      }
+    }
+  },
+  timer: {
     relationships: {
       owner: {
-        table: 'users',
+        model: 'user',
         type: 'belongsTo',
         reverse: 'timers'
       }
@@ -118,29 +132,29 @@ module.exports = {
       }
     }
   },
-  dailyposts: {
+  dailyPost: {
     relationships: {
       user: {
-        table: 'users',
+        model: 'user',
         type: 'belongsTo',
         reverse: 'dailyposts'
       }
     }
   },
-  users: {
+  user: {
     relationships: {
       timers: {
-        table: 'timers',
+        model: 'timer',
         type: 'hasMany',
         reverse: 'owner'
       },
       projects: {
-        table: 'projects',
+        model: 'project',
         type: 'hasMany',
         reverse: 'owner'
       },
       dailyposts: {
-        table: 'dailyposts',
+        model: 'dailyPost',
         type: 'hasMany',
         reverse: 'user'
       }

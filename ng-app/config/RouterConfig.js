@@ -15,7 +15,7 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
     controller : "dashboardCtrl",
     resolve: {
       data: ['dataService', function(dataService) {
-        return dataService.get(['projects', 'options', 'timers', 'dailyposts', 'client-ids']);
+        return dataService.get(['projects', 'options', 'timers', 'daily-posts', 'client-ids']);
       }]
     }
   })
@@ -58,6 +58,9 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
       flatUiColors: ['$http', function($http) {
         return $http.get('/flat-ui-colors.json')
         .then(response => (response.data));
+      }],
+      data: ['dataService', function(dataService) {
+        return dataService.get(['projects', 'remote-projects']);
       }]
     }
   })
