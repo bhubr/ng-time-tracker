@@ -374,11 +374,20 @@ console.log('ProjectsController', data);
    */
   $scope.updateProject = function(id) {
     const { name, description, color, remoteProjectId } = $scope.project;
+    // console.log('updateProject', name, description, color, remoteProjectId, { data: { type: 'projects', id,
+    //   attributes: { name, description, color } },
+    //   relationships: {
+    //     'remote-project': { data: { type: 'remote-projects', id: remoteProjectId } }
+    //   }
+    // });
     $http.put("/api/v1/projects/" + id,
-    { data: { type: 'projects', id,
-      attributes: { name, description, color } },
-      relationships: {
-        'remote-project': { data: { type: 'remoteprojects', id: remoteProjectId } }
+    { data:
+      {
+        type: 'projects', id,
+        attributes: { name, description, color },
+        relationships: {
+          'remote-project': { data: { type: 'remote-projects', id: remoteProjectId } }
+        }
       }
     } )
     .then(function(response) {
