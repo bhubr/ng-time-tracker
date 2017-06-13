@@ -3,6 +3,171 @@ webpackJsonp([0],{
 /***/ 118:
 /***/ (function(module, exports) {
 
+ProjectEditorController.$inject = ['$rootScope', '$scope', '$http', '$window', 'lodash', 'jsonapiUtils', 'notificationService'];
+
+function ProjectEditorController($rootScope, $scope, $http, $window, _, jsonapiUtils, notificationService) {
+  const ctrl = this;
+  console.log('ProjectEditorController scope', $scope)
+
+  // this.$onChanges = function(changesObj) {
+  //   console.log('$onChanges', changesObj);
+  // };
+
+  /**
+   * Create a project
+   */
+  $scope.createProject = function(project) {
+    // console.log('createProject', this, this.project);
+    const { name, description, color, remoteProjectId } = project;
+    // $scope.newProject();
+    
+    $http.post("/api/v1/projects",
+    { data: { type: 'projects',
+      attributes: { name, description, color },
+      relationships: {
+        owner: { data: { type: 'users', id: $rootScope.currentUser.userId } },
+        'remote-project': { data: { type: 'remote-projects', id: remoteProjectId } }
+      }
+    } } )
+    .then(function(response) {
+      const newRecord = jsonapiUtils.unmapRecord( response.data.data );
+      ctrl.onCreate(newRecord);
+      // $scope.projects.push( newRecord );
+      notificationService.notify('success', 'Project created');
+    })
+    .catch(err => {
+      notificationService.notify('danger', 'Project could not be created: ' + err);
+    });
+  }
+
+  /**
+   * Update a project
+   */
+  this.updateProject = function(id) {
+    const { name, description, color, remoteProjectId } = ctrl.project;
+    // console.log('updateProject', name, description, color, remoteProjectId, { data: { type: 'projects', id,
+    //   attributes: { name, description, color } },
+    //   relationships: {
+    //     'remote-project': { data: { type: 'remote-projects', id: remoteProjectId } }
+    //   }
+    // });
+    $http.put("/api/v1/projects/" + id,
+    { data:
+      {
+        type: 'projects', id,
+        attributes: { name, description, color },
+        relationships: {
+          'remote-project': { data: { type: 'remote-projects', id: remoteProjectId } }
+        }
+      }
+    } )
+    .then(function(response) {
+      const updatedProject = jsonapiUtils.unmapRecord( response.data.data );
+      ctrl.onProjectUpdated({ project: updatedProject });
+
+      notificationService.notify('success', 'Project updated');
+    })
+    .catch(err => {
+      notificationService.notify('danger', 'Project could not be updated: ' + err);
+    });
+  }
+
+  /**
+   * Delete a project
+   */
+  this.deleteProject = function( project ) {
+    if($window.confirm('Are you sure you want to delete "' + project.name + '"?')) {
+      $http.delete('/api/v1/projects/' + project.id)
+      .then(function(response) {
+        // _.remove(ctrl.projects, project);
+        ctrl.onProjectDeleted({ project });
+        notificationService.notify('success', 'Project deleted');
+      })
+      .catch(err => {
+        notificationService.notify('danger', 'Project could not be deleted: ' + err);
+      });
+    }
+  }
+  /**
+   * Assign a color to project
+   */
+  $scope.pickColor = function( evt ) {
+    $scope.project.color = $( evt.target ).data( 'color' );
+  }
+
+}
+
+module.exports = {
+  templateUrl: 'project-editor.html',
+  controller: ProjectEditorController,
+  bindings: {
+    project: '=',
+    remoteProjects: '=',
+    onCreate: '&',
+    onDelete: '&',
+    onUpdate: '&',
+    onProjectUpdated: '&',
+    onProjectDeleted: '&'
+  }
+};
+
+/***/ }),
+
+/***/ 119:
+/***/ (function(module, exports) {
+
+ProjectListController.$inject = ['lodash']; // '$scope', '$rootScope', '$window', '$http', 'jsonapiUtils', 'notificationService', 'flatUiColors', 'data'];
+
+function ProjectListController(_) { //$scope, $rootScope, $window, $http, , jsonapiUtils, notificationService, flatUiColors, data) {
+  var ctrl = this;
+  if(this.projects.length > 0) {
+    this.project = this.projects[0];
+  }
+  console.log("ProjectListController", this.projects, 'has projects?', this.projects.length > 0, this.project);
+
+  /**
+   * Select project in list
+   */
+  this.selectProject = function( id ) {
+    const project = _.find(this.projects, { id });
+    console.log('select project', id, project);
+    ctrl.project = angular.copy(project);
+    // ctrl.onSelect(angular.copy(project));
+  };
+
+  this.updateProjectInList = function(updatedProject) {
+    console.log('updateProject in list', updatedProject);
+    const existingProject = _.find(ctrl.projects, { id: updatedProject.id });
+    const indexInProjects = ctrl.projects.indexOf(existingProject);
+    ctrl.projects[indexInProjects] = updatedProject;
+  };
+
+  this.deleteProjectFromList = function(deletedProject) {
+    console.log('deleteProjectFromList', deletedProject);
+    _.remove(ctrl.projects, deletedProject);
+  };
+
+}
+
+
+module.exports = {
+  templateUrl: 'project-list.html',
+  controller: ProjectListController,
+  bindings: {
+    projects: '=',
+    remoteProjects: '=',
+    colors: '=',
+    onSelect: '&'
+    // onDelete: '&',
+    // onUpdate: '&'
+  }
+};
+
+/***/ }),
+
+/***/ 120:
+/***/ (function(module, exports) {
+
 function JwtConfig($httpProvider, jwtOptionsProvider) {
   // Please note we're annotating the function so that the $injector works when the file is minified
   jwtOptionsProvider.config({
@@ -27,7 +192,7 @@ module.exports = JwtConfig;
 
 /***/ }),
 
-/***/ 119:
+/***/ 121:
 /***/ (function(module, exports) {
 
 RouterConfig.$inject = ['$routeProvider', '$httpProvider', '$locationProvider'];
@@ -121,7 +286,7 @@ module.exports = RouterConfig;
 
 /***/ }),
 
-/***/ 120:
+/***/ 122:
 /***/ (function(module, exports) {
 
 function TranslationConfig($translateProvider) {
@@ -152,7 +317,7 @@ module.exports = TranslationConfig;
 
 /***/ }),
 
-/***/ 121:
+/***/ 123:
 /***/ (function(module, exports) {
 
 AccountsController.$inject = ['$rootScope', '$scope', '$http', '$location', '$routeParams', 'lodash', 'notificationService', 'bitbucketService', 'repoApis', 'data'];
@@ -216,7 +381,7 @@ module.exports = AccountsController;
 
 /***/ }),
 
-/***/ 122:
+/***/ 124:
 /***/ (function(module, exports) {
 
 AlertController.$inject = ['$rootScope', '$scope', '$timeout'];
@@ -238,7 +403,7 @@ module.exports = AlertController;
 
 /***/ }),
 
-/***/ 123:
+/***/ 125:
 /***/ (function(module, exports) {
 
 DashboardController.$inject = ['$rootScope', '$scope', 'lodash', 'moment', 'dataService', 'optionService', 'data'];
@@ -291,7 +456,7 @@ module.exports = DashboardController;
 
 /***/ }),
 
-/***/ 124:
+/***/ 126:
 /***/ (function(module, exports) {
 
 MainController.$inject = ['$rootScope', '$scope', '$location', 'authService'];
@@ -307,7 +472,7 @@ module.exports = MainController;
 
 /***/ }),
 
-/***/ 125:
+/***/ 127:
 /***/ (function(module, exports) {
 
 ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodash', 'jsonapiUtils', 'notificationService', 'flatUiColors', 'data'];
@@ -321,7 +486,7 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
    |
    */
   var blankProject = {
-    name: '',
+    name: 'New project',
     description: '',
     color: '#fff'
   };
@@ -334,7 +499,7 @@ ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodas
    */
 console.log('ProjectsController', data);
   $scope.projects = data.projects;
-  $scope.project = angular.copy(blankProject);
+  // $scope.project = angular.copy(blankProject);
   $scope.colors = flatUiColors;
   $scope.remoteProjects = data['remote-projects'];
 
@@ -344,78 +509,8 @@ console.log('ProjectsController', data);
    |
    */
 
-  /**
-   * Create a project
-   */
-  $scope.createProject = function() {
-    const { name, description, color, remoteProjectId } = $scope.project;
-    $scope.newProject();
-    
-    $http.post("/api/v1/projects",
-    { data: { type: 'projects',
-      attributes: { name, description, color },
-      relationships: {
-        owner: { data: { type: 'users', id: $rootScope.currentUser.userId } },
-        'remote-project': { data: { type: 'remote-projects', id: remoteProjectId } }
-      }
-    } } )
-    .then(function(response) {
-      const newRecord = jsonapiUtils.unmapRecord( response.data.data );
-      $scope.projects.push( newRecord );
-      notificationService.notify('success', 'Project created');
-    })
-    .catch(err => {
-      notificationService.notify('danger', 'Project could not be created: ' + err);
-    });
-  }
-
-  /**
-   * Update a project
-   */
-  $scope.updateProject = function(id) {
-    const { name, description, color, remoteProjectId } = $scope.project;
-    // console.log('updateProject', name, description, color, remoteProjectId, { data: { type: 'projects', id,
-    //   attributes: { name, description, color } },
-    //   relationships: {
-    //     'remote-project': { data: { type: 'remote-projects', id: remoteProjectId } }
-    //   }
-    // });
-    $http.put("/api/v1/projects/" + id,
-    { data:
-      {
-        type: 'projects', id,
-        attributes: { name, description, color },
-        relationships: {
-          'remote-project': { data: { type: 'remote-projects', id: remoteProjectId } }
-        }
-      }
-    } )
-    .then(function(response) {
-      const existingProject = _.find($scope.projects, { id });
-      const indexInProjects = $scope.projects.indexOf(existingProject);
-      const updatedProject = jsonapiUtils.unmapRecord( response.data.data );
-      $scope.projects[indexInProjects] = updatedProject;
-      notificationService.notify('success', 'Project updated');
-    })
-    .catch(err => {
-      notificationService.notify('danger', 'Project could not be updated: ' + err);
-    });
-  }
-
-  /**
-   * Delete a project
-   */
-  $scope.deleteProject = function( project ) {
-    if($window.confirm('Are you sure you want to delete "' + project.name + '"?')) {
-      $http.delete('/api/v1/projects/' + project.id)
-      .then(function(response) {
-        _.remove($scope.projects, project);
-        notificationService.notify('success', 'Project deleted');
-      })
-      .catch(err => {
-        notificationService.notify('danger', 'Project could not be deleted: ' + err);
-      });
-    }
+  $scope.onCreate = function(proj) {
+    console.log('onCreate bubbled', proj);
   }
 
 
@@ -424,22 +519,6 @@ console.log('ProjectsController', data);
    *-------------------*
    |
    */
-
-  /**
-   * Assign a color to project
-   */
-  $scope.pickColor = function( evt ) {
-    $scope.project.color = $( evt.target ).data( 'color' );
-  }
-
-  /**
-   * Select project in list
-   */
-  $scope.selectProject = function( id ) {
-    const project = _.find($scope.projects, { id });
-    console.log('select project', id, project);
-    $scope.project = angular.copy(project);
-  }
 
   /**
    * Reset project
@@ -454,7 +533,7 @@ module.exports = ProjectsController;
 
 /***/ }),
 
-/***/ 126:
+/***/ 128:
 /***/ (function(module, exports) {
 
 ReposController.$inject = ['$rootScope', '$scope', '$location', '$routeParams', 'repoApis', 'lodash', 'bitbucketService', 'data'];
@@ -469,7 +548,7 @@ module.exports = ReposController;
 
 /***/ }),
 
-/***/ 127:
+/***/ 129:
 /***/ (function(module, exports) {
 
 SigninController.$inject = ['$rootScope', '$scope', '$location', 'authService'];
@@ -490,7 +569,7 @@ module.exports = SigninController;
 
 /***/ }),
 
-/***/ 128:
+/***/ 130:
 /***/ (function(module, exports) {
 
 SignupController.$inject = ['$rootScope', '$scope', 'authService'];
@@ -513,7 +592,7 @@ module.exports = SignupController;
 
 /***/ }),
 
-/***/ 129:
+/***/ 131:
 /***/ (function(module, exports) {
 
 StatsController.$inject = ['$scope', 'dataService', 'lodash'];
@@ -608,7 +687,7 @@ module.exports = StatsController;
 
 /***/ }),
 
-/***/ 130:
+/***/ 132:
 /***/ (function(module, exports) {
 
 const MYSQL_OFFSET = 7200;
@@ -755,7 +834,7 @@ module.exports = TimersController;
 
 /***/ }),
 
-/***/ 131:
+/***/ 133:
 /***/ (function(module, exports) {
 
 AuthService.$inject = ['$rootScope', '$http', 'jwtHelper'];
@@ -833,7 +912,7 @@ module.exports = AuthService;
 
 /***/ }),
 
-/***/ 132:
+/***/ 134:
 /***/ (function(module, exports) {
 
 BitbucketService.$inject = ['$rootScope', '$window', '$http', 'repoApis'];
@@ -879,7 +958,7 @@ module.exports = BitbucketService;
 
 /***/ }),
 
-/***/ 133:
+/***/ 135:
 /***/ (function(module, exports) {
 
 /*----------------------------------------
@@ -936,7 +1015,7 @@ module.exports = DataService;
 
 /***/ }),
 
-/***/ 134:
+/***/ 136:
 /***/ (function(module, exports) {
 
 /*----------------------------------------
@@ -994,7 +1073,7 @@ module.exports = JsonapiUtils;
 
 /***/ }),
 
-/***/ 135:
+/***/ 137:
 /***/ (function(module, exports) {
 
 NotificationService.$inject = ['$rootScope'];
@@ -1030,7 +1109,7 @@ module.exports = NotificationService;
 
 /***/ }),
 
-/***/ 136:
+/***/ 138:
 /***/ (function(module, exports) {
 
 OptionService.$inject = ['dataService'];
@@ -1079,7 +1158,7 @@ module.exports = OptionService;
 
 /***/ }),
 
-/***/ 137:
+/***/ 139:
 /***/ (function(module, exports) {
 
 TokenCheckInterceptor.$inject = ['$q', '$location'];
@@ -1101,7 +1180,7 @@ module.exports = TokenCheckInterceptor;
 
 /***/ }),
 
-/***/ 138:
+/***/ 140:
 /***/ (function(module, exports) {
 
 /*----------------------------------------
@@ -1137,7 +1216,7 @@ module.exports = TranslationService;
 
 /***/ }),
 
-/***/ 139:
+/***/ 141:
 /***/ (function(module, exports) {
 
 /**
@@ -1161,7 +1240,7 @@ module.exports = function() {
 
 /***/ }),
 
-/***/ 140:
+/***/ 142:
 /***/ (function(module, exports) {
 
 /*
@@ -1270,10 +1349,10 @@ angular.module('btford.socket-io', []).
 
 /***/ }),
 
-/***/ 150:
+/***/ 152:
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(140);
+__webpack_require__(142);
 
 const DURATION_POMO = 1500;
 
@@ -1364,31 +1443,33 @@ app.directive('templateComment', function () {
 // });
 // angular.module('myApp', ['nvd3'])
 app
-.config(__webpack_require__(118))
-.config(__webpack_require__(119))
 .config(__webpack_require__(120))
-.factory('notificationService', __webpack_require__(135))
-.factory('authService', __webpack_require__(131))
-.factory('dataService', __webpack_require__(133))
-.factory('optionService', __webpack_require__(136))
-.factory('translationService', __webpack_require__(138))
-.factory('jsonapiUtils', __webpack_require__(134))
-.factory('tokenCheckInterceptor', __webpack_require__(137))
-.factory('bitbucketService', __webpack_require__(132))
+.config(__webpack_require__(121))
+.config(__webpack_require__(122))
+.component('projectList', __webpack_require__(119))
+.component('projectEditor', __webpack_require__(118))
+.factory('notificationService', __webpack_require__(137))
+.factory('authService', __webpack_require__(133))
+.factory('dataService', __webpack_require__(135))
+.factory('optionService', __webpack_require__(138))
+.factory('translationService', __webpack_require__(140))
+.factory('jsonapiUtils', __webpack_require__(136))
+.factory('tokenCheckInterceptor', __webpack_require__(139))
+.factory('bitbucketService', __webpack_require__(134))
 .config(['$httpProvider', function($httpProvider) {  
     $httpProvider.interceptors.push('tokenCheckInterceptor');
 }])
-.controller('mainCtrl', __webpack_require__(124))
-.controller('alertCtrl', __webpack_require__(122))
-.controller('dashboardCtrl', __webpack_require__(123))
-.controller('signinCtrl', __webpack_require__(127))
-.controller('signupCtrl', __webpack_require__(128))
-.controller('accountsCtrl', __webpack_require__(121))
-.controller('statsCtrl', __webpack_require__(129))
-.controller('projectsCtrl', __webpack_require__(125))
-.controller('timerCtrl', __webpack_require__(130))
-.controller('reposCtrl', __webpack_require__(126))
-.filter('formatTimer', __webpack_require__(139))
+.controller('mainCtrl', __webpack_require__(126))
+.controller('alertCtrl', __webpack_require__(124))
+.controller('dashboardCtrl', __webpack_require__(125))
+.controller('signinCtrl', __webpack_require__(129))
+.controller('signupCtrl', __webpack_require__(130))
+.controller('accountsCtrl', __webpack_require__(123))
+.controller('statsCtrl', __webpack_require__(131))
+.controller('projectsCtrl', __webpack_require__(127))
+.controller('timerCtrl', __webpack_require__(132))
+.controller('reposCtrl', __webpack_require__(128))
+.filter('formatTimer', __webpack_require__(141))
 .run(['translationService', 'authService', 'notificationService',
   function(translationService, authService, notificationService) {
     translationService.init();
@@ -1401,4 +1482,4 @@ app
 
 /***/ })
 
-},[150]);
+},[152]);
