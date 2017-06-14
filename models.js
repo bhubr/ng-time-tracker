@@ -74,8 +74,22 @@ module.exports = {
       }
     }
   },
+  account: {
+    relationships: {
+      remoteProjects: {
+        model: 'remoteProject',
+        type: 'hasMany',
+        reverse: 'localProject'
+      }
+    }
+  },
   remoteProject: {
     relationships: {
+      account: {
+        model: 'account',
+        type: 'belongsTo',
+        reverse: 'remoteProjects'
+      },
       localProject: {
         model: 'project',
         type: 'belongsTo',
