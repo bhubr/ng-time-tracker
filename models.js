@@ -79,7 +79,7 @@ module.exports = {
       remoteProjects: {
         model: 'remoteProject',
         type: 'hasMany',
-        reverse: 'localProject'
+        reverse: 'account'
       }
     }
   },
