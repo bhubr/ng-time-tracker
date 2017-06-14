@@ -194,6 +194,10 @@ app.post('/api/v1/sync/issues/:remoteId',
       console.log('\n\n###### RETURNED FROM ISSUES QUERY\n', issuesRes);
       // fs.writeFileSync(dump, JSON.stringify(projectsRes));
       return res.json(issuesRes);
+    })
+    .catch(err => {
+      console.log('\n## Fatal', err);
+      res.json({ error: err.message });
     });
 
 });

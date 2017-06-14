@@ -65,7 +65,7 @@ module.exports = {
       owner: {
         model: 'user',
         type: 'belongsTo',
-        reverse: 'timers'
+        reverse: 'projects'
       },
       remoteProject: {
         model: 'remoteProject',
