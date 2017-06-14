@@ -67,6 +67,28 @@ function ProjectEditorController($rootScope, $scope, $http, $window, _, jsonapiU
     });
   }
 
+
+  /**
+   * Sync issues
+   */
+  this.syncIssues = function(id) {
+    const { name, description, remoteProjectId } = ctrl.project;
+    $http.post("/api/v1/sync/issues/" + remoteProjectId,
+    {} )
+    .then(function(response) {
+      console.log("## syncIssues returned");
+      console.log(response.data);
+      // const updatedProject = jsonapiUtils.unmapRecord( response.data.data );
+      // ctrl.onProjectUpdated({ project: updatedProject });
+
+      // notificationService.notify('success', 'Project updated');
+    })
+    .catch(err => {
+      // notificationService.notify('danger', 'Project could not be updated: ' + err);
+    });
+  }
+
+
   /**
    * Delete a project
    */

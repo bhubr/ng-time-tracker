@@ -7,7 +7,7 @@ const configs = require(__dirname + '/config.json');
 const env = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
 const config = configs[env];
 const models = require('./models');
-const { router, middlewares, queryBuilder, queryAsync } = require('jsonapi-express-backend')(__dirname, config, models);
+const { model, router, middlewares, queryBuilder, queryAsync } = require('jsonapi-express-backend')(__dirname, config, models);
 // const { router, middlewares, queryBuilder, queryAsync } = require('../jsonapi-express-backend/index')(__dirname, config, models);
 
 const port = config.port || 3001;
@@ -113,7 +113,6 @@ app.post('/api/v1/sync/repos/:accountId', (req, res) => {
       return res.status(403).json({ error: "You don't have access rights to access this resource" });
     }
     apiAccount = account;
-toto = account.name.replace('@', '-');
     apiStrategy = repoApis[account.type];
     return objWrapper.findById('api_tokens', account.tokenId);
   })
@@ -121,11 +120,9 @@ toto = account.name.replace('@', '-');
   .then(() => apiStrategy.getProjects())
   .then(projectsRes => {
     console.log('\n\n###### RETURNED FROM REPOS QUERY\n', projectsRes);
-    // const dump = __dirname + '/repos-' + toto + '-' + (new Date()).getTime() + '.json';
     // fs.writeFileSync(dump, JSON.stringify(projectsRes));
 
     Promise.map(projectsRes, entry => {
-      console.log('\n# ' + toto, entry);
       const { uuid, name, fullName, htmlUrl } = entry;
       const attrs = {
         userId: req.jwt.userId,
@@ -154,6 +151,50 @@ toto = account.name.replace('@', '-');
     console.log('\n## Fatal', err);
     res.json({ error: err.message });
   });
+
+});
+
+app.post('/api/v1/sync/issues/:remoteId',
+  (req, res) => {
+    let account;
+    let remote;
+    console.log('server sync issues', req.params);
+    model.store.findRecord('remoteProject', req.params.remoteId)
+    .then(_remote => {
+      if(! _remote) {
+        return res.status(404).json({ error: 'Remote not found' });
+      }
+      // if(_remote.accountId !== account.id) {
+      //   return res.status(400).json({ error: "Remote and account id don't match" });
+      // }
+      console.log('#2 found remote', _remote);
+      remote = _remote;
+      return _remote;
+    })
+    .then(remote => model.store.findRecord('account', remote.accountId))
+    .then(_account => {
+      if(! _account) {
+        return res.status(404).json({ error: 'Account not found' });
+      }
+      if(_account.userId !== req.jwt.userId) {
+        return res.status(403).json({ error: "You don't have access rights to access this resource" });
+      }
+      console.log('#1 found account', _account);
+      account = _account;
+    })
+
+    .then(() => {
+      apiAccount = account;
+      apiStrategy = repoApis[account.type];
+      return objWrapper.findById('api_tokens', account.tokenId);
+    })
+    .then(token => apiStrategy.setToken(token.access_token))
+    .then(() => apiStrategy.getIssuesFor(remote.name))
+    .then(issuesRes => {
+      console.log('\n\n###### RETURNED FROM ISSUES QUERY\n', issuesRes);
+      // fs.writeFileSync(dump, JSON.stringify(projectsRes));
+      return res.json(issuesRes);
+    });
 
 });
 

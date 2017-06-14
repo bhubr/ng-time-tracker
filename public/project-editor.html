@@ -32,6 +32,7 @@
 
       
       <button ng-if="$ctrl.project.id" type="button" class="btn btn-primary" ng-click="$ctrl.updateProject($ctrl.project.id)" translate>UPDATE</button>
+      <button ng-if="$ctrl.project.id" type="button" class="btn btn-info" ng-click="$ctrl.syncIssues($ctrl.project.id)" translate>SYNC_ISSUES</button>
       <button ng-if="! $ctrl.project.id" type="button" class="btn btn-primary" ng-click="createProject($ctrl.project)" translate>CREATE</button>
     </form>
   </div>
