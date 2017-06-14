@@ -4,6 +4,7 @@
   "repository": "https://github.com/",
   "description": "Track projects and time with Express and AngularJS",
   "dependencies": {
+    "bcrypt": "^1.0.2",
     "bluebird": "^3.5.0",
     "body-parser": "^1.16.0",
     "body-parser-json": "^1.9.2",
@@ -12,7 +13,8 @@
     "code-repositories-api-common": "0.0.60",
     "code-repositories-api-node": "0.0.3",
     "express": "^4.14.1",
-    "jsonapi-express-backend": "^0.5.7",
+    "jsonapi-express-backend": "^0.5.8",
+    "jsonapi-express-backend-query": "^0.1.4",
     "knex": "^0.12.6",
     "lodash": "^4.17.4",
     "lodash-inflection": "^1.5.0",
