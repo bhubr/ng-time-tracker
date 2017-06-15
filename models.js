@@ -65,7 +65,7 @@ module.exports = {
       owner: {
         model: 'user',
         type: 'belongsTo',
-        reverse: 'timers'
+        reverse: 'projects'
       },
       remoteProject: {
         model: 'remoteProject',
@@ -74,8 +74,22 @@ module.exports = {
       }
     }
   },
+  account: {
+    relationships: {
+      remoteProjects: {
+        model: 'remoteProject',
+        type: 'hasMany',
+        reverse: 'account'
+      }
+    }
+  },
   remoteProject: {
     relationships: {
+      account: {
+        model: 'account',
+        type: 'belongsTo',
+        reverse: 'remoteProjects'
+      },
       localProject: {
         model: 'project',
         type: 'belongsTo',

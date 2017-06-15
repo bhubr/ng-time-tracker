@@ -1,0 +1,22 @@
+<div class="col-md-7 col-sm-12">
+  <div class="panel panel-default">
+    <div class="panel-heading" translate>PROJECT_LIST</div>
+    <div class="panel-body">
+      <div class="table-scroll">
+        <table class="table table-condensed table-striped">
+          <tr>
+            <th translate>PROJECT_NAME</th>
+            <th translate>PROJECT_DESC</th>
+          </tr>
+          <tr ng-repeat="proj in $ctrl.projects" ng-click="$ctrl.selectProject(proj.id)">
+            <td style="width: 40%"><strong style="border-bottom: 4px solid {{proj.color}}; border-radius: 4px">{{ proj.name }}</strong></td>
+            <td>{{ proj.description }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col-md-5 col-sm-12">
+  <project-editor on-select="alert('yay')" project="$ctrl.project" remote-projects="$ctrl.remoteProjects" colors="colors" on-project-updated="$ctrl.updateProjectInList(project)" on-project-deleted="$ctrl.deleteProjectFromList(project)"></project-editor>
+</div>

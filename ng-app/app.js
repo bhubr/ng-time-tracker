@@ -92,6 +92,8 @@ app
 .config(require('./config/JwtConfig'))
 .config(require('./config/RouterConfig'))
 .config(require('./config/TranslationConfig'))
+.component('projectList', require('./components/ProjectListComponent'))
+.component('projectEditor', require('./components/ProjectEditorComponent'))
 .factory('notificationService', require('./factories/NotificationService'))
 .factory('authService', require('./factories/AuthService'))
 .factory('dataService', require('./factories/DataService'))
