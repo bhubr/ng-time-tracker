@@ -11,7 +11,7 @@
     "bookshelf": "^0.10.3",
     "chokidar": "^1.6.1",
     "code-repositories-api-common": "0.0.63",
-    "code-repositories-api-node": "0.0.3",
+    "code-repositories-api-node": "0.0.4",
     "express": "^4.14.1",
     "jsonapi-express-backend": "^0.5.8",
     "jsonapi-express-backend-query": "^0.1.4",
