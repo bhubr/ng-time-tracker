@@ -132,12 +132,12 @@ app.post('/api/v1/sync/repos/:accountId', (req, res) => {
         fullName,
         htmlUrl
       };
-      return objWrapper.findBy('remoteprojects', {
+      return objWrapper.findBy('remote_projects', {
         remoteUuid: uuid
       })
       .then(existing => ( existing ?
         Object.assign( existing, { isNew: false } ) :
-        objWrapper.create('remoteprojects', attrs)
+        objWrapper.create('remote_projects', attrs)
         .then(record => Object.assign( record, { isNew: true } ))
       ) );
     })
