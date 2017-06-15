@@ -158,6 +158,8 @@ app.post('/api/v1/sync/issues/:remoteId',
   (req, res) => {
     let account;
     let remote;
+    let name;
+    let fullName;
     console.log('server sync issues', req.params);
     model.store.findRecord('remoteProject', req.params.remoteId)
     .then(_remote => {
@@ -169,6 +171,8 @@ app.post('/api/v1/sync/issues/:remoteId',
       // }
       console.log('#2 found remote', _remote);
       remote = _remote;
+      name = remote.name;
+      fullName = remote.fullName;
       return _remote;
     })
     .then(remote => model.store.findRecord('account', remote.accountId))
@@ -189,7 +193,7 @@ app.post('/api/v1/sync/issues/:remoteId',
       return objWrapper.findById('api_tokens', account.tokenId);
     })
     .then(token => apiStrategy.setToken(token.access_token))
-    .then(() => apiStrategy.getIssuesFor(remote.name))
+    .then(() => apiStrategy.getIssuesFor({ name, fullName }))
     .then(issuesRes => {
       console.log('\n\n###### RETURNED FROM ISSUES QUERY\n', issuesRes);
       // fs.writeFileSync(dump, JSON.stringify(projectsRes));
