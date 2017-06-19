@@ -9,6 +9,7 @@ function TranslationConfig($translateProvider) {
     REQUEST_AUTHORIZATION: 'Request authorization',
     CREATE_PROJECT: 'Create project',
     EDIT_PROJECT: 'Edit project',
+    SELECT_PROJECT: 'Select project',
     PROJECT_LIST: 'Project list',
     PROJECT_NAME: 'Project name',
     PROJECT_DESC: 'Project description',

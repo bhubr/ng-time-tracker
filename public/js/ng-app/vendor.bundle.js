@@ -151,7 +151,7 @@
 /******/ 	__webpack_require__.oe = function(err) { console.error(err); throw err; };
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 163);
+/******/ 	return __webpack_require__(__webpack_require__.s = 164);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1987,7 +1987,7 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            __webpack_require__(160)("./" + name);
+            __webpack_require__(161)("./" + name);
             // because defineLocale currently also sets the global locale, we
             // want to undo that for lazy loaded locales
             getSetGlobalLocale(oldLocale);
@@ -4628,7 +4628,7 @@ return hooks;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(157);
+__webpack_require__(158);
 module.exports = angular;
 
 
@@ -15766,16 +15766,17 @@ module.exports = function(module) {
 /* 140 */,
 /* 141 */,
 /* 142 */,
-/* 143 */
+/* 143 */,
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(153);
+__webpack_require__(154);
 module.exports = 'angular-jwt';
 
 
 
 /***/ }),
-/* 144 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15801,7 +15802,7 @@ angular.module('markdown', [])
 
 
 /***/ }),
-/* 145 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* angular-moment.js / v1.0.1 / (c) 2013, 2014, 2015, 2016 Uri Shaked / MIT Licence */
@@ -16547,30 +16548,30 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 146 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(154);
-module.exports = 'nvd3';
-
-/***/ }),
 /* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(155);
-module.exports = 'ngRoute';
-
+module.exports = 'nvd3';
 
 /***/ }),
 /* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(156);
-module.exports = 'ngSanitize';
+module.exports = 'ngRoute';
 
 
 /***/ }),
 /* 149 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(157);
+module.exports = 'ngSanitize';
+
+
+/***/ }),
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20286,7 +20287,7 @@ return 'pascalprecht.translate';
 
 
 /***/ }),
-/* 150 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// your library here
@@ -20294,7 +20295,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   'use strict';
   if (true) {
     // AMD. Register as an anonymous module.
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(158)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(159)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -20411,7 +20412,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 }));
 
 /***/ }),
-/* 151 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module, global) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -31513,11 +31514,11 @@ angular.module('ngLodash', []).constant('lodash', null).config([
     $provide.constant('lodash', _);
   }
 ]);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(117)(module), __webpack_require__(162)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(117)(module), __webpack_require__(163)))
 
 /***/ }),
-/* 152 */,
-/* 153 */
+/* 153 */,
+/* 154 */
 /***/ (function(module, exports) {
 
 (function() {
@@ -31916,7 +31917,7 @@ angular.module('angular-jwt.options', [])
 }());
 
 /***/ }),
-/* 154 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**************************************************************************
@@ -31931,7 +31932,7 @@ angular.module('angular-jwt.options', [])
     // Node.js or CommonJS
     if (true) {
         /* jshint -W020 */
-        nv = __webpack_require__(161);
+        nv = __webpack_require__(162);
         /* jshint +W020 */
     }
 
@@ -32575,7 +32576,7 @@ angular.module('angular-jwt.options', [])
 
 
 /***/ }),
-/* 155 */
+/* 156 */
 /***/ (function(module, exports) {
 
 /**
@@ -33652,7 +33653,7 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 
 /***/ }),
-/* 156 */
+/* 157 */
 /***/ (function(module, exports) {
 
 /**
@@ -34397,7 +34398,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 
 
 /***/ }),
-/* 157 */
+/* 158 */
 /***/ (function(module, exports) {
 
 /**
@@ -67023,7 +67024,7 @@ $provide.value("$locale", {
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
 
 /***/ }),
-/* 158 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// your library here
@@ -67064,19 +67065,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
      */
     function Bitbucket(requestStrategy) {
       this.requestStrategy = requestStrategy;
-      // this.username = cred.username;
-      // this.id = 'bitbucket-' + (1000000 * Math.random()).toString(36);
       this.baseUri = 'https://api.bitbucket.org/2.0';
-      // this.baseUri = 'http://api.bitbucket.tls';
-      // this.uri = 'https://api.bitbucket.org/2.0/repositories/' + cred.username;
-      // this.options = {
-      //     // uri: this.uri,
-      //     headers: {
-      //       'Authorization': common.getAuthHeader(cred),
-      //       'User-Agent': 'MyProjects-js-App'
-      //     },
-      //     json: true
-      // };
     }
 
     Bitbucket.prototype.setToken = function(token) {
@@ -67088,10 +67077,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       this.setPath('/user')
       console.log('Bitbucket query logged-in user');
       return this.requestStrategy.get()
-      .then(user => {
-        console.log('GET /user response', user);
-        self.username = user.username;
-        return user;
+      .then(({ body }) => {
+        console.log('GET /user response', body);
+        self.username = body.username;
+        return body;
       })
       .catch(err => {
         console.error('GET /user failed', error);
@@ -67100,114 +67089,85 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
 
     Bitbucket.prototype.setPath = function(relativePath) {
-      // this.options.uri = this.baseUri + relativePath;
       if(this.token === undefined) {
         throw new Error('token undefined in Bitbucket strategy');
       }
       this.requestStrategy.setup(this.baseUri, relativePath, {
         Authorization: 'Bearer ' + this.token
       })
-      // this.requestStrategy.setPath(relativePath);
     };
 
     Bitbucket.prototype.get = function(url, headers) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
+      // return new Promise((resolve, reject) => {
+        // setTimeout(() => {
           return this.requestStrategy.get(url, headers);  
-        }, 1000);
-      });
+        // }, 1000);
+      // });
     };
 
     Bitbucket.prototype.getUsername = function() {
       var self = this;
       this.setPath('/user');
       return this.get()
-      .then(user => {
+      .then(({ body }) => {
         console.log('Bitbucket.getUsername');
-        console.log(user);
-        self.username = user.username;
-        return user;
+        console.log(body);
+        self.username = body.username;
+        return body;
       })
     };
 
     Bitbucket.prototype.getProjects = function() {
-      // this.counter = 0;
       this.setPath('/repositories/' + this.username);
       return this.promiseLoop({
         next: this.baseUri + '/repositories/' + this.username,
         values: []
       })
-      .then(({ values }) => (
-        values.map(record => ({
+      .then(({ body }) => (
+        body.values.map(record => ({
           uuid: record.uuid,
           name: record.name,
           fullName: record.full_name,
           htmlUrl: record.links.html.href
         }))
       ));
-      // return this.get.call(this)
-      // .then(res => { console.log('getProjects res', res); return res; })
-      // .then(res => this.seqLoopDescending.call(this, res, res.values));
     };
 
 
     Bitbucket.prototype.getCommitsFor = function(repoName) {
       this.setPath('/repositories/' + this.username + '/' + repoName + '/commits');
       return this.get()
-      .then(commits => { 
-        // console.log(commits);
-        return commits.values.map(commit => {
-        // console.log(commit);
-        // return commit;
+      .then(({ body }) => { 
+        return body.values.map(commit => {
         return { sha: commit.hash, message: commit.message };
       }); });
     };
 
-    Bitbucket.prototype.getIssuesFor = function(repoName) {
-      this.setPath('/repositories/' + this.username + '/' + repoName + '/issues');
-      return this.get()
-      .then(response => (response.values))
+    Bitbucket.prototype.getIssuesFor = function(repo) {
+      const { name } = repo;
+      return this.promiseLoop({
+        next: this.baseUri + '/repositories/' + this.username + '/' + name + '/issues',
+        values: []
+      });
+/*      return this.get()
+      .then(response => (response.values))*/
       // .then(commits => { return _.map(commits, commit => {
       //   return { sha: commit.sha, message: commit.commit.message };
       // }); });
     };
 
-    Bitbucket.prototype.getNextPage = function(nextPageLink) {
-      // this.options.uri = nextPageLink;
-      console.log('getNextPage', nextPageLink, this.headers);
-      return this.requestStrategy.get.call(this.requestStrategy, nextPageLink, this.headers);
-    }
-    Bitbucket.prototype.seqLoopDescending = function (res, allRepos) {
-      var that = this;
-      this.counter++;
-      console.log('after ' + this.counter + ' requests: ', allRepos, allRepos.length);
-      return new Promise(function (resolve, reject) {
-        if(res.next === undefined) resolve(allRepos.concat(res.values));
-        else that.getNextPage(res.next).then(({ next, values }) => {
-          if(next === undefined) resolve(allRepos.concat(values));
-          else resolve(that.seqLoopDescending.call(that, { next, values }, allRepos.concat(values)));
-        })
-        .catch(err => {
-          console.error("#### STH WRONG", err);
-          reject(err);
-        })
-      });
-    }
-
     Bitbucket.prototype.promiseLoop = function(res) {
       var that = this;
       console.log('\npromiseLoop, next/values', res.next, res.values);
-      // return new Promise((resolve, reject) => {
         if(res.next) {
           return this.requestStrategy.get(res.next, this.requestStrategy.headers)
           .then(passLog)
-          .then(_res => that.promiseLoop.call(that, { next: _res.next, values: res.values.concat(_res.values) }));
+          .then(({ body }) => that.promiseLoop.call(that, { next: body.next, values: res.values.concat(body.values) }));
         }
         else {
           console.log('has no more, res/values:', res, res.values);
           return Promise.resolve(res);
         }
-      // });
     }
 
     return Bitbucket;
@@ -67224,16 +67184,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
     function Github(requestStrategy) {
       this.requestStrategy = requestStrategy;
-      // this.username = cred.username;
       this.baseUri = 'https://api.github.com';
-      // this.options = {
-      //   uri: 'https://api.github.com',
-      //   headers: {
-      //     'Authorization': common.getAuthHeader(cred),
-      //     'User-Agent': 'MyProjects-js-App'
-      //   },
-      //   json: true
-      // };
     }
 
     Github.prototype.setToken = function(token) {
@@ -67246,10 +67197,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       this.setPath('/user')
       console.log('Github query logged-in user');
       return this.requestStrategy.get()
-      .then(user => {
-        console.log('GET /user response', user);
-        self.username = user.username;
-        return { username: user.login };
+      .then(({ body }) => {
+        console.log('GET /user response', body);
+        self.username = body.login;
+        return { username: body.login };
       })
       .catch(err => {
         console.error('GET /user failed', err);
@@ -67258,7 +67209,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
 
     Github.prototype.setPath = function(relativePath) {
-      // this.options.uri = this.baseUri + relativePath;
       if(this.token === undefined) {
         throw new Error('token undefined in Github strategy');
       }
@@ -67266,11 +67216,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         Authorization: 'Bearer ' + this.token,
         'User-Agent': 'bhubr.titang.server'
       })
-      // this.requestStrategy.setPath(relativePath);
     };
-    // Github.prototype.setPath = function(relativePath) {
-    //   this.options.uri = this.baseUri + relativePath;
-    // };
 
     Github.prototype.get = function(relativePath) {
       return this.requestStrategy.get();
@@ -67279,8 +67225,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     Github.prototype.getProjects = function() {
       this.setPath('/user/repos');
       return this.requestStrategy.get()
-      .then(records => (
-        records.map(record => ({
+      .then(({ body }) => (
+        body.map(record => ({
           uuid: '' + record.id,
           name: record.name,
           fullName: record.full_name,
@@ -67296,14 +67242,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     Github.prototype.getCommitsFor = function(repoName) {
       this.setPath('/repos/' + this.username + '/' + repoName + '/commits');
       return this.get()
-      .then(commits => { return commits.map(commit => {
+      .then(({ body }) => { return body.map(commit => {
         return { sha: commit.sha, message: commit.commit.message };
       }); });
     };
 
-    Github.prototype.getIssuesFor = function(repoName) {
-      this.setPath('/repos/' + this.username + '/' + repoName + '/issues');
-      return this.get();
+    Github.prototype.getIssuesFor = function(repo) {
+      const { name } = repo;
+      this.setPath('/repos/' + this.username + '/' + name + '/issues');
+      return this.get()
+      .then(({ body }) => (body));
     };
 
     return Github;
@@ -67320,16 +67268,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
     function Gitlab(requestStrategy) {
       this.requestStrategy = requestStrategy;
-      // this.username = cred.username;
-      // this.projects = cred.projects;
       this.baseUri = 'https://gitlab.com/api/v4';
-      // this.options = {
-      //   uri: 'https://gitlab.com/api/v4',
-      //   headers: {
-      //     'PRIVATE-TOKEN': cred.password
-      //   },
-      //   json: true
-      // };
     }
 
     Gitlab.prototype.setToken = function(token) {
@@ -67341,10 +67280,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       this.setPath('/user')
       console.log('Gitlab query logged-in user');
       return this.requestStrategy.get()
-      .then(user => {
-        console.log('GET /user response', user);
-        self.username = user.username;
-        return user;
+      .then(({ body }) => {
+        console.log('GET /user response', body);
+        self.username = body.username;
+        return body;
       })
       .catch(err => {
         console.error('GET /user failed', error);
@@ -67353,14 +67292,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
 
     Gitlab.prototype.setPath = function(relativePath) {
-      // this.options.uri = this.baseUri + relativePath;
       if(this.token === undefined) {
         throw new Error('token undefined in Gitlab strategy');
       }
       this.requestStrategy.setup(this.baseUri, relativePath, {
         Authorization: 'Bearer ' + this.token
       })
-      // this.requestStrategy.setPath(relativePath);
     };
     Gitlab.prototype.get = function(relativePath) {
       return this.requestStrategy.get();
@@ -67369,34 +67306,31 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     Gitlab.prototype.getProjects = function() {
       this.setPath('/projects?membership=yes');
       return this.requestStrategy.get()
-      .then(records => (
-        records.map(record => ({
+      .then(({ body }) => (
+        body.map(record => ({
           uuid: '' + record.id,
           name: record.name,
           fullName: record.name_with_namespace.replace(/ /g,''),
           htmlUrl: record.web_url
         }))
       ));
-      // return Promise.map(this.projects, projectName => {
-      //   this.setPath('/projects/' + projectName + '/repository/tree');
-      //   return this.get();
-      // });
-      // return this.projects.map(name => ({ name }));
-
     };
 
     Gitlab.prototype.getCommitsFor = function(repoName) {
       this.setPath('/repos/' + this.username + '/' + repoName + '/commits');
       return this.get()
-      .then(commits => { return commits.map(commit => {
+      .then(({ body }) => { return body.map(commit => {
         return { sha: commit.sha, message: commit.commit.message };
       }); });
     };
 
 
-    Gitlab.prototype.getIssuesFor = function(projectName) {
-      this.setPath('/projects/' + projectName + '/issues');
+    Gitlab.prototype.getIssuesFor = function(repo) {
+      const { fullName } = repo;
+      const encodedFullName = encodeURIComponent(fullName);
+      this.setPath('/projects/' + encodedFullName + '/issues');
       return this.get()
+      .then(({ body }) => (body));
       // .then(commits => { return _.map(commits, commit => {
       //   return { sha: commit.sha, message: commit.commit.message };
       // }); });
@@ -67421,76 +67355,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
 
     return instances;
-
   }
 
-
-  // function CodeRepositoriesApi(cred, request) {
-  //   var strategies = {
-  //     github: GithubStrategy,
-  //     gitlab: GitlabStrategy,
-  //     bitbucket: BitbucketStrategy
-  //   }
-  //   // this.strategy = new strategies[cred.type](cred, request);
-  // }
-
-  // CodeRepositoriesApi.prototype.getProjectsForAccount = function(cred) {
-  //   return this.strategy.getProjects();
-  // };
-
-  // CodeRepositoriesApi.prototype.getUsername = function() {
-  //   this.strategy.getUsername();
-  // }
-
-  // CodeRepositoriesApi.prototype.getProjects = function(provider) {
-  //   console.log('getProjects');
-  //   console.log(provider, this.instances, this.instances[provider]);
-  //   return this.instances[provider].getProjects();
-  // };
-  //   // getProjects: function(creds) {
-  //   //   if( creds === undefined ) throw new Error("You must supply credentials to getProjects()");
-  //   //   var promises = [];
-  //   //   creds.forEach(cred => {
-  //   //     promises.push(getProjectsForAccount(cred));
-  //   //   })
-  //   //   return Promise.all(promises)
-  //   //   .then(results => {
-  //   //     var orderedResults = [];
-  //   //     creds.forEach((cred, index) => {
-  //   //       var { username, type } = cred;
-  //   //       orderedResults.push({
-  //   //         account: cred,
-  //   //         repositories: results[index]
-  //   //       });
-  //   //     });
-  //   //     return orderedResults;
-  //   //   });
-  //   // },
-
-  // CodeRepositoriesApi.prototype.getCommitsForRepo = function(cred, repoSlug) {
-  //   return this.strategy.getCommitsFor(repoSlug);
-  // };
-
-  //  CodeRepositoriesApi.prototype.getIssuesForRepo = function(cred, repoSlug) {
-  //   return this.strategy.getIssuesFor(repoSlug);
-  // };
-
-  // CodeRepositoriesApi.prototype.addAuthToken = function(provider, token) {
-  //   this.instances[provider].setToken(token);
-  // }
-
-
-  //  CodeRepositoriesApi.prototype.getVersion = function() {
-  //   return '0.0.13';
-  // };
-
-  // return CodeRepositoriesApi; // the name of your module
 }));
 
 
 
 /***/ }),
-/* 159 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
@@ -77053,7 +76925,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
 }();
 
 /***/ }),
-/* 160 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -77302,10 +77174,10 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 160;
+webpackContext.id = 161;
 
 /***/ }),
-/* 161 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* nvd3 version 1.8.5 (https://github.com/novus/nvd3) 2016-12-01 */
@@ -77325,7 +77197,7 @@ nv.dom = {}; //DOM manipulation functions
 
 // Node/CommonJS - require D3
 if (typeof(module) !== 'undefined' && typeof(exports) !== 'undefined' && typeof(d3) == 'undefined') {
-    d3 = __webpack_require__(159);
+    d3 = __webpack_require__(160);
 }
 
 nv.dispatch = d3.dispatch('render_start', 'render_end');
@@ -92735,7 +92607,7 @@ nv.version = "1.8.5";
 //# sourceMappingURL=nv.d3.js.map
 
 /***/ }),
-/* 162 */
+/* 163 */
 /***/ (function(module, exports) {
 
 var g;
@@ -92762,19 +92634,19 @@ module.exports = g;
 
 
 /***/ }),
-/* 163 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-__webpack_require__(148);
-__webpack_require__(143);
-__webpack_require__(147);
-__webpack_require__(144);
 __webpack_require__(149);
+__webpack_require__(144);
+__webpack_require__(148);
 __webpack_require__(145);
+__webpack_require__(150);
 __webpack_require__(146);
-__webpack_require__(151);
-module.exports = __webpack_require__(150);
+__webpack_require__(147);
+__webpack_require__(152);
+module.exports = __webpack_require__(151);
 
 
 /***/ })

@@ -190,6 +190,30 @@ module.exports = {
 /***/ 120:
 /***/ (function(module, exports) {
 
+TimerSetupComponent.$inject = [];
+
+function TimerSetupComponent() {
+  this.filters = {
+    project: ''
+  };
+  console.log(this);
+}
+
+
+module.exports = {
+  templateUrl: 'timer-setup.html',
+  controller: TimerSetupComponent,
+  bindings: {
+    projectOptions: '=',
+    // onProjectDeleted: '&'
+  }
+};
+
+/***/ }),
+
+/***/ 121:
+/***/ (function(module, exports) {
+
 function JwtConfig($httpProvider, jwtOptionsProvider) {
   // Please note we're annotating the function so that the $injector works when the file is minified
   jwtOptionsProvider.config({
@@ -214,7 +238,7 @@ module.exports = JwtConfig;
 
 /***/ }),
 
-/***/ 121:
+/***/ 122:
 /***/ (function(module, exports) {
 
 RouterConfig.$inject = ['$routeProvider', '$httpProvider', '$locationProvider'];
@@ -308,7 +332,7 @@ module.exports = RouterConfig;
 
 /***/ }),
 
-/***/ 122:
+/***/ 123:
 /***/ (function(module, exports) {
 
 function TranslationConfig($translateProvider) {
@@ -322,6 +346,7 @@ function TranslationConfig($translateProvider) {
     REQUEST_AUTHORIZATION: 'Request authorization',
     CREATE_PROJECT: 'Create project',
     EDIT_PROJECT: 'Edit project',
+    SELECT_PROJECT: 'Select project',
     PROJECT_LIST: 'Project list',
     PROJECT_NAME: 'Project name',
     PROJECT_DESC: 'Project description',
@@ -339,7 +364,7 @@ module.exports = TranslationConfig;
 
 /***/ }),
 
-/***/ 123:
+/***/ 124:
 /***/ (function(module, exports) {
 
 AccountsController.$inject = ['$rootScope', '$scope', '$http', '$location', '$routeParams', 'lodash', 'notificationService', 'bitbucketService', 'repoApis', 'data'];
@@ -403,7 +428,7 @@ module.exports = AccountsController;
 
 /***/ }),
 
-/***/ 124:
+/***/ 125:
 /***/ (function(module, exports) {
 
 AlertController.$inject = ['$rootScope', '$scope', '$timeout'];
@@ -425,7 +450,7 @@ module.exports = AlertController;
 
 /***/ }),
 
-/***/ 125:
+/***/ 126:
 /***/ (function(module, exports) {
 
 DashboardController.$inject = ['$rootScope', '$scope', 'lodash', 'moment', 'dataService', 'optionService', 'data'];
@@ -478,7 +503,7 @@ module.exports = DashboardController;
 
 /***/ }),
 
-/***/ 126:
+/***/ 127:
 /***/ (function(module, exports) {
 
 MainController.$inject = ['$rootScope', '$scope', '$location', 'authService'];
@@ -494,7 +519,7 @@ module.exports = MainController;
 
 /***/ }),
 
-/***/ 127:
+/***/ 128:
 /***/ (function(module, exports) {
 
 ProjectsController.$inject = ['$scope', '$rootScope', '$window', '$http', 'lodash', 'jsonapiUtils', 'notificationService', 'flatUiColors', 'data'];
@@ -555,7 +580,7 @@ module.exports = ProjectsController;
 
 /***/ }),
 
-/***/ 128:
+/***/ 129:
 /***/ (function(module, exports) {
 
 ReposController.$inject = ['$rootScope', '$scope', '$location', '$routeParams', 'repoApis', 'lodash', 'bitbucketService', 'data'];
@@ -570,7 +595,7 @@ module.exports = ReposController;
 
 /***/ }),
 
-/***/ 129:
+/***/ 130:
 /***/ (function(module, exports) {
 
 SigninController.$inject = ['$rootScope', '$scope', '$location', 'authService'];
@@ -591,7 +616,7 @@ module.exports = SigninController;
 
 /***/ }),
 
-/***/ 130:
+/***/ 131:
 /***/ (function(module, exports) {
 
 SignupController.$inject = ['$rootScope', '$scope', 'authService'];
@@ -614,7 +639,7 @@ module.exports = SignupController;
 
 /***/ }),
 
-/***/ 131:
+/***/ 132:
 /***/ (function(module, exports) {
 
 StatsController.$inject = ['$scope', 'dataService', 'lodash'];
@@ -709,7 +734,7 @@ module.exports = StatsController;
 
 /***/ }),
 
-/***/ 132:
+/***/ 133:
 /***/ (function(module, exports) {
 
 const MYSQL_OFFSET = 7200;
@@ -856,7 +881,7 @@ module.exports = TimersController;
 
 /***/ }),
 
-/***/ 133:
+/***/ 134:
 /***/ (function(module, exports) {
 
 AuthService.$inject = ['$rootScope', '$http', 'jwtHelper'];
@@ -934,7 +959,7 @@ module.exports = AuthService;
 
 /***/ }),
 
-/***/ 134:
+/***/ 135:
 /***/ (function(module, exports) {
 
 BitbucketService.$inject = ['$rootScope', '$window', '$http', 'repoApis'];
@@ -980,7 +1005,7 @@ module.exports = BitbucketService;
 
 /***/ }),
 
-/***/ 135:
+/***/ 136:
 /***/ (function(module, exports) {
 
 /*----------------------------------------
@@ -1037,7 +1062,7 @@ module.exports = DataService;
 
 /***/ }),
 
-/***/ 136:
+/***/ 137:
 /***/ (function(module, exports) {
 
 /*----------------------------------------
@@ -1095,7 +1120,7 @@ module.exports = JsonapiUtils;
 
 /***/ }),
 
-/***/ 137:
+/***/ 138:
 /***/ (function(module, exports) {
 
 NotificationService.$inject = ['$rootScope'];
@@ -1131,7 +1156,7 @@ module.exports = NotificationService;
 
 /***/ }),
 
-/***/ 138:
+/***/ 139:
 /***/ (function(module, exports) {
 
 OptionService.$inject = ['dataService'];
@@ -1180,7 +1205,7 @@ module.exports = OptionService;
 
 /***/ }),
 
-/***/ 139:
+/***/ 140:
 /***/ (function(module, exports) {
 
 TokenCheckInterceptor.$inject = ['$q', '$location'];
@@ -1202,7 +1227,7 @@ module.exports = TokenCheckInterceptor;
 
 /***/ }),
 
-/***/ 140:
+/***/ 141:
 /***/ (function(module, exports) {
 
 /*----------------------------------------
@@ -1238,7 +1263,7 @@ module.exports = TranslationService;
 
 /***/ }),
 
-/***/ 141:
+/***/ 142:
 /***/ (function(module, exports) {
 
 /**
@@ -1262,7 +1287,7 @@ module.exports = function() {
 
 /***/ }),
 
-/***/ 142:
+/***/ 143:
 /***/ (function(module, exports) {
 
 /*
@@ -1371,10 +1396,10 @@ angular.module('btford.socket-io', []).
 
 /***/ }),
 
-/***/ 152:
+/***/ 153:
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(142);
+__webpack_require__(143);
 
 const DURATION_POMO = 1500;
 
@@ -1434,7 +1459,7 @@ function notifyMe(idleTime) {
 }
 
 // Declare app
-var app = angular.module("myApp", [
+var app = angular.module("ngTimeTracker", [
   'ngRoute',
   'ngLodash',
   'ngSanitize',
@@ -1465,33 +1490,34 @@ app.directive('templateComment', function () {
 // });
 // angular.module('myApp', ['nvd3'])
 app
-.config(__webpack_require__(120))
 .config(__webpack_require__(121))
 .config(__webpack_require__(122))
+.config(__webpack_require__(123))
+.component('timerSetup', __webpack_require__(120))
 .component('projectList', __webpack_require__(119))
 .component('projectEditor', __webpack_require__(118))
-.factory('notificationService', __webpack_require__(137))
-.factory('authService', __webpack_require__(133))
-.factory('dataService', __webpack_require__(135))
-.factory('optionService', __webpack_require__(138))
-.factory('translationService', __webpack_require__(140))
-.factory('jsonapiUtils', __webpack_require__(136))
-.factory('tokenCheckInterceptor', __webpack_require__(139))
-.factory('bitbucketService', __webpack_require__(134))
+.factory('notificationService', __webpack_require__(138))
+.factory('authService', __webpack_require__(134))
+.factory('dataService', __webpack_require__(136))
+.factory('optionService', __webpack_require__(139))
+.factory('translationService', __webpack_require__(141))
+.factory('jsonapiUtils', __webpack_require__(137))
+.factory('tokenCheckInterceptor', __webpack_require__(140))
+.factory('bitbucketService', __webpack_require__(135))
 .config(['$httpProvider', function($httpProvider) {  
     $httpProvider.interceptors.push('tokenCheckInterceptor');
 }])
-.controller('mainCtrl', __webpack_require__(126))
-.controller('alertCtrl', __webpack_require__(124))
-.controller('dashboardCtrl', __webpack_require__(125))
-.controller('signinCtrl', __webpack_require__(129))
-.controller('signupCtrl', __webpack_require__(130))
-.controller('accountsCtrl', __webpack_require__(123))
-.controller('statsCtrl', __webpack_require__(131))
-.controller('projectsCtrl', __webpack_require__(127))
-.controller('timerCtrl', __webpack_require__(132))
-.controller('reposCtrl', __webpack_require__(128))
-.filter('formatTimer', __webpack_require__(141))
+.controller('mainCtrl', __webpack_require__(127))
+.controller('alertCtrl', __webpack_require__(125))
+.controller('dashboardCtrl', __webpack_require__(126))
+.controller('signinCtrl', __webpack_require__(130))
+.controller('signupCtrl', __webpack_require__(131))
+.controller('accountsCtrl', __webpack_require__(124))
+.controller('statsCtrl', __webpack_require__(132))
+.controller('projectsCtrl', __webpack_require__(128))
+.controller('timerCtrl', __webpack_require__(133))
+.controller('reposCtrl', __webpack_require__(129))
+.filter('formatTimer', __webpack_require__(142))
 .run(['translationService', 'authService', 'notificationService',
   function(translationService, authService, notificationService) {
     translationService.init();
@@ -1504,4 +1530,4 @@ app
 
 /***/ })
 
-},[152]);
+},[153]);

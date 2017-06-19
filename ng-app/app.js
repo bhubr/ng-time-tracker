@@ -58,7 +58,7 @@ function notifyMe(idleTime) {
 }
 
 // Declare app
-var app = angular.module("myApp", [
+var app = angular.module("ngTimeTracker", [
   'ngRoute',
   'ngLodash',
   'ngSanitize',
@@ -92,6 +92,7 @@ app
 .config(require('./config/JwtConfig'))
 .config(require('./config/RouterConfig'))
 .config(require('./config/TranslationConfig'))
+.component('timerSetup', require('./components/TimerSetupComponent'))
 .component('projectList', require('./components/ProjectListComponent'))
 .component('projectEditor', require('./components/ProjectEditorComponent'))
 .factory('notificationService', require('./factories/NotificationService'))

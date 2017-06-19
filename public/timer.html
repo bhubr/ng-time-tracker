@@ -11,17 +11,13 @@
         </div>
       </div>
 
-      <template-comment><h3>Projects list</h3>
-      <ul>
-        <li ng-repeat="x in projects">
-          <strong>{{ x.name }}</strong> {{ x.description }}
-        </li>
-      </ul></template-comment>
+
       <h3>Timeline</h3>
       <div class="input-field">
         <select class="browser-default" ng-model="filters.project" ng-options="p.id as p.name for p in projectOptions"></select>
         <!-- <select class="browser-default" ng-model="filters.timeslice" ng-options="t in timesliceOptions"></select> -->
       </div>
+      <timer-setup project-options="projectOptions"></timer-setup>
       <ul>
         <li data-id="{{ timer.id }}" ng-repeat="timer in timers" ng-click="select($event)">
           {{ timer.createdAt.substr(0, 16).replace('T', ' ') }}
