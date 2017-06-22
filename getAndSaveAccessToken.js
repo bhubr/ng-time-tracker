@@ -24,6 +24,7 @@ function passLog(label) {
 }
 
 module.exports = function(provider, userId, credentials, code) {
+  console.log('getAndSaveAccessToken', provider, userId, credentials, code);
 
   const api = repoApis.factory(provider, credentials);
   let mustCreateAccount;
