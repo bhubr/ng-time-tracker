@@ -10,7 +10,7 @@
     "body-parser-json": "^1.9.2",
     "bookshelf": "^0.10.3",
     "chokidar": "^1.6.1",
-    "code-repositories-api-common": "^0.1.1",
+    "code-repositories-api-common": "^0.1.2",
     "code-repositories-api-node": "0.1.0",
     "express": "^4.14.1",
     "jsonapi-express-backend": "^0.5.8",

@@ -2,6 +2,7 @@ const webdriverio = require('webdriverio');
 const path        = require('path');
 const chai        = require('chai');
 const assert      = chai.assert;
+const _           = require('lodash');
 const fakers      = require('./fakers');
 const { server, emitter } = require('./test-server');
 
@@ -40,6 +41,7 @@ describe('all tests', () => {
     let token;
     let user;
     let account;
+    let sampleProject;
 
     before(
       function() {
@@ -81,7 +83,28 @@ describe('all tests', () => {
       };
       request(options)
       .then(res => {
-        console.log("YES ", res)
+        // console.log("YES ", res, typeof res);
+        const remotes = JSON.parse(res);
+        sampleProject = _.find(remotes, { name: 'code-repositories-api-common' });
+        // console.log(remotes, sampleProject);
+        done()
+      })
+      .catch(err => {
+        console.log('NOOO', err)
+        done(err)
+      })
+    });
+
+    it('use token to get projects', (done) => {
+      // code-repositories-api-common
+
+      const options = {
+        method: 'GET',
+        uri: 'http://localhost:3033/get-issues/' + sampleProject.id + '/' + user.id
+      };
+      request(options)
+      .then(res => {
+        console.log("YES ", res, typeof res);
         done()
       })
       .catch(err => {

@@ -16,6 +16,7 @@ const models       = require(rootPath + '/models');
 const { model, router, middlewares, queryBuilder, queryAsync } = require('jsonapi-express-backend')(rootPath, config, models);
 const getAndSaveAccessToken = require('../getAndSaveAccessToken');
 const getAccountProjects = require('../getAccountProjects');
+const getRemoteIssues = require('../getRemoteIssues');
 
 server.get('/cb/:provider', function (req, res) {
   if(! req.query.code) {
@@ -53,14 +54,27 @@ server.get('/get-projects/:accountId/:userId', (req, res) => {
   const { accountId, userId } = req.params;
   return getAccountProjects(accountId, userId)
   .then(result => {
-    console.log('ok', result);
+    // console.log('ok', result);
     res.json(result)
   })
   .catch(err => {
-    console.error('nok', err)
+    console.error('nok', err.message)
     res.json({ err: err.message })
   })
-})
+});
+
+server.get('/get-issues/:remoteId/:userId', (req, res) => {
+  const { remoteId, userId } = req.params;
+  return getRemoteIssues(remoteId, userId)
+  .then(result => {
+    // console.log('ok', result);
+    res.json(result)
+  })
+  .catch(err => {
+    console.error('nok', err.message)
+    res.json({ err: err.message })
+  })
+});
 
 
 server.listen(3033, function () {
