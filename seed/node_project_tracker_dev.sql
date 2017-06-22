@@ -230,3 +230,7 @@ ALTER TABLE `projects`
 -- 05.31.2017
 ALTER TABLE `projects` ADD COLUMN `remoteProjectId` int(11) NOT NULL;
 ALTER TABLE `remoteprojects` ADD COLUMN `localProjectId` int(11) NOT NULL;
+
+ALTER TABLE `api_tokens` CHANGE `access_token` `accessToken` VARCHAR(160) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `api_tokens` CHANGE `refresh_token` `refreshToken` VARCHAR(160) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `api_tokens` ADD COLUMN `username` VARCHAR(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;

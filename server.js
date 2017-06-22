@@ -60,6 +60,7 @@ const io = require('socket.io')(http);
 const RequestStrategy = require('code-repositories-api-node');
 const requestStrategy = new RequestStrategy;
 const repoApis = require('code-repositories-api-common')(requestStrategy);
+// const repoApis = require('../code-repositories-api')(requestStrategy);
 app.use(express.static('public'));
 app.use(bodyParser.json({ type: 'application/json' }));
 
@@ -225,69 +226,28 @@ app.post('/api/v1/got/:provider',
   const { provider } = req.params;
   const { userId } = req.jwt;
   const params = config.OAuthClients[provider];
-
-  // Encode provider credentials to base64
-  const rawCredentials = params.clientId + ':' + params.secret;
-  const encodedCredentials = new Buffer(rawCredentials).toString('base64');
+  const api = repoApis.factory(provider, params);
 
   let mustCreateAccount;
   let mustCreateToken;
-  const paramsPerProvider = {
-    bitbucket: {
-      uri: 'https://bitbucket.org/site/oauth2/access_token',
-      extract: function(response) {
-        return JSON.parse(response);
-      },
-      form: {},
-      headers: {
-        Authorization: 'Basic ' + encodedCredentials
-      }
-    },
-    github: {
-      uri: 'https://github.com/login/oauth/access_token',
-      extract: function(response) {
-        return querystring.parse(response);
-      },
-      form: {},
-      headers: {}
-    },
-    gitlab: {
-      uri: 'https://gitlab.com/oauth/token',
-      extract: function(response) {
-        return JSON.parse(response);
-      },
-      form: {
-        client_id: params.clientId,
-        client_secret: params.secret,
-        redirect_uri: params.redirectUri
-      },
-      headers: {}
-    }
-  };
 
-  const { uri, headers, form } = paramsPerProvider[provider];
-  // Prepare request to provider's access token route
-  const options = {
-    method: 'POST',
-    uri,
-    form: Object.assign(form, {
-      grant_type: 'authorization_code',
-      code: req.body.code
-    }),
-    headers
-  };
 
   // Fire request, store parsed JSON response
-  chain(request(options))
-  .then(passLog('## server response from ' + provider))
-  // .then(response => JSON.parse(response))
-  .then(paramsPerProvider[provider].extract)
-  .then(passLog('## parsed response'))
-  .set('token')
-  // Setup the provider strategy with freshly got access token
-  .then(token => repoApis[provider].setToken(token.access_token))
-  .then(passLog('## setToken / getUser result'))
+  chain(api.requestAccessToken())
+  .then(passLog('## parsed response for token request'))
+  .then(tokens => api.setTokens(tokens))
+  .then(passLog('## return from set token'))
+  .set('tokens')
+  .then(() => api.getUser())
   .set('apiUser')
+  .then(passLog('## return from get user'))
+  // .then(passLog('## server response from ' + provider))
+  // .then(response => JSON.parse(response))
+  // .then(paramsPerProvider[provider].extract)
+  // Setup the provider strategy with freshly got access token
+  // .then(token => repoApis[provider].setToken(token.access_token))
+  // .then(passLog('## setToken / getUser result'))
+  // .set('apiUser')
   .then(({ username }) => {
     return getAccount(userId, provider, username)
     .then(passLog('## getAccount result'))
@@ -310,7 +270,7 @@ app.post('/api/v1/got/:provider',
   .then(passLog('## Created account'))
   .set('account')
   // .get(passLog('## store chain content'))
-  .get(({ token, apiUser, account }) => {
+  .get(({ tokens, apiUser, account }) => {
     return getToken(account.id)
     .then(tokenRecord => {
       mustCreateToken = tokenRecord === false;

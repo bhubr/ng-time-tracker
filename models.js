@@ -74,10 +74,24 @@ module.exports = {
       }
     }
   },
+  apiToken: {
+    relationships: {
+      account: {
+        model: 'account',
+        type: 'belongsTo',
+        reverse: 'apiTokens'
+      }
+    }
+  },
   account: {
     relationships: {
       remoteProjects: {
         model: 'remoteProject',
+        type: 'hasMany',
+        reverse: 'account'
+      },
+      apiTokens: {
+        model: 'apiToken',
         type: 'hasMany',
         reverse: 'account'
       }
