@@ -15,6 +15,7 @@ const repoApis     = require('code-repositories-api-common')(reqStrategy);
 const models       = require(rootPath + '/models');
 const { model, router, middlewares, queryBuilder, queryAsync } = require('jsonapi-express-backend')(rootPath, config, models);
 const getAndSaveAccessToken = require('../getAndSaveAccessToken');
+const getAccountProjects = require('../getAccountProjects');
 
 server.get('/cb/:provider', function (req, res) {
   if(! req.query.code) {
@@ -30,10 +31,14 @@ server.get('/cb/:provider', function (req, res) {
   .then(user => {
     // api.requestAccessToken(req.query.code)
     getAndSaveAccessToken(provider, user.id, credentials[provider], code)
-    .then(tokens => {
-      res.json(tokens);
-      console.log(tokens);
-      emitter.emit('token', tokens);
+    .then(tokenAndAccount => {
+      res.json(tokenAndAccount);
+      // console.log(tokens);
+      emitter.emit('userAndToken', {
+        user,
+        token: tokenAndAccount.tokenRecord,
+        account: tokenAndAccount.accountRecord
+      });
     })
     
   })
@@ -42,8 +47,21 @@ server.get('/cb/:provider', function (req, res) {
     emitter.emit('err', new Error(typeof err === 'string' ? err.substr(0, 100): Object.keys(err)));
   });
 
-
 });
+
+server.get('/get-projects/:accountId/:userId', (req, res) => {
+  const { accountId, userId } = req.params;
+  return getAccountProjects(accountId, userId)
+  .then(result => {
+    console.log('ok', result);
+    res.json(result)
+  })
+  .catch(err => {
+    console.error('nok', err)
+    res.json({ err: err.message })
+  })
+})
+
 
 server.listen(3033, function () {
   console.log('Test server listening on port 3033!');

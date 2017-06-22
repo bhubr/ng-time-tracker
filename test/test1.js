@@ -11,6 +11,7 @@ const env         = process.env.NODE_ENV ? process.env.NODE_ENV : 'test';
 const config      = configs[env];
 const credentials = config.OAuthClients;
 const models      = require(rootPath + '/models');
+const request     = require('request-promise');
 
 const { model, router, middlewares, queryBuilder, queryAsync } = require('jsonapi-express-backend')(rootPath, config, models);
 
@@ -36,7 +37,9 @@ describe('all tests', () => {
 
     this.timeout(99999999);
     let client;
-    let tokens;
+    let token;
+    let user;
+    let account;
 
     before(
       function() {
@@ -45,7 +48,7 @@ describe('all tests', () => {
       }
     );
 
-    it('- get authorization code and token',function(done) {
+    it('get authorization code and token',function(done) {
       const authorizeUrl = 'https://bitbucket.org/site/oauth2/authorize'
         + "?client_id=" + credentials.bitbucket.clientId + "&response_type=code";
 
@@ -53,9 +56,12 @@ describe('all tests', () => {
         emitter.removeAllListeners();
         done(err);
       });
-      emitter.on('token', _tokens => {
+      emitter.on('userAndToken', data => {
         client.end();
-        tokens = _tokens;
+        token = data.token;
+        account = data.account;
+        user = data.user;
+        // console.log('userAndToken', data);
         emitter.removeAllListeners();
         done();
       });
@@ -66,6 +72,22 @@ describe('all tests', () => {
         .click('input[type="submit"]')
         .click('button.aui-button:nth-child(1)')
         .pause(1000);
+    });
+
+    it('use token to get projects', (done) => {
+      const options = {
+        method: 'GET',
+        uri: 'http://localhost:3033/get-projects/' + account.id + '/' + user.id
+      };
+      request(options)
+      .then(res => {
+        console.log("YES ", res)
+        done()
+      })
+      .catch(err => {
+        console.log('NOOO', err)
+        done(err)
+      })
     });
 
   });

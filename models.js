@@ -79,7 +79,7 @@ module.exports = {
       account: {
         model: 'account',
         type: 'belongsTo',
-        reverse: 'apiTokens'
+        reverse: 'apiToken'
       }
     }
   },
@@ -90,9 +90,9 @@ module.exports = {
         type: 'hasMany',
         reverse: 'account'
       },
-      apiTokens: {
+      apiToken: {
         model: 'apiToken',
-        type: 'hasMany',
+        type: 'belongsTo',
         reverse: 'account'
       }
     }

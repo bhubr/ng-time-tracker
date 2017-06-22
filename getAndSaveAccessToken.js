@@ -52,29 +52,33 @@ module.exports = function(provider, userId, credentials, code) {
       return store.createRecord('account', accountAttrs)
     });
   })
-  .set('account')
-  .get(({ tokens, apiUser, account }) =>
-    store.findRecordBy('apiToken', { accountId: account.id })
+  .set('accountRecord')
+  .get(({ tokens, apiUser, accountRecord }) =>
+    store.findRecordBy('apiToken', { accountId: accountRecord.id })
     .then(tokenRecord => {
       mustCreateToken = tokenRecord === false;
       // console.log('mustCreateToken', tokens, mustCreateToken ? 'yes' : 'no');
-      let tokenAttrs = {
-        accessToken: tokens.accessToken,
-        username: account.username
-      };
-      if(tokens.refreshToken) {
-        tokenAttrs.refreshToken = tokens.refreshToken;
-      }
+      // let tokenAttrs = {
+      //   accessToken: tokens.accessToken,
+      //   username: accountRecord.username
+      // };
+      // if(tokens.refreshToken) {
+      //   tokenAttrs.refreshToken = tokens.refreshToken;
+      // }
+      const tokenAttrs = Object.assign({
+        username: accountRecord.username
+      }, tokens);
+      console.log(tokens, tokenAttrs);
       // If a token already exists for this account, update it
       if(! mustCreateToken) {
         return store.updateRecord('apiToken', tokenRecord.id, tokenAttrs);
       }
-      tokenAttrs.accountId = account.id;
+      tokenAttrs.accountId = accountRecord.id;
       // console.log('## Creating token', tokenAttrs);
       return store.createRecord('apiToken', tokenAttrs)
       // .then(passLog('## Created token'))
       .then(record => {
-        return store.updateRecord('account', account.id, { tokenId: record.id })
+        return store.updateRecord('account', accountRecord.id, { tokenId: record.id })
         .then(() => (record));
       });
     })
@@ -86,7 +90,8 @@ module.exports = function(provider, userId, credentials, code) {
     // });
     // console.log('## return payload', payload);
     // res.json(payload);
-    return data;
+    const { tokenRecord, accountRecord } = data;
+    return { tokenRecord, accountRecord };
   })
   .catch(err => {
     console.log(err);

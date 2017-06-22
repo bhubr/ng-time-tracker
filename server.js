@@ -290,7 +290,7 @@ app.post('/api/v1/got/:provider',
       return objWrapper.create('api_tokens', tokenAttrs)
       .then(passLog('## Created token'))
       .then(record => {
-        return objWrapper.update('accounts', account.id, { tokenId: record.id })
+        return objWrapper.update('account', account.id, { tokenId: record.id })
         .then(() => (record));
       });
     });
