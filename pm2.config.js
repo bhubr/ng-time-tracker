@@ -10,9 +10,7 @@ module.exports = {
       name      : "ng-time-tracker",
       script    : "server.js",
       env: {
-        COMMON_VARIABLE: "true"
-      },
-      env_production : {
+        COMMON_VARIABLE: "true",
         NODE_ENV: "development"
       }
     }
