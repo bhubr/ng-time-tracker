@@ -233,6 +233,8 @@ app.post('/api/v1/got/:provider',
     const credentials = config.OAuthClients[provider];
     const { code } = req.body;
     return getAndSaveAccessToken(provider, userId, credentials, code)
+    .then(data => res.json(data))
+    .catch(err => res.status(500).json({ error: err.message }))
   // Get params
   //   * From request: provider (bitbucket, github, etc.)
   //   * From JWT: current user's ID
