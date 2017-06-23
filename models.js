@@ -115,7 +115,7 @@ module.exports = {
         reverse: 'issues'
       }
     }
-  }
+  },
   remoteProject: {
     relationships: {
       account: {
