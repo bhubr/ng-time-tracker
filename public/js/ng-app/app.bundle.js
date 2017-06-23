@@ -550,7 +550,6 @@ ProjectDetailsController.$inject = ['$scope', '$rootScope', '$window', '$http', 
   const projectId = $routeParams.projectId;
   $scope.colors = flatUiColors;
   $scope.remoteProjects = data['remote-projects'];
-  $scope.loadIssues();
 
   $http.get('/api/v1/projects/' + projectId)
   .then(res => {
@@ -566,6 +565,7 @@ ProjectDetailsController.$inject = ['$scope', '$rootScope', '$window', '$http', 
       console.log("got issues", res, $scope.project);
     })
   }
+  $scope.loadIssues();
 
 }
 
