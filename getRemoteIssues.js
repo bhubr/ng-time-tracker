@@ -76,6 +76,7 @@ module.exports = function(remoteId, userId) {
           projectId: remote.localProjectId
         }, entry);
         return store.findRecordBy('issue', {
+          remoteId: remote.id,
           iid: entry.iid
         })
         .then(existing => ( existing ?
