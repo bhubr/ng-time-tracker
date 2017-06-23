@@ -57,10 +57,10 @@
     <footer class="footer">
       <div class="container" ng-controller="timerCtrl">
         <p class="text-muted">{{ timeRemaining | formatTimer }}</p>
+        <div><button class="btn btn-info" ng-click="logout()">FORCE LOGOUT</button></div>
       </div>
     </footer>
 
-    <div><button class="btn btn-info" ng-click="logout()">FORCE LOGOUT</button></div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/vendor/showdown.min.js"></script>

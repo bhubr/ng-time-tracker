@@ -64,6 +64,16 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
       }]
     }
   })
+  .when("/projects/:projectId", {
+    templateUrl : "project-details.html",
+    controller : "projectsDetailsCtrl",
+    resolve: {
+      flatUiColors: ['$http', function($http) {
+        return $http.get('/flat-ui-colors.json')
+        .then(response => (response.data));
+      }]
+    }
+  })
   .when("/timer", {
     templateUrl : "timer.html",
     controller : "timerCtrl",

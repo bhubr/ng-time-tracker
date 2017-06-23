@@ -114,6 +114,7 @@ app
 .controller('accountsCtrl', require('./controllers/AccountsController'))
 .controller('statsCtrl', require('./controllers/StatsController'))
 .controller('projectsCtrl', require('./controllers/ProjectsController'))
+.controller('projectsDetailsCtrl', require('./controllers/ProjectDetailsController'))
 .controller('timerCtrl', require('./controllers/TimersController'))
 .controller('reposCtrl', require('./controllers/ReposController'))
 .filter('formatTimer', require('./filters/formatTimer'))
