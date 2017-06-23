@@ -71,6 +71,9 @@ function RouterConfig($routeProvider, $httpProvider, $locationProvider) {
       flatUiColors: ['$http', function($http) {
         return $http.get('/flat-ui-colors.json')
         .then(response => (response.data));
+      }],
+      data: ['dataService', function(dataService) {
+        return dataService.get(['remote-projects']);
       }]
     }
   })
