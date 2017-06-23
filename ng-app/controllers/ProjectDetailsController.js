@@ -8,7 +8,7 @@ ProjectDetailsController.$inject = ['$scope', '$rootScope', '$window', '$http', 
    |
    */
   console.log('ProjectDetailsController params', $routeParams);
-  const projectId = $routeParams.projectId;
+  const projectId = parseInt($routeParams.projectId, 10);
   $scope.colors = flatUiColors;
   $scope.remoteProjects = data['remote-projects'];
 
