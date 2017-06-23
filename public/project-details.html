@@ -9,10 +9,12 @@
       <div class="table-scroll">
         <table class="table table-condensed table-striped">
           <tr>
+            <th translate>ID</th>
             <th translate>ISSUE_TITLE</th>
             <th translate>ISSUE_DESC</th>
           </tr>
           <tr ng-repeat="issue in issues">
+            <td>{{ issue.iid }}</td>
             <td>{{ issue.title }}</td>
             <td>{{ issue.description }}</td>
           </tr>
