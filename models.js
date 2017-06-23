@@ -71,6 +71,11 @@ module.exports = {
         model: 'remoteProject',
         type: 'belongsTo',
         reverse: 'localProject'
+      },
+      issues: {
+        model: 'issue',
+        type: 'hasMany',
+        reverse: 'project'
       }
     }
   },
@@ -97,6 +102,20 @@ module.exports = {
       }
     }
   },
+  issue: {
+    relationships: {
+      project: {
+        model: 'project',
+        type: 'belongsTo',
+        reverse: 'issues'
+      },
+      remote: {
+        model: 'remoteProject',
+        type: 'belongsTo',
+        reverse: 'issues'
+      }
+    }
+  }
   remoteProject: {
     relationships: {
       account: {
@@ -108,6 +127,11 @@ module.exports = {
         model: 'project',
         type: 'belongsTo',
         reverse: 'remoteProject'
+      },
+      issues: {
+        model: 'issue',
+        type: 'hasMany',
+        reverse: 'remote'
       }
     }
   },
