@@ -14,7 +14,7 @@ ProjectDetailsController.$inject = ['$scope', '$rootScope', '$window', '$http', 
   const projectId = $routeParams.projectId;
   $http.get('/api/v1/projects/' + projectId)
   .then(res => {
-    $scope.project = jsonapiUtils.unmapRecord(res.data);
+    $scope.project = jsonapiUtils.unmapRecord(res.data.data);
     console.log("got project", res, $scope.project);
   })
 
