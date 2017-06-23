@@ -123,6 +123,7 @@ module.exports = {
     onCreate: '&',
     onDelete: '&',
     onUpdate: '&',
+    onIssuesSynced: '&',
     onProjectUpdated: '&',
     onProjectDeleted: '&'
   }

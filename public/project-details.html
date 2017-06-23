@@ -1,3 +1,24 @@
-<div class="col-md-12 col-sm-12">
-  <project-editor on-select="alert('yay')" project="project" remote-projects="remoteProjects" colors="colors"></project-editor>
+<div class="col-md-6 col-sm-12">
+  <project-editor on-select="alert('yay')" project="project" remote-projects="remoteProjects" colors="colors" on-issues-synced="loadIssues()"></project-editor>
+</div>
+
+<div class="col-md-6 col-sm-12">
+  <div class="panel panel-default">
+    <div class="panel-heading" translate>ISSUE_LIST</div>
+    <div class="panel-body">
+      <div class="table-scroll">
+        <table class="table table-condensed table-striped">
+          <tr>
+            <th translate>ISSUE_TITLE</th>
+            <th translate>ISSUE_DESC</th>
+          </tr>
+          <tr ng-repeat="issue in issues">
+            <td>{{ issue.title }}</td>
+            <td>{{ issue.description }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </div>
