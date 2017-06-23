@@ -64,11 +64,27 @@ module.exports = function(remoteId, userId) {
     })
     .then(tokens => apiStrategy.setTokens(tokens))
     .then(() => apiStrategy.getIssuesFor({ name, fullName }))
-    // .then(issuesRes => {
+
+    .then(issuesRes => {
     //   console.log('\n\n###### RETURNED FROM ISSUES QUERY\n', issuesRes);
     //   // fs.writeFileSync(dump, JSON.stringify(projectsRes));
+      return Promise.map(issuesRes, entry => {
+        // const { uuid, name, fullName, htmlUrl } = entry;
+        const attrs = Object.assign({
+          remoteId: remote.id,
+          projectId: remote.localProjectId
+        }, entry);
+        return store.findRecordBy('issue', {
+          iid: entry.iid
+        })
+        .then(existing => ( existing ?
+          Object.assign( existing, { isNew: false } ) :
+          store.createRecord('issue', attrs)
+          .then(record => Object.assign( record, { isNew: true } ))
+        ) );
+      })
     //   return res.json(issuesRes);
-    // })
+    })
     // .catch(err => {
     //   console.log('\n## Fatal', err);
     //   res.json({ error: err.message });

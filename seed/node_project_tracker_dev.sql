@@ -237,3 +237,37 @@ ALTER TABLE `api_tokens` ADD COLUMN `username` VARCHAR(64) CHARACTER SET utf8 CO
 ALTER TABLE `api_tokens` ADD COLUMN `scopes` TEXT;
 ALTER TABLE `api_tokens` CHANGE `expiresAt` `expiresAt` BIGINT(11) NULL DEFAULT NULL;
 ALTER TABLE `remote_projects` CHANGE `localProjectId` `localProjectId` INT(11) NULL;
+
+
+CREATE TABLE `issues` (
+  `id` int(11) NOT NULL,
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  `status` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `content` text COLLATE utf8_unicode_ci,
+  `remoteId` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Index pour les tables déchargées
+--
+
+--
+-- Index pour la table `issues`
+--
+ALTER TABLE `issues`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `issues_ibfk_1` (`remoteId`);
+
+--
+-- AUTO_INCREMENT pour les tables déchargées
+--
+
+--
+-- AUTO_INCREMENT pour la table `issues`
+--
+ALTER TABLE `issues`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;COMMIT;
+
+ALTER TABLE `issues` ADD COLUMN `id` int(11) NOT NULL;
