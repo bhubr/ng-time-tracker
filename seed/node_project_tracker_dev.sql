@@ -270,4 +270,10 @@ ALTER TABLE `issues`
 ALTER TABLE `issues`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;COMMIT;
 
-ALTER TABLE `issues` ADD COLUMN `id` int(11) NOT NULL;
+ALTER TABLE `issues` ADD COLUMN `iid` int(11) NOT NULL;
+ALTER TABLE `issues` CHANGE `status` `state` VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `issues` CHANGE `label` `title` VARCHAR(128) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `issues` CHANGE `content` `description` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `issues` ADD COLUMN `projectId` int(11) NOT NULL;
+ALTER TABLE `issues`
+  ADD KEY `issues_ibfk_2` (`projectId`);

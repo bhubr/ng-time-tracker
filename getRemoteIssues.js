@@ -1,3 +1,4 @@
+const Promise      = require('bluebird');
 const ReqStrategy  = require('code-repositories-api-node');
 const reqStrategy  = new ReqStrategy();
 const repoApis     = require('code-repositories-api-common')(reqStrategy);
