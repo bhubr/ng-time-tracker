@@ -561,8 +561,9 @@ ProjectDetailsController.$inject = ['$scope', '$rootScope', '$window', '$http', 
     console.log('loadIssues');
     $http.get('/api/v1/issues?projectId=' + projectId)
     .then(res => {
-      $scope.issues = jsonapiUtils.unmapRecords(res.data.data);
-      console.log("got issues", res, $scope.project);
+      const allIssues = jsonapiUtils.unmapRecords(res.data.data);
+      $scope.issues = _.filter(allIssues, issue => (issue.projectId === projectId));
+      console.log("got issues", $scope.issues);
     })
   }
   $scope.loadIssues();
