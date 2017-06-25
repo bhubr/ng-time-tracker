@@ -23,6 +23,9 @@ function DashboardController($rootScope, $scope, _, moment, dataService, optionS
     return recentProjectIds.indexOf(p.id) !== -1;
   });
 
+  $scope.projectOptions = [{ id: 0, name: '' }].concat($scope.activeProjects);
+
+
   // Daily posts
   var today = moment().format('YYYY-MM-DD');
   var dailyPost = _.find(data.dailyposts, function(post) {

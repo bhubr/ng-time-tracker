@@ -1,6 +1,6 @@
-TimerSetupComponent.$inject = [];
+TimerSetupController.$inject = [];
 
-function TimerSetupComponent() {
+function TimerSetupController() {
   this.filters = {
     project: ''
   };
@@ -10,7 +10,7 @@ function TimerSetupComponent() {
 
 module.exports = {
   templateUrl: 'timer-setup.html',
-  controller: TimerSetupComponent,
+  controller: TimerSetupController,
   bindings: {
     projectOptions: '=',
     // onProjectDeleted: '&'
