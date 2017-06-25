@@ -20,7 +20,7 @@ function DashboardController($rootScope, $scope, _, moment, dataService, optionS
   });
   var recentProjectIds = _.map(recentTimers, 'projectId');
   $scope.activeProjects = _.filter(data.projects, function(p) {
-    return recentProjectIds.indexOf(p.id) !== -1;
+    return recentProjectIds.indexOf(p.id) !== -1 || p.active;
   });
 
   $scope.projectOptions = [{ id: 0, name: '' }].concat($scope.activeProjects);

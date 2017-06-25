@@ -151,7 +151,7 @@
 /******/ 	__webpack_require__.oe = function(err) { console.error(err); throw err; };
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 170);
+/******/ 	return __webpack_require__(__webpack_require__.s = 169);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1987,7 +1987,7 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            __webpack_require__(168)("./" + name);
+            __webpack_require__(167)("./" + name);
             // because defineLocale currently also sets the global locale, we
             // want to undo that for lazy loaded locales
             getSetGlobalLocale(oldLocale);
@@ -4628,7 +4628,7 @@ return hooks;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(161);
+__webpack_require__(160);
 module.exports = angular;
 
 
@@ -15795,17 +15795,16 @@ module.exports = function(module) {
 /* 143 */,
 /* 144 */,
 /* 145 */,
-/* 146 */,
-/* 147 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(157);
+__webpack_require__(156);
 module.exports = 'angular-jwt';
 
 
 
 /***/ }),
-/* 148 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15831,7 +15830,7 @@ angular.module('markdown', [])
 
 
 /***/ }),
-/* 149 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* angular-moment.js / v1.0.1 / (c) 2013, 2014, 2015, 2016 Uri Shaked / MIT Licence */
@@ -16577,30 +16576,30 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
+/* 149 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(157);
+module.exports = 'nvd3';
+
+/***/ }),
 /* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(158);
-module.exports = 'nvd3';
+module.exports = 'ngRoute';
+
 
 /***/ }),
 /* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(159);
-module.exports = 'ngRoute';
-
-
-/***/ }),
-/* 152 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(160);
 module.exports = 'ngSanitize';
 
 
 /***/ }),
-/* 153 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -20316,7 +20315,7 @@ return 'pascalprecht.translate';
 
 
 /***/ }),
-/* 154 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// your library here
@@ -20324,7 +20323,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   'use strict';
   if (true) {
     // AMD. Register as an anonymous module.
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(164)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(163)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -20441,7 +20440,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 }));
 
 /***/ }),
-/* 155 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module, global) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -31546,8 +31545,8 @@ angular.module('ngLodash', []).constant('lodash', null).config([
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(118)(module), __webpack_require__(117)))
 
 /***/ }),
-/* 156 */,
-/* 157 */
+/* 155 */,
+/* 156 */
 /***/ (function(module, exports) {
 
 (function() {
@@ -31946,7 +31945,7 @@ angular.module('angular-jwt.options', [])
 }());
 
 /***/ }),
-/* 158 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**************************************************************************
@@ -31961,7 +31960,7 @@ angular.module('angular-jwt.options', [])
     // Node.js or CommonJS
     if (true) {
         /* jshint -W020 */
-        nv = __webpack_require__(169);
+        nv = __webpack_require__(168);
         /* jshint +W020 */
     }
 
@@ -32605,7 +32604,7 @@ angular.module('angular-jwt.options', [])
 
 
 /***/ }),
-/* 159 */
+/* 158 */
 /***/ (function(module, exports) {
 
 /**
@@ -33682,7 +33681,7 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 
 /***/ }),
-/* 160 */
+/* 159 */
 /***/ (function(module, exports) {
 
 /**
@@ -34427,7 +34426,7 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 
 
 /***/ }),
-/* 161 */
+/* 160 */
 /***/ (function(module, exports) {
 
 /**
@@ -67053,7 +67052,7 @@ $provide.value("$locale", {
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
 
 /***/ }),
-/* 162 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67174,7 +67173,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 163 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67188,9 +67187,9 @@ function fromByteArray (uint8) {
 
 
 
-var base64 = __webpack_require__(162)
-var ieee754 = __webpack_require__(166)
-var isArray = __webpack_require__(167)
+var base64 = __webpack_require__(161)
+var ieee754 = __webpack_require__(165)
+var isArray = __webpack_require__(166)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -68971,7 +68970,7 @@ function isnan (val) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(117)))
 
 /***/ }),
-/* 164 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// your library here
@@ -69628,10 +69627,10 @@ function isnan (val) {
 }));
 
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(163).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(162).Buffer))
 
 /***/ }),
-/* 165 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
@@ -79194,7 +79193,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
 }();
 
 /***/ }),
-/* 166 */
+/* 165 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -79284,7 +79283,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 167 */
+/* 166 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -79295,7 +79294,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 168 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -79544,10 +79543,10 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 168;
+webpackContext.id = 167;
 
 /***/ }),
-/* 169 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* nvd3 version 1.8.5 (https://github.com/novus/nvd3) 2016-12-01 */
@@ -79567,7 +79566,7 @@ nv.dom = {}; //DOM manipulation functions
 
 // Node/CommonJS - require D3
 if (typeof(module) !== 'undefined' && typeof(exports) !== 'undefined' && typeof(d3) == 'undefined') {
-    d3 = __webpack_require__(165);
+    d3 = __webpack_require__(164);
 }
 
 nv.dispatch = d3.dispatch('render_start', 'render_end');
@@ -94977,19 +94976,19 @@ nv.version = "1.8.5";
 //# sourceMappingURL=nv.d3.js.map
 
 /***/ }),
-/* 170 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-__webpack_require__(152);
-__webpack_require__(147);
 __webpack_require__(151);
-__webpack_require__(148);
-__webpack_require__(153);
-__webpack_require__(149);
+__webpack_require__(146);
 __webpack_require__(150);
-__webpack_require__(155);
-module.exports = __webpack_require__(154);
+__webpack_require__(147);
+__webpack_require__(152);
+__webpack_require__(148);
+__webpack_require__(149);
+__webpack_require__(154);
+module.exports = __webpack_require__(153);
 
 
 /***/ })
