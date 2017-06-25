@@ -39,7 +39,7 @@ function ProjectEditorController($rootScope, $scope, $http, $window, _, jsonapiU
    * Update a project
    */
   this.updateProject = function(id) {
-    const { name, description, color, remoteProjectId } = ctrl.project;
+    const { name, description, color, active, remoteProjectId } = ctrl.project;
     // console.log('updateProject', name, description, color, remoteProjectId, { data: { type: 'projects', id,
     //   attributes: { name, description, color } },
     //   relationships: {
@@ -50,7 +50,7 @@ function ProjectEditorController($rootScope, $scope, $http, $window, _, jsonapiU
     { data:
       {
         type: 'projects', id,
-        attributes: { name, description, color },
+        attributes: { name, description, color, active },
         relationships: {
           'remote-project': { data: { type: 'remote-projects', id: remoteProjectId } }
         }
