@@ -5,10 +5,12 @@
       <div class="table-scroll">
         <table class="table table-condensed table-striped">
           <tr>
+            <th translate>ACTIVE</th>
             <th translate>PROJECT_NAME</th>
             <th translate>PROJECT_DESC</th>
           </tr>
           <tr ng-repeat="proj in $ctrl.projects" ng-click="$ctrl.selectProject(proj.id)">
+            <td><span ng-if="proj.active">*</span></td>
             <td style="width: 40%"><strong style="border-bottom: 2px solid {{proj.color}};">
               <a href="/projects/{{ proj.id }}">{{ proj.name }}</a>
             </strong></td>
