@@ -29,7 +29,11 @@
           <div ng-click="$ctrl.pickColor($event)" data-color="{{ c.color }}" class="col-md-4 col-sm-6 col-xs-6" ng-repeat="c in colors" style="background-color: {{ c.color }}">{{ c.name }}</div>
         </div>
       </div>
-
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" ng-model="$ctrl.project.active"> PROJECT_IS_ACTIVE
+        </label>
+      </div>
       
       <button ng-if="$ctrl.project.id" type="button" class="btn btn-primary" ng-click="$ctrl.updateProject($ctrl.project.id)" translate>UPDATE</button>
       <button ng-if="$ctrl.project.id" type="button" class="btn btn-info" ng-click="$ctrl.syncIssues($ctrl.project.id)" translate>SYNC_ISSUES</button>

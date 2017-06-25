@@ -278,3 +278,7 @@ ALTER TABLE `issues` CHANGE `content` `description` TEXT CHARACTER SET utf8 COLL
 ALTER TABLE `issues` ADD COLUMN `projectId` int(11) NOT NULL;
 ALTER TABLE `issues`
   ADD KEY `issues_ibfk_2` (`projectId`);
+
+
+--
+ALTER TABLE `projects` ADD COLUMN `active` boolean;
