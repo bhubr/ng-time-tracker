@@ -205,6 +205,7 @@ function TimerSetupController($interval, _, dataService, optionService, notifica
     markdown: '',
     status: '',
     ownerId: '',
+    type: 'pomodoro',
     duration: optionService.get('pomodoro'),
     projectId: storedProjectId !== null ? storedProjectId : 0,
     issueId: storedIssueId !== null ? storedIssueId : 0
