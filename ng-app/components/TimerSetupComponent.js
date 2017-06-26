@@ -3,6 +3,7 @@ TimerSetupController.$inject = ['$interval', 'lodash', 'dataService', 'optionSer
 function TimerSetupController($interval, _, dataService, optionService, notificationService) {
   console.log('TimerSetupController init', this);
   const self = this;
+  const MYSQL_OFFSET = 7200;
   const storedProjectId = localStorage.getItem('storedProjectId');
   const storedIssueId = localStorage.getItem('storedIssueId');
 
@@ -126,7 +127,21 @@ function TimerSetupController($interval, _, dataService, optionService, notifica
     .catch(err => {
       this.statustext = err;
     });
-  }}
+  }
+
+  if(this.lastTimer) {
+    console.log('has lastTimer', this.lastTimer);
+    var timeStampStart = new Date( thislastTimer.createdAt ).getTime();
+    var timeStampNow = Date.now();
+    console.log('timer start, now, diff:', timeStampStart, timeStampNow, Math.floor( ( timeStampNow - timeStampStart ) / 1000 ) - MYSQL_OFFSET);
+    var timeDiff = Math.floor( ( timeStampNow - timeStampStart ) / 1000 ) - MYSQL_OFFSET;
+    if( timeDiff < optionService.get('pomodoro') ) {
+      this.startTimer( optionService.get('pomodoro') - timeDiff );
+      this.timer = this.lastTimer;
+    }
+  }
+
+}
 
 
 module.exports = {
