@@ -15,7 +15,7 @@ function TimerSetupController(_, dataService) {
     const id = this.filters.projectId;
     if(id !== 0) {
       const project = _.find(this.projectOptions,{ id })
-      this.syncProjectIssues({ project });
+      this.syncProjectIssues(project);
     }
   }
 
