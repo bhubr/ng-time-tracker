@@ -324,7 +324,7 @@ function TimerSetupController($interval, _, dataService, optionService, notifica
 
   if(this.lastTimer) {
     console.log('has lastTimer', this.lastTimer);
-    var timeStampStart = new Date( thislastTimer.createdAt ).getTime();
+    var timeStampStart = new Date( this.lastTimer.createdAt ).getTime();
     var timeStampNow = Date.now();
     console.log('timer start, now, diff:', timeStampStart, timeStampNow, Math.floor( ( timeStampNow - timeStampStart ) / 1000 ) - MYSQL_OFFSET);
     var timeDiff = Math.floor( ( timeStampNow - timeStampStart ) / 1000 ) - MYSQL_OFFSET;
