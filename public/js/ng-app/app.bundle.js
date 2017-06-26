@@ -216,7 +216,7 @@ function TimerSetupController($interval, _, dataService, optionService, notifica
   this.issueOptions = [];
   this.timerInterval = null;
   this.timeRemaining = 0;
-  this.lastTimer = {};
+  // this.lastTimer = {};
   // this.currentTimer = {};
   this.allTimers = [];
   this.timers = [];
