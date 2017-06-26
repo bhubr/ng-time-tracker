@@ -64,15 +64,15 @@ function DataService($http, $q, _, jsonapiUtils) {
       });
     },
 
-    createTimer: function(timer) {
-
+    createTimer: function(timer, userId) {
+      console.log('DS.createTimer', timer, userId)
       return $http.post("/api/v1/timers",
       {
         data: {
           type: 'timers',
           attributes: timer, //{ type },
           relationships: {
-            owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
+            owner: { data: { type: 'users', id: userId } }
           }
         }
       } )
