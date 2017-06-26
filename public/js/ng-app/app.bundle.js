@@ -195,9 +195,17 @@ TimerSetupController.$inject = [];
 
 function TimerSetupController() {
   this.filters = {
-    project: ''
+    project: '',
+    issue: ''
   };
-  console.log(this);
+  
+  this.selectProject = function() {
+    console.log('TimerSetupController.selectProject', this.filters);
+  }
+
+  this.selectIssue = function() {
+    console.log('TimerSetupController.selectIssue', this.filters);
+  }
 }
 
 

@@ -1,4 +1,8 @@
 <div class="form-group">
-<label for="selectProject" translate>SELECT_PROJECT</label>
-  <select class="form-control" ng-model="$ctrl.filters.project" ng-options="p.id as p.name for p in $ctrl.projectOptions"></select>
+  <label for="selectProject" translate>SELECT_PROJECT</label>
+  <select id="selectProject" class="form-control" ng-model="$ctrl.filters.project" ng-options="p.id as p.name for p in $ctrl.projectOptions" ng-change="$ctrl.selectProject()"></select>
+</div>
+<div class="form-group">
+  <label for="selectIssue" translate>SELECT_ISSUE</label>
+  <select id="selectIssue" class="form-control" ng-model="$ctrl.filters.issue" ng-options="p.id as p.name for p in $ctrl.projectOptions" ng-change="$ctrl.selectIssue()"></select>
 </div>
