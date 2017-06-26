@@ -252,10 +252,10 @@ function TimerSetupController($interval, _, dataService, optionService, notifica
     this.timeRemaining = duration === undefined ? optionService.get('pomodoro') : duration;
     this.timerInterval = $interval( () => {
       // this.$apply(function(){
-        this.timeRemaining -= 1;
-        if( this.timeRemaining === 0 ) {
-          $interval.cancel( this.timerInterval );
-          this.timerInterval = null;
+        self.timeRemaining -= 1;
+        if( self.timeRemaining === 0 ) {
+          $interval.cancel( self.timerInterval );
+          self.timerInterval = null;
         }
       // });
     }, 1000 );
