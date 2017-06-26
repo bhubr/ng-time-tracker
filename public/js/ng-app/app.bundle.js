@@ -342,6 +342,7 @@ module.exports = {
   controller: TimerSetupController,
   bindings: {
     projectOptions: '=',
+    lastTimer: '=',
     onProjectSelected: '&'
     // onProjectDeleted: '&'
   }
