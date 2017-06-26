@@ -39,23 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
     Notification.requestPermission();
 });
 
-// http://stackoverflow.com/questions/2271156/chrome-desktop-notification-example
-function notifyMe(idleTime) {
-  if (Notification.permission !== "granted")
-    Notification.requestPermission();
-  else {
-    var notification = new Notification("Don't stay idle!!", {
-      icon: 'http://cdn.sstatic.net/stackexchange/img/logos/so/so-icon.png',
-      body: "Hey there! You've been idle for " + idleTime + ' minute(s)',
-    });
 
-    notification.onclick = function () {
-      window.open("http://stackoverflow.com/a/13328397/1269037");      
-    };
-
-  }
-
-}
 
 // Declare app
 var app = angular.module("ngTimeTracker", [
