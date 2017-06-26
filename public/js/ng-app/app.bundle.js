@@ -194,6 +194,7 @@ module.exports = {
 TimerSetupController.$inject = [];
 
 function TimerSetupController() {
+  console.log('TimerSetupController init', this);
   this.filters = {
     project: '',
     issue: ''
@@ -201,6 +202,7 @@ function TimerSetupController() {
   
   this.selectProject = function() {
     console.log('TimerSetupController.selectProject', this.filters);
+    // this.onProjectSelected({ projectId: this.filters.project });
   }
 
   this.selectIssue = function() {
@@ -214,6 +216,7 @@ module.exports = {
   controller: TimerSetupController,
   bindings: {
     projectOptions: '=',
+    onProjectSelected: '&'
     // onProjectDeleted: '&'
   }
 };
