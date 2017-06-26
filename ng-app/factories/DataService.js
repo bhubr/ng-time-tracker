@@ -48,7 +48,7 @@ function DataService($http, $q, _, jsonapiUtils) {
 
     syncProjectIssues: function(project) {
       const { name, description, remoteProjectId } = project;
-      $http.post("/api/v1/sync/issues/" + remoteProjectId,
+      return $http.post("/api/v1/sync/issues/" + remoteProjectId,
       {} )
       .then(function(response) {
         console.log("## syncIssues returned");
