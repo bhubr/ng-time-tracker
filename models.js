@@ -76,6 +76,11 @@ module.exports = {
         model: 'issue',
         type: 'hasMany',
         reverse: 'project'
+      },
+      timers: {
+        model: 'timer',
+        type: 'hasMany',
+        reverse: 'project'
       }
     }
   },
@@ -149,6 +154,11 @@ module.exports = {
       },
       issue: {
         model: 'issue',
+        type: 'belongsTo',
+        reverse: 'timers'
+      },
+      project: {
+        model: 'project',
         type: 'belongsTo',
         reverse: 'timers'
       }
