@@ -25,15 +25,6 @@ function DashboardController($rootScope, $scope, _, moment, dataService, optionS
 
   $scope.projectOptions = [{ id: 0, name: '' }].concat($scope.activeProjects);
 
-  $scope.syncProjectIssues = function(project) {
-    console.log('DashboardController.syncProjectIssues', project);
-    dataService.syncProjectIssues(project)
-    .then(issues => {
-      $scope.issueOptions = [{ id: 0, name: '' }].concat(issues);
-      console.log('DashboardController $scope.issueOptions', $scope.issueOptions);
-    })
-  }
-
   // Daily posts
   var today = moment().format('YYYY-MM-DD');
   var dailyPost = _.find(data.dailyposts, function(post) {

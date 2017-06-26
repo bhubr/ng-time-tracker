@@ -191,22 +191,35 @@ module.exports = {
 /***/ 121:
 /***/ (function(module, exports) {
 
-TimerSetupController.$inject = ['lodash'];
+TimerSetupController.$inject = ['lodash', 'dataService'];
 
-function TimerSetupController(_) {
+function TimerSetupController(_, dataService) {
   console.log('TimerSetupController init', this);
+  const self = this;
+
   this.filters = {
     projectId: '',
     issueId: ''
   };
+  this.issueOptions = [];
   
   this.selectProject = function() {
     console.log('TimerSetupController.selectProject', this.filters);
     const id = this.filters.projectId;
     if(id !== 0) {
       const project = _.find(this.projectOptions,{ id })
-      this.onProjectSelected({ project });
+      this.syncProjectIssues({ project });
     }
+  }
+
+
+  this.syncProjectIssues = function(project) {
+    console.log('TimerSetupController.syncProjectIssues', project);
+    dataService.syncProjectIssues(project)
+    .then(issues => {
+      self.issueOptions = [{ id: 0, name: '' }].concat(issues);
+      console.log('TimerSetupController $scope.issueOptions', self.issueOptions);
+    })
   }
 
   this.selectIssue = function() {
@@ -508,15 +521,6 @@ function DashboardController($rootScope, $scope, _, moment, dataService, optionS
   });
 
   $scope.projectOptions = [{ id: 0, name: '' }].concat($scope.activeProjects);
-
-  $scope.syncProjectIssues = function(project) {
-    console.log('DashboardController.syncProjectIssues', project);
-    dataService.syncProjectIssues(project)
-    .then(issues => {
-      $scope.issueOptions = [{ id: 0, name: '' }].concat(issues);
-      console.log('DashboardController $scope.issueOptions', $scope.issueOptions);
-    })
-  }
 
   // Daily posts
   var today = moment().format('YYYY-MM-DD');
