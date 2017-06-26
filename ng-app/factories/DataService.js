@@ -91,6 +91,25 @@ function DataService($rootScope, $http, $q, _, jsonapiUtils) {
       // .catch(err => {
       //   this.statustext = err;
       // });
+    },
+
+    updateTimer: function(timer) {
+      $http.put("/api/v1/timers/" + timer.id, {
+        data: {
+          type: 'timers',
+          id: timer.id,
+          attributes: {
+            summary: timer.summary,
+            markdown: timer.markdown
+          }
+        } 
+      } )
+      .then(function(response) {
+        return jsonapiUtils.unmapRecord(response.data.data);
+      })
+      .catch(err => {
+        this.statustext = err;
+      });
     }
   };
 }

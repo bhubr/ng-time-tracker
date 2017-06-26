@@ -279,47 +279,21 @@ function TimerSetupController($interval, _, dataService, optionService, notifica
     .catch(err => {
       notificationService.notify('danger', 'timer creation failed: ' + err);
     })
-    // $http.post("/api/v1/timers",
-    // {
-    //   data: {
-    //     type: 'timers',
-    //     attributes: { type },
-    //     relationships: {
-    //       owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
-    //     }
-    //   }
-    // } )
-    // .then(function(response) {
-    //   this.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
-    //   this.timers.push( this.currentTimer );
-    // })
-    // .catch(err => {
-    //   this.statustext = err;
-    // });
   }
 
   this.updatePomodoro = function() {
 
-    $http.put("/api/v1/timers/" + this.currentTimer.id, {
-      data: {
-        type: 'timers',
-        id: this.currentTimer.id,
-        attributes: {
-          summary: this.currentTimer.summary,
-          markdown: this.currentTimer.markdown,
-          projectId: this.currentTimer.projectId
-        }
-      } 
-    } )
-    .then(function(response) {
-      this.currentTimer = Object.assign( 
-        this.currentTimer,
-        jsonapiUtils.unmapRecord(response.data.data)
-      );
+    dataService.updateTimer(this.timer)
+    .then(timer => {
+      console.log('startPomodoro timer returned', timer);
+      this.startTimer();
+      this.timer = timer;
+      notificationService.notify('success', 'timer update');
     })
     .catch(err => {
-      this.statustext = err;
-    });
+      notificationService.notify('danger', 'timer update failed: ' + err);
+    })
+
   }
 
   if(this.lastTimer) {
@@ -1236,6 +1210,25 @@ function DataService($rootScope, $http, $q, _, jsonapiUtils) {
       // .catch(err => {
       //   this.statustext = err;
       // });
+    },
+
+    updateTimer: function(timer) {
+      $http.put("/api/v1/timers/" + timer.id, {
+        data: {
+          type: 'timers',
+          id: timer.id,
+          attributes: {
+            summary: timer.summary,
+            markdown: timer.markdown
+          }
+        } 
+      } )
+      .then(function(response) {
+        return jsonapiUtils.unmapRecord(response.data.data);
+      })
+      .catch(err => {
+        this.statustext = err;
+      });
     }
   };
 }
