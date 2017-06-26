@@ -121,7 +121,7 @@ module.exports = {
       },
       timers: {
         model: 'timer',
-        type: 'belongsTo',
+        type: 'hasMany',
         reverse: 'issue'
       }
     }
