@@ -191,9 +191,9 @@ module.exports = {
 /***/ 121:
 /***/ (function(module, exports) {
 
-TimerSetupController.$inject = ['$interval', 'lodash', 'dataService', 'optionService'];
+TimerSetupController.$inject = ['$interval', 'lodash', 'dataService', 'optionService', 'notificationService'];
 
-function TimerSetupController($interval, _, dataService, optionService) {
+function TimerSetupController($interval, _, dataService, optionService, notificationService) {
   console.log('TimerSetupController init', this);
   const self = this;
   const storedProjectId = localStorage.getItem('storedProjectId');
