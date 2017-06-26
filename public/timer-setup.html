@@ -19,7 +19,7 @@
     <textarea id="inputMarkdown" class="form-control" ng-model="$ctrl.timer.markdown">{{ $ctrl.timer.markdown }}</textarea>
   </div>
   <div class="browser-default col-sm-12" ng-bind-html="$ctrl.timer.markdown | markdown"></div>
-  <div class="input-field col col-sm-7">
+  <div class="form-group col col-sm-7">
     <select ng-options="s for s in $ctrl.statusOptions" class="form-control" ng-model="$ctrl.timer.status">
       <option ng-repeat="x in statuses">{{x}}</option>
     </select>
@@ -30,7 +30,11 @@
     </select>
   </div>
  -->
-  <div class="input-field col-sm-12" ng-if="$ctrl.timer.id"><button class="btn btn-primary" ng-click="$ctrl.updatePomodoro()">Update</button></div>
-  <div class="input-field col-sm-12" ng-if="! $ctrl.timer.id"><button class="btn btn-primary" ng-click="$ctrl.startPomodoro()">Start</button></div>
+  <div class="form-group col-sm-12" ng-if="$ctrl.timer.id">
+    <button class="btn btn-primary" ng-click="$ctrl.updatePomodoro()">Update</button>
+  </div>
+  <div class="form-group col-sm-12" ng-if="! $ctrl.timer.id">
+    <button class="btn btn-primary" ng-click="$ctrl.startPomodoro()">Start</button>
+  </div>
 </div>
 
