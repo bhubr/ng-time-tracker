@@ -1207,6 +1207,7 @@ function DataService($rootScope, $http, $q, _, jsonapiUtils) {
         attributes: { type, summary, markdown, duration },
         relationships
       };
+      console.log('DS.createTimer ### 3', { data });
       return $http.post("/api/v1/timers", { data } )
       .then(function(response) {
         // this.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
