@@ -191,9 +191,9 @@ module.exports = {
 /***/ 121:
 /***/ (function(module, exports) {
 
-TimerSetupController.$inject = ['lodash', 'dataService', 'optionService'];
+TimerSetupController.$inject = ['$interval', 'lodash', 'dataService', 'optionService'];
 
-function TimerSetupController(_, dataService, optionService) {
+function TimerSetupController($interval, _, dataService, optionService) {
   console.log('TimerSetupController init', this);
   const self = this;
   const storedProjectId = localStorage.getItem('storedProjectId');
@@ -211,7 +211,7 @@ function TimerSetupController(_, dataService, optionService) {
   };
   this.statusOptions = ['new', 'done', 'interrupted'];
   this.issueOptions = [];
-  this.timer = null;
+  this.timerInterval = null;
   this.timeRemaining = 0;
   this.lastTimer = {};
   this.currentTimer = {};
@@ -248,14 +248,14 @@ function TimerSetupController(_, dataService, optionService) {
 
   this.startTimer = function( duration ) {
     this.timeRemaining = duration === undefined ? optionService.get('pomodoro') : duration;
-    this.timer = setInterval( () => {
-      this.$apply(function(){
+    this.timerInterval = $interval( () => {
+      // this.$apply(function(){
         this.timeRemaining -= 1;
         if( this.timeRemaining === 0 ) {
-          clearInterval( this.timer );
-          this.timer = null;
+          $interval.cancel( this.timerInterval );
+          this.timerInterval = null;
         }
-      });
+      // });
     }, 1000 );
 
   }
@@ -264,26 +264,34 @@ function TimerSetupController(_, dataService, optionService) {
     console.log("startPomodoro", this.currentUser, this.timer)
     const type = "pomodoro";
     this.currentTimer = null;
-    this.startTimer();
     // console.log('before createPomodoro', this.currentUser, this.currentUser.id);
-
-    $http.post("/api/v1/timers",
-    {
-      data: {
-        type: 'timers',
-        attributes: { type },
-        relationships: {
-          owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
-        }
-      }
-    } )
-    .then(function(response) {
-      this.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
-      this.timers.push( this.currentTimer );
+    dataService.createTimer(this.timer)
+    .then(timer => {
+      this.startTimer();
+      this.timer = timer;
+      this.timers.push( this.timer );
+      notificationService.notify('success', 'timer started');
     })
     .catch(err => {
-      this.statustext = err;
-    });
+      notificationService.notify('danger', 'timer creation failed: ' + err);
+    })
+    // $http.post("/api/v1/timers",
+    // {
+    //   data: {
+    //     type: 'timers',
+    //     attributes: { type },
+    //     relationships: {
+    //       owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
+    //     }
+    //   }
+    // } )
+    // .then(function(response) {
+    //   this.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
+    //   this.timers.push( this.currentTimer );
+    // })
+    // .catch(err => {
+    //   this.statustext = err;
+    // });
   }
 
   this.updatePomodoro = function() {
@@ -1178,6 +1186,28 @@ function DataService($http, $q, _, jsonapiUtils) {
       .catch(err => {
         notificationService.notify('danger', 'syncProjectIssues err: ' + err);
       });
+    },
+
+    createTimer: function(timer) {
+
+      return $http.post("/api/v1/timers",
+      {
+        data: {
+          type: 'timers',
+          attributes: timer, //{ type },
+          relationships: {
+            owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
+          }
+        }
+      } )
+      .then(function(response) {
+        // this.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
+        return jsonapiUtils.unmapRecords(response.data.data);
+        this.timers.push( this.currentTimer );
+      })
+      // .catch(err => {
+      //   this.statustext = err;
+      // });
     }
   };
 }

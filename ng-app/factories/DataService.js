@@ -62,6 +62,28 @@ function DataService($http, $q, _, jsonapiUtils) {
       .catch(err => {
         notificationService.notify('danger', 'syncProjectIssues err: ' + err);
       });
+    },
+
+    createTimer: function(timer) {
+
+      return $http.post("/api/v1/timers",
+      {
+        data: {
+          type: 'timers',
+          attributes: timer, //{ type },
+          relationships: {
+            owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
+          }
+        }
+      } )
+      .then(function(response) {
+        // this.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
+        return jsonapiUtils.unmapRecords(response.data.data);
+        this.timers.push( this.currentTimer );
+      })
+      // .catch(err => {
+      //   this.statustext = err;
+      // });
     }
   };
 }
