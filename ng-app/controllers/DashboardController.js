@@ -27,6 +27,10 @@ function DashboardController($rootScope, $scope, _, moment, dataService, optionS
 
   $scope.syncProjectIssues = function(project) {
     console.log('DashboardController.syncProjectIssues', project);
+    dataService.syncProjectIssues(project)
+    .then(issues => {
+      $scope.issueOptions = [{ id: 0, name: '' }].concat(issues);
+    })
   }
 
   // Daily posts

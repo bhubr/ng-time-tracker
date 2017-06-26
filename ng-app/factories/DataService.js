@@ -44,6 +44,24 @@ function DataService($http, $q, _, jsonapiUtils) {
         data: { type, attributes, relationships }
       })
       .then(response => (response.data));
+    },
+
+    syncProjectIssues: function(project) {
+      const { name, description, remoteProjectId } = project;
+      $http.post("/api/v1/sync/issues/" + remoteProjectId,
+      {} )
+      .then(function(response) {
+        console.log("## syncIssues returned");
+        console.log(response.data);
+        return response.data;
+        // const updatedProject = jsonapiUtils.unmapRecord( response.data.data );
+        // ctrl.onProjectUpdated({ project: updatedProject });
+
+        notificationService.notify('success', 'syncProjectIssues ok');
+      })
+      .catch(err => {
+        notificationService.notify('danger', 'syncProjectIssues err: ' + err);
+      });
     }
   };
 }

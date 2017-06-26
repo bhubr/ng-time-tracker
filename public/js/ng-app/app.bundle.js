@@ -511,6 +511,10 @@ function DashboardController($rootScope, $scope, _, moment, dataService, optionS
 
   $scope.syncProjectIssues = function(project) {
     console.log('DashboardController.syncProjectIssues', project);
+    dataService.syncProjectIssues(project)
+    .then(issues => {
+      $scope.issueOptions = [{ id: 0, name: '' }].concat(issues);
+    })
   }
 
   // Daily posts
@@ -1130,6 +1134,24 @@ function DataService($http, $q, _, jsonapiUtils) {
         data: { type, attributes, relationships }
       })
       .then(response => (response.data));
+    },
+
+    syncProjectIssues: function(project) {
+      const { name, description, remoteProjectId } = project;
+      $http.post("/api/v1/sync/issues/" + remoteProjectId,
+      {} )
+      .then(function(response) {
+        console.log("## syncIssues returned");
+        console.log(response.data);
+        return response.data;
+        // const updatedProject = jsonapiUtils.unmapRecord( response.data.data );
+        // ctrl.onProjectUpdated({ project: updatedProject });
+
+        notificationService.notify('success', 'syncProjectIssues ok');
+      })
+      .catch(err => {
+        notificationService.notify('danger', 'syncProjectIssues err: ' + err);
+      });
     }
   };
 }

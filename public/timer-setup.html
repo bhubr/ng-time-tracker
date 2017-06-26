@@ -4,5 +4,5 @@
 </div>
 <div class="form-group">
   <label for="selectIssue" translate>SELECT_ISSUE</label>
-  <select id="selectIssue" class="form-control" ng-model="$ctrl.filters.issueId" ng-options="p.id as p.name for p in $ctrl.projectOptions" ng-change="$ctrl.selectIssue()"></select>
+  <select id="selectIssue" class="form-control" ng-model="$ctrl.filters.issueId" ng-options="i.id as i.title for i in $ctrl.issueOptions" ng-change="$ctrl.selectIssue()"></select>
 </div>
