@@ -7,6 +7,7 @@ const env = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
 const config = configs[env];
 const { query } = require('jsonapi-express-backend-query')(config.db);
 const queryBuilder = require('./node_modules/jsonapi-express-backend/lib/queryBuilder');
+const utils = require('./node_modules/jsonapi-express-backend/lib/utils');
 const lockScreen = require('./lockScreen');
 const { startIdleTimer, stopIdleTimer } = require('./notify');
 
@@ -181,7 +182,7 @@ module.exports = {
           newValue = (new Date()).getTime();
           // console.log('current: ' + newValue + ', prev: ' + timer.lastTimestamp+ ', diff: ' + (newValue - timer.lastTimestamp) );
           if( newValue - timer.startTimestamp >= durationMs ) {
-            const dateTime = new Date().toMysqlFormat();
+            const dateTime = utils.dateToMySQL(new Date());
             const status = newValue - timer.lastTimestamp > 1050 ? 'interrupted' : 'done';
             query(queryBuilder.updateOne('timers', timerId, {
               status,
@@ -194,7 +195,7 @@ module.exports = {
               timer.current = null;
               timer.lastTimestamp = 0;
               startIdleTimer();
-              lockScreen();
+              // lockScreen();
             } );
           }
           timer.lastTimestamp = newValue;
