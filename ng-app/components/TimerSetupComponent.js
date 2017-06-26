@@ -76,6 +76,7 @@ function TimerSetupController($interval, _, dataService, optionService, notifica
     // console.log('before createPomodoro', this.currentUser, this.currentUser.id);
     dataService.createTimer(this.timer)
     .then(timer => {
+      console.log('startPomodoro timer returned', timer);
       this.startTimer();
       this.timer = timer;
       this.timers.push( this.timer );
