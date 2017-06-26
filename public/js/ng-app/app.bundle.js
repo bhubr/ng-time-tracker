@@ -191,20 +191,33 @@ module.exports = {
 /***/ 121:
 /***/ (function(module, exports) {
 
-TimerSetupController.$inject = ['lodash', 'dataService'];
+TimerSetupController.$inject = ['lodash', 'dataService', 'optionService'];
 
-function TimerSetupController(_, dataService) {
+function TimerSetupController(_, dataService, optionService) {
   console.log('TimerSetupController init', this);
   const self = this;
   const storedProjectId = localStorage.getItem('storedProjectId');
   const storedIssueId = localStorage.getItem('storedIssueId');
 
-  this.filters = {
+  this.timer = {
+    id: 0,
+    summary: '',
+    markdown: '',
+    status: '',
+    ownerId: '',
+    duration: optionService.get('pomodoro'),
     projectId: storedProjectId !== null ? storedProjectId : 0,
     issueId: storedIssueId !== null ? storedIssueId : 0
   };
+  this.statusOptions = ['new', 'done', 'interrupted'];
   this.issueOptions = [];
-  
+  this.timer = null;
+  this.timeRemaining = 0;
+  this.lastTimer = {};
+  this.currentTimer = {};
+  this.allTimers = [];
+  this.timers = [];
+
   this.selectProject = function() {
     console.log('TimerSetupController.selectProject', this.filters);
     const id = this.filters.projectId;
@@ -222,7 +235,7 @@ function TimerSetupController(_, dataService) {
     dataService.syncProjectIssues(project)
     .then(issues => {
       self.issueOptions = [{ id: 0, title: '' }].concat(issues);
-      console.log('TimerSetupController $scope.issueOptions', self.issueOptions);
+      console.log('TimerSetupController this.issueOptions', self.issueOptions);
     })
   }
 
@@ -231,7 +244,71 @@ function TimerSetupController(_, dataService) {
     const id = this.filters.issueId;
     localStorage.setItem('storedIssueId', id);
   }
-}
+
+
+  this.startTimer = function( duration ) {
+    this.timeRemaining = duration === undefined ? optionService.get('pomodoro') : duration;
+    this.timer = setInterval( () => {
+      this.$apply(function(){
+        this.timeRemaining -= 1;
+        if( this.timeRemaining === 0 ) {
+          clearInterval( this.timer );
+          this.timer = null;
+        }
+      });
+    }, 1000 );
+
+  }
+
+  this.startPomodoro = function() {
+    const type = "pomodoro";
+    this.currentTimer = null;
+    this.startTimer();
+    console.log("startPomodoro", this.currentUser, this.timer)
+    // console.log('before createPomodoro', this.currentUser, this.currentUser.id);
+
+    $http.post("/api/v1/timers",
+    {
+      data: {
+        type: 'timers',
+        attributes: { type },
+        relationships: {
+          owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
+        }
+      }
+    } )
+    .then(function(response) {
+      this.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
+      this.timers.push( this.currentTimer );
+    })
+    .catch(err => {
+      this.statustext = err;
+    });
+  }
+
+  this.updatePomodoro = function() {
+
+    $http.put("/api/v1/timers/" + this.currentTimer.id, {
+      data: {
+        type: 'timers',
+        id: this.currentTimer.id,
+        attributes: {
+          summary: this.currentTimer.summary,
+          markdown: this.currentTimer.markdown,
+          projectId: this.currentTimer.projectId
+        }
+      } 
+    } )
+    .then(function(response) {
+      this.currentTimer = Object.assign( 
+        this.currentTimer,
+        jsonapiUtils.unmapRecord(response.data.data)
+      );
+    })
+    .catch(err => {
+      this.statustext = err;
+    });
+  }}
 
 
 module.exports = {
@@ -895,20 +972,6 @@ function TimersController($scope, $rootScope, $http, lodash, optionService, noti
       lodash.filter($scope.allTimers, timer => (timer.projectId === $scope.filters.project));
   }
 
-  $scope.startTimer = function( duration ) {
-    $scope.timeRemaining = duration === undefined ? optionService.get('pomodoro') : duration;
-    $scope.timer = setInterval( () => {
-      $scope.$apply(function(){
-        $scope.timeRemaining -= 1;
-        if( $scope.timeRemaining === 0 ) {
-          clearInterval( $scope.timer );
-          $scope.timer = null;
-        }
-      });
-    }, 1000 );
-
-  }
-
   $scope.select = function( evt ) {
     var $parentLi = $( evt.target ).closest('li');
     var id = parseInt( $parentLi.data( 'id' ), 10 );
@@ -916,54 +979,6 @@ function TimersController($scope, $rootScope, $http, lodash, optionService, noti
     $scope.currentTimer = timer;
   }
 
-  $scope.createPomodoro = function() {
-    const type = "pomodoro";
-    $scope.currentTimer = null;
-    $scope.startTimer();
-    // console.log('before createPomodoro', $scope.currentUser, $scope.currentUser.id);
-
-    $http.post("/api/v1/timers",
-    {
-      data: {
-        type: 'timers',
-        attributes: { type },
-        relationships: {
-          owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
-        }
-      }
-    } )
-    .then(function(response) {
-      $scope.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
-      $scope.timers.push( $scope.currentTimer );
-    })
-    .catch(err => {
-      $scope.statustext = err;
-    });
-  }
-
-  $scope.updatePomodoro = function() {
-
-    $http.put("/api/v1/timers/" + $scope.currentTimer.id, {
-      data: {
-        type: 'timers',
-        id: $scope.currentTimer.id,
-        attributes: {
-          summary: $scope.currentTimer.summary,
-          markdown: $scope.currentTimer.markdown,
-          projectId: $scope.currentTimer.projectId
-        }
-      } 
-    } )
-    .then(function(response) {
-      $scope.currentTimer = Object.assign( 
-        $scope.currentTimer,
-        jsonapiUtils.unmapRecord(response.data.data)
-      );
-    })
-    .catch(err => {
-      $scope.statustext = err;
-    });
-  }
 
   getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtils );
 

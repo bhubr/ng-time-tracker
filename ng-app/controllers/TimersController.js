@@ -65,20 +65,6 @@ function TimersController($scope, $rootScope, $http, lodash, optionService, noti
       lodash.filter($scope.allTimers, timer => (timer.projectId === $scope.filters.project));
   }
 
-  $scope.startTimer = function( duration ) {
-    $scope.timeRemaining = duration === undefined ? optionService.get('pomodoro') : duration;
-    $scope.timer = setInterval( () => {
-      $scope.$apply(function(){
-        $scope.timeRemaining -= 1;
-        if( $scope.timeRemaining === 0 ) {
-          clearInterval( $scope.timer );
-          $scope.timer = null;
-        }
-      });
-    }, 1000 );
-
-  }
-
   $scope.select = function( evt ) {
     var $parentLi = $( evt.target ).closest('li');
     var id = parseInt( $parentLi.data( 'id' ), 10 );
@@ -86,54 +72,6 @@ function TimersController($scope, $rootScope, $http, lodash, optionService, noti
     $scope.currentTimer = timer;
   }
 
-  $scope.createPomodoro = function() {
-    const type = "pomodoro";
-    $scope.currentTimer = null;
-    $scope.startTimer();
-    // console.log('before createPomodoro', $scope.currentUser, $scope.currentUser.id);
-
-    $http.post("/api/v1/timers",
-    {
-      data: {
-        type: 'timers',
-        attributes: { type },
-        relationships: {
-          owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
-        }
-      }
-    } )
-    .then(function(response) {
-      $scope.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
-      $scope.timers.push( $scope.currentTimer );
-    })
-    .catch(err => {
-      $scope.statustext = err;
-    });
-  }
-
-  $scope.updatePomodoro = function() {
-
-    $http.put("/api/v1/timers/" + $scope.currentTimer.id, {
-      data: {
-        type: 'timers',
-        id: $scope.currentTimer.id,
-        attributes: {
-          summary: $scope.currentTimer.summary,
-          markdown: $scope.currentTimer.markdown,
-          projectId: $scope.currentTimer.projectId
-        }
-      } 
-    } )
-    .then(function(response) {
-      $scope.currentTimer = Object.assign( 
-        $scope.currentTimer,
-        jsonapiUtils.unmapRecord(response.data.data)
-      );
-    })
-    .catch(err => {
-      $scope.statustext = err;
-    });
-  }
 
   getTimersAndProjects( $scope, $http, lodash, optionService, jsonapiUtils );
 
