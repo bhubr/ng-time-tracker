@@ -9,14 +9,14 @@
   </div>
   <div class="form-group col-sm-12">
     <label for="inputSummary">Summary</label>
-    <input id="inputSummary" placeholder="What are you working on?" type="text" ng-model="$ctrl.timer.summary">
+    <input id="inputSummary" class="form-control" placeholder="What are you working on?" type="text" ng-model="$ctrl.timer.summary">
   </div>
   <div class="col-sm-12">
-  Started at: {{ $ctrl.timer.createdAt.substr(11, 5) }}
+    <span ng-if="$ctrl.timer.id">Started at: {{ $ctrl.timer.createdAt.substr(11, 5) }}</span>
   </div>
   <div class="form-group col-sm-12">
     <label for="inputMarkdown">Details</label>
-    <textarea id="inputMarkdown" ng-model="currentTimer.markdown">{{ $ctrl.timer.markdown }}</textarea>
+    <textarea id="inputMarkdown" class="form-control" ng-model="$ctrl.timer.markdown">{{ $ctrl.timer.markdown }}</textarea>
   </div>
   <div class="browser-default col-sm-12" ng-bind-html="$ctrl.timer.markdown | markdown"></div>
   <div class="input-field col col-sm-7">
@@ -30,7 +30,7 @@
     </select>
   </div>
  -->
-  <div class="input-field col-sm-12" ng-if="$ctrl.timer.id"><button class="btn" ng-click="$ctrl.updatePomodoro()">Update</button></div>
-  <div class="input-field col-sm-12" ng-if="! $ctrl.timer.id"><button class="btn" ng-click="$ctrl.startPomodoro()">Start</button></div>
+  <div class="input-field col-sm-12" ng-if="$ctrl.timer.id"><button class="btn btn-primary" ng-click="$ctrl.updatePomodoro()">Update</button></div>
+  <div class="input-field col-sm-12" ng-if="! $ctrl.timer.id"><button class="btn btn-primary" ng-click="$ctrl.startPomodoro()">Start</button></div>
 </div>
 

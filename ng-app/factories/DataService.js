@@ -66,15 +66,20 @@ function DataService($rootScope, $http, $q, _, jsonapiUtils) {
 
     createTimer: function(timer) {
       console.log('DS.createTimer', timer, $rootScope.currentUser.userId)
+      const { type, summary, markdown, duration, issueId, ownerId } = timer;
+      const relationships = {
+        owner: { data: { type: 'users', id: $rootScope.currentUser.userId } },
+        // issue: 
+      };
+      if(issueId) {
+        relationships.issue = { data: { type: 'issues', id: issueId } };
+      }
       return $http.post("/api/v1/timers",
       {
         data: {
           type: 'timers',
-          attributes: timer, //{ type },
-          relationships: {
-            owner: { data: { type: 'users', id: $rootScope.currentUser.userId } },
-            // issue: { data: { type: 'issues', id: timer.issueId } }
-          }
+          attributes: { type, summary, markdown, duration },
+          relationships
         }
       } )
       .then(function(response) {
