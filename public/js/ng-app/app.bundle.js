@@ -1127,9 +1127,9 @@ module.exports = BitbucketService;
  *----------------------------------------
  |
  */
-DataService.$inject = ['$http', '$q', 'lodash', 'jsonapiUtils'];
+DataService.$inject = ['$rootScope', '$http', '$q', 'lodash', 'jsonapiUtils'];
 
-function DataService($http, $q, _, jsonapiUtils) {
+function DataService($rootScope, $http, $q, _, jsonapiUtils) {
   return {
     get: function(keys) {
       if(typeof keys === 'string') {
@@ -1188,15 +1188,15 @@ function DataService($http, $q, _, jsonapiUtils) {
       });
     },
 
-    createTimer: function(timer, userId) {
-      console.log('DS.createTimer', timer, userId)
+    createTimer: function(timer) {
+      console.log('DS.createTimer', timer, $rootScope.currentUser.userId)
       return $http.post("/api/v1/timers",
       {
         data: {
           type: 'timers',
           attributes: timer, //{ type },
           relationships: {
-            owner: { data: { type: 'users', id: userId } }
+            owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
           }
         }
       } )
