@@ -191,18 +191,22 @@ module.exports = {
 /***/ 121:
 /***/ (function(module, exports) {
 
-TimerSetupController.$inject = [];
+TimerSetupController.$inject = ['lodash'];
 
-function TimerSetupController() {
+function TimerSetupController(_) {
   console.log('TimerSetupController init', this);
   this.filters = {
-    project: '',
-    issue: ''
+    projectId: '',
+    issueId: ''
   };
   
   this.selectProject = function() {
     console.log('TimerSetupController.selectProject', this.filters);
-    // this.onProjectSelected({ projectId: this.filters.project });
+    const id = this.filters.projectId;
+    if(id !== 0) {
+      const project = _.find(this.projectOptions,{ id })
+      this.onProjectSelected({ project });
+    }
   }
 
   this.selectIssue = function() {
@@ -505,6 +509,9 @@ function DashboardController($rootScope, $scope, _, moment, dataService, optionS
 
   $scope.projectOptions = [{ id: 0, name: '' }].concat($scope.activeProjects);
 
+  $scope.syncProjectIssues = function(project) {
+    console.log('DashboardController.syncProjectIssues', project);
+  }
 
   // Daily posts
   var today = moment().format('YYYY-MM-DD');

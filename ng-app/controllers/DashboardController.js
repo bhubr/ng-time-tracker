@@ -25,6 +25,9 @@ function DashboardController($rootScope, $scope, _, moment, dataService, optionS
 
   $scope.projectOptions = [{ id: 0, name: '' }].concat($scope.activeProjects);
 
+  $scope.syncProjectIssues = function(project) {
+    console.log('DashboardController.syncProjectIssues', project);
+  }
 
   // Daily posts
   var today = moment().format('YYYY-MM-DD');
