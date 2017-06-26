@@ -94,7 +94,7 @@ function DataService($rootScope, $http, $q, _, jsonapiUtils) {
     },
 
     updateTimer: function(timer) {
-      $http.put("/api/v1/timers/" + timer.id, {
+      return $http.put("/api/v1/timers/" + timer.id, {
         data: {
           type: 'timers',
           id: timer.id,
