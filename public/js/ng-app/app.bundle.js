@@ -261,10 +261,10 @@ function TimerSetupController(_, dataService, optionService) {
   }
 
   this.startPomodoro = function() {
+    console.log("startPomodoro", this.currentUser, this.timer)
     const type = "pomodoro";
     this.currentTimer = null;
     this.startTimer();
-    console.log("startPomodoro", this.currentUser, this.timer)
     // console.log('before createPomodoro', this.currentUser, this.currentUser.id);
 
     $http.post("/api/v1/timers",
