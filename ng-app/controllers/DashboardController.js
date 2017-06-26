@@ -13,6 +13,7 @@ function DashboardController($rootScope, $scope, _, moment, dataService, optionS
   var sortedTimers = _.sortBy(data.timers, 'createdAt');
   $scope.latestTimers = _.slice(sortedTimers, numTimers - 5);
   $scope.lastTimer = _.findLast( data.timers, { status: 'new' } );
+  console.log('DashboardController lastTimer', $scope.lastTimer);
 
   // Projects for which there have been timers in the last 7 days
   var oneWeekAgo = moment().subtract(7, 'days');
