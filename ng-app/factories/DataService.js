@@ -85,8 +85,8 @@ function DataService($rootScope, $http, $q, _, jsonapiUtils) {
       return $http.post("/api/v1/timers", { data } )
       .then(function(response) {
         // this.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
-        return jsonapiUtils.unmapRecords(response.data.data);
-        this.timers.push( this.currentTimer );
+        return jsonapiUtils.unmapRecord(response.data.data);
+        // this.timers.push( this.currentTimer );
       })
       // .catch(err => {
       //   this.statustext = err;
