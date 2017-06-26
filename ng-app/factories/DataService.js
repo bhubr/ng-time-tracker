@@ -72,7 +72,8 @@ function DataService($rootScope, $http, $q, _, jsonapiUtils) {
           type: 'timers',
           attributes: timer, //{ type },
           relationships: {
-            owner: { data: { type: 'users', id: $rootScope.currentUser.userId } }
+            owner: { data: { type: 'users', id: $rootScope.currentUser.userId } },
+            // issue: { data: { type: 'issues', id: timer.issueId } }
           }
         }
       } )

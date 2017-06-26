@@ -113,6 +113,11 @@ module.exports = {
         model: 'remoteProject',
         type: 'belongsTo',
         reverse: 'issues'
+      },
+      timers: {
+        model: 'timer',
+        type: 'belongsTo',
+        reverse: 'issue'
       }
     }
   },
@@ -139,6 +144,11 @@ module.exports = {
     relationships: {
       owner: {
         model: 'user',
+        type: 'belongsTo',
+        reverse: 'timers'
+      },
+      issue: {
+        model: 'issue',
         type: 'belongsTo',
         reverse: 'timers'
       }

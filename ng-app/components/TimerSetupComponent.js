@@ -16,6 +16,7 @@ function TimerSetupController($interval, _, dataService, optionService, notifica
     projectId: storedProjectId !== null ? storedProjectId : 0,
     issueId: storedIssueId !== null ? storedIssueId : 0
   };
+
   this.statusOptions = ['new', 'done', 'interrupted'];
   this.issueOptions = [];
   this.timerInterval = null;
@@ -26,8 +27,8 @@ function TimerSetupController($interval, _, dataService, optionService, notifica
   this.timers = [];
 
   this.selectProject = function() {
-    console.log('TimerSetupController.selectProject', this.filters);
-    const id = this.filters.projectId;
+    console.log('TimerSetupController.selectProject', this.timer);
+    const id = this.timer.projectId;
     if(id !== 0) {
       const project = _.find(this.projectOptions,{ id })
       this.syncProjectIssues(project);
@@ -47,8 +48,8 @@ function TimerSetupController($interval, _, dataService, optionService, notifica
   }
 
   this.selectIssue = function() {
-    console.log('TimerSetupController.selectIssue', this.filters);
-    const id = this.filters.issueId;
+    console.log('TimerSetupController.selectIssue', this.timer);
+    const id = this.timer.issueId;
     localStorage.setItem('storedIssueId', id);
   }
 
