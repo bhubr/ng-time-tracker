@@ -65,10 +65,12 @@ function DataService($rootScope, $http, $q, _, jsonapiUtils) {
     },
 
     createTimer: function(timer) {
-      console.log('DS.createTimer', timer, $rootScope.currentUser.userId)
-      const { type, summary, markdown, duration, issueId, ownerId } = timer;
+      console.log('DS.createTimer ### 1', timer, $rootScope.currentUser.userId)
+      const { type, summary, markdown, duration, issueId, ownerId, projectId } = timer;
+      console.log('DS.createTimer ### 2', type, summary, markdown, duration, issueId, ownerId, projectId);
       const relationships = {
         owner: { data: { type: 'users', id: $rootScope.currentUser.userId } },
+        project: { data: { type: 'projects', id: projectId } },
         // issue: 
       };
       if(issueId) {
