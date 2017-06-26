@@ -76,14 +76,12 @@ function DataService($rootScope, $http, $q, _, jsonapiUtils) {
       if(issueId) {
         relationships.issue = { data: { type: 'issues', id: issueId } };
       }
-      return $http.post("/api/v1/timers",
-      {
-        data: {
-          type: 'timers',
-          attributes: { type, summary, markdown, duration },
-          relationships
-        }
-      } )
+      const data = {
+        type: 'timers',
+        attributes: { type, summary, markdown, duration },
+        relationships
+      };
+      return $http.post("/api/v1/timers", { data } )
       .then(function(response) {
         // this.currentTimer = jsonapiUtils.unmapRecords(response.data.data);
         return jsonapiUtils.unmapRecords(response.data.data);
