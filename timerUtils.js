@@ -55,7 +55,7 @@ TimerWrapper.prototype.onIntervalTick = function() {
     }))
     .then( () => this.timerStop.bind(this) );
   }
-  timer.lastTimestamp = currentTimestamp;
+  this.lastTimestamp = currentTimestamp;
 };
 
 TimerWrapper.prototype.timerStop = function() {
