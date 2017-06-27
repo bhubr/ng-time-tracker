@@ -61,13 +61,13 @@ TimerWrapper.prototype.onIntervalTick = function() {
 };
 
 TimerWrapper.prototype.timerStop = function() {
-  console.log('TimerWrapper.timerStop');
-  clearInterval( this.interval );
-  this.interval = null;
-  this.currentModel = null;
-  this.lastTimestamp = 0;
-  startIdleTimer(this.currentModel.ownerId);
+  console.log('TimerWrapper.timerStop', this);
+  clearInterval(this.interval);
   notifyTimerDone(this.currentModel.ownerId);
+  startIdleTimer(this.currentModel.ownerId);
+  this.interval = null;
+  this.lastTimestamp = 0;
+  this.currentModel = null;
   // lockScreen();
 };
 
