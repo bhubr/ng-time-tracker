@@ -48,7 +48,7 @@ TimerWrapper.prototype.onIntervalTick = function() {
   if( currentTimestamp - this.startTimestamp >= this.durationMsec ) {
     const dateTime = utils.dateToMySQL(new Date());
     const status = currentTimestamp - this.lastTimestamp > 1050 ? 'interrupted' : 'done';
-    query(queryBuilder.updateOne('timers', timerId, {
+    query(queryBuilder.updateOne('timers', this.timerId, {
       status,
       stoppedAt: dateTime,
       updatedAt: dateTime
