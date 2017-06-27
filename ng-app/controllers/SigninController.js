@@ -1,6 +1,7 @@
 SigninController.$inject = ['$rootScope', '$scope', '$location', 'authService'];
 
 function SigninController($rootScope, $scope, $location, authService) {
+  $scope.hideFooterTimer = true;
   $scope.payload = {
     email: '',
     password: ''

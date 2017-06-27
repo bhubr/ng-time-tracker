@@ -774,6 +774,7 @@ module.exports = ReposController;
 SigninController.$inject = ['$rootScope', '$scope', '$location', 'authService'];
 
 function SigninController($rootScope, $scope, $location, authService) {
+  $scope.hideFooterTimer = true;
   $scope.payload = {
     email: '',
     password: ''
@@ -795,6 +796,7 @@ module.exports = SigninController;
 SignupController.$inject = ['$rootScope', '$scope', 'authService'];
 
 function SignupController($rootScope, $scope, authService) {
+  $scope.hideFooterTimer = true;
   // $scope.payload = {
   //   email: '',
   //   username: '',

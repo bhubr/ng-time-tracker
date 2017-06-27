@@ -1,6 +1,7 @@
 SignupController.$inject = ['$rootScope', '$scope', 'authService'];
 
 function SignupController($rootScope, $scope, authService) {
+  $scope.hideFooterTimer = true;
   // $scope.payload = {
   //   email: '',
   //   username: '',
