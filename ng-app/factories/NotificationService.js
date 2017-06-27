@@ -2,14 +2,34 @@ NotificationService.$inject = ['$rootScope'];
 
 function NotificationService($rootScope) {
 
-  // http://stackoverflow.com/questions/2271156/chrome-desktop-notification-example
-  function notifyMe(idleTime) {
-    if (Notification.permission !== "granted")
+  /**
+   * Send browser desktop notification.
+   * Source: http://stackoverflow.com/questions/2271156/chrome-desktop-notification-example
+   */
+  function notifyMe(data) {
+    const textsPerType = {
+      idle: {
+        title: "Don't stay idle!!!",
+        body: data => {
+          return "Hey there! You've been idle for " + data.idleTime + ' minute(s)';
+        }
+      },
+      done: {
+        title: 'Timer complete',
+        body: data => {
+          return "Feel free to take a break! Do it!";
+        }
+      }
+    };
+    const texts = textsPerType[data.type];
+    // Request permission if not yet granted
+    if (Notification.permission !== "granted") {
       Notification.requestPermission();
+    }
     else {
-      var notification = new Notification("Don't stay idle!!", {
+      var notification = new Notification(texts.title, {
         icon: 'https://ares.gods.ovh/img/Tomato_icon-icons.com_68675.png',
-        body: "Hey there! You've been idle for " + idleTime + ' minute(s)',
+        body: texts.body(data),
       });
 
       notification.onclick = function () {
@@ -30,7 +50,7 @@ function NotificationService($rootScope) {
     var socket = io();
     socket.on('idle', function(idleTime){
       console.log(idleTime);
-      notifyMe(idleTime);
+      notifyMe({ type: 'idle', idleTime: idleTime });
     });
     socket.on('server ready', function(msg){
       // console.log(msg);
@@ -38,6 +58,9 @@ function NotificationService($rootScope) {
       if(token !== null) {
         socket.emit('client ready', token);
       }
+    });
+    socket.on('timer done', () => {
+      notifyMe({ type: 'done' })
     });
   }
 
