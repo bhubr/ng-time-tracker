@@ -33,6 +33,7 @@ const timerStore = new TimerStore();
 function TimerWrapper(timerModel) {
   console.log('TimerWrapper constructor', timerModel);
   this.timerId = timerModel.id;
+  this.userId = timerModel.ownerId;
   this.startTimestamp = (new Date()).getTime();
   this.lastTimestamp = (new Date()).getTime();
   this.currentModel = timerModel;
@@ -63,8 +64,8 @@ TimerWrapper.prototype.onIntervalTick = function() {
 TimerWrapper.prototype.timerStop = function() {
   console.log('TimerWrapper.timerStop', this);
   clearInterval(this.interval);
-  notifyTimerDone(this.currentModel.ownerId);
-  startIdleTimer(this.currentModel.ownerId);
+  notifyTimerDone(this.userId);
+  startIdleTimer(this.userId);
   this.interval = null;
   this.lastTimestamp = 0;
   this.currentModel = null;
