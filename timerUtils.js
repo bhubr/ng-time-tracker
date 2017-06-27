@@ -19,8 +19,8 @@ function TimerStore() {
 }
 
 TimerStore.prototype.factory = function(timerModel) {
-  const { userId } = timerModel;
-  console.log('TimerStore.factory', timerModel, userId);
+  const userId = timerModel.ownerId;
+  console.log('TimerStore.factory', timerModel, 'owner =>', userId);
   if(this.timersPerUser[userId]) {
     delete this.timersPerUser[userId];
   }
@@ -38,13 +38,13 @@ function TimerWrapper(timerModel) {
   this.currentModel = timerModel;
   this.durationMsec = timerModel.duration * 1000;
   this.interval = setInterval(this.onIntervalTick.bind(this), 1000 );
-  stopIdleTimer(timerModel.userId);
+  stopIdleTimer(timerModel.ownerId);
 }
 
 TimerWrapper.prototype.onIntervalTick = function() {
   console.log('TimerWrapper.onIntervalTick');
   let currentTimestamp = (new Date()).getTime();
-  console.log('current: ' + this.currentTimestamp + ', prev: ' + this.lastTimestamp+ ', diff: ' + (currentTimestamp - this.lastTimestamp) );
+  console.log('current: ' + currentTimestamp + ', prev: ' + this.lastTimestamp+ ', diff: ' + (currentTimestamp - this.lastTimestamp) );
   if( currentTimestamp - this.startTimestamp >= this.durationMsec ) {
     const dateTime = utils.dateToMySQL(new Date());
     const status = currentTimestamp - this.lastTimestamp > 1050 ? 'interrupted' : 'done';
@@ -64,16 +64,16 @@ TimerWrapper.prototype.timerStop = function() {
   this.interval = null;
   this.currentModel = null;
   this.lastTimestamp = 0;
-  startIdleTimer(this.currentModel.userId);
-  notifyTimerDone(this.currentModel.userId);
+  startIdleTimer(this.currentModel.ownerId);
+  notifyTimerDone(this.currentModel.ownerId);
   // lockScreen();
 };
 
 function afterCreate(timerModel) {
   // WEIRD. Gotta store timer id b/c it gets erased from timerModel later on!!!
   const timerId = timerModel.id;
-  const { userId } = timerModel;
-  console.log('timerModel user', timerModel, userId);
+  const { ownerId } = timerModel;
+  console.log('timerModel user', timerModel, ownerId);
   const wrapper = timerStore.factory(timerModel);
 
 
