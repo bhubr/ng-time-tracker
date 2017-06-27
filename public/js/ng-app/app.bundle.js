@@ -1337,7 +1337,11 @@ function NotificationService($rootScope) {
       notifyMe(idleTime);
     });
     socket.on('server ready', function(msg){
-      console.log(msg);
+      // console.log(msg);
+      const token = localStorage.getItem('id_token');
+      if(token !== null) {
+        socket.emit('client ready', token);
+      }
     });
   }
 

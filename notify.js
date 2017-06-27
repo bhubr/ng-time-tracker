@@ -1,13 +1,26 @@
+const configs = require(__dirname + '/config.json');
+const env = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
+const config = configs[env];
+const models = require('./models');
+const { checkJwt } = require('jsonapi-express-backend')(__dirname, config, models);
+
 // const notifier = require('node-notifier');
 
 var io;
-var socket;
+// var socket;
 function setIo(_io) {
   io = _io;
 
-  io.on('connection', function(_socket){
+  io.on('connection', function(socket){
     console.log('a user connected');
-    socket = _socket;
+    // socket = _socket;
+    socket.on('client ready', function(jwt) {
+      console.log('received from client', jwt);
+      checkJwt(jwt)
+      .then(decoded => {
+        console.log('decoded jwt', decoded);
+      })
+    });
     socket.emit('server ready', { msg: 'ready' });
   });
 
