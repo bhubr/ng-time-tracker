@@ -8,7 +8,7 @@ function NotificationService($rootScope) {
       Notification.requestPermission();
     else {
       var notification = new Notification("Don't stay idle!!", {
-        icon: 'http://cdn.sstatic.net/stackexchange/img/logos/so/so-icon.png',
+        icon: 'https://ares.gods.ovh/img/Tomato_icon-icons.com_68675.png',
         body: "Hey there! You've been idle for " + idleTime + ' minute(s)',
       });
 
