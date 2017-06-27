@@ -43,6 +43,7 @@ function TimerWrapper(timerModel) {
 
 TimerWrapper.prototype.onIntervalTick = function() {
   console.log('TimerWrapper.onIntervalTick');
+  const timerStop = this.timerStop.bind(this);
   let currentTimestamp = (new Date()).getTime();
   console.log('current: ' + currentTimestamp + ', prev: ' + this.lastTimestamp+ ', diff: ' + (currentTimestamp - this.lastTimestamp) );
   if( currentTimestamp - this.startTimestamp >= this.durationMsec ) {
@@ -53,8 +54,8 @@ TimerWrapper.prototype.onIntervalTick = function() {
       stoppedAt: dateTime,
       updatedAt: dateTime
     }))
-    .then( utils.passLog('timer after stop') )
-    .then( () => this.timerStop.bind(this) );
+    // .then( utils.passLog('timer after stop') )
+    .then(timerStop);
   }
   this.lastTimestamp = currentTimestamp;
 };
