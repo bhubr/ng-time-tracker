@@ -53,6 +53,7 @@ TimerWrapper.prototype.onIntervalTick = function() {
       stoppedAt: dateTime,
       updatedAt: dateTime
     }))
+    .then( utils.passLog('timer after stop') )
     .then( () => this.timerStop.bind(this) );
   }
   this.lastTimestamp = currentTimestamp;
