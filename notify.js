@@ -3,22 +3,21 @@ const env = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
 const config = configs[env];
 const models = require('./models');
 const { checkJwt } = require('jsonapi-express-backend')(__dirname, config, models);
+let socketsPerUser = {};
+let io;
 
-// const notifier = require('node-notifier');
-
-var io;
-// var socket;
 function setIo(_io) {
   io = _io;
 
   io.on('connection', function(socket){
     console.log('a user connected');
-    // socket = _socket;
     socket.on('client ready', function(jwt) {
       console.log('received from client', jwt);
       checkJwt(jwt)
       .then(decoded => {
         console.log('decoded jwt', decoded);
+        const { userId } = decoded;
+        socketsPerUser[userId] = socket;
       })
     });
     socket.emit('server ready', { msg: 'ready' });
@@ -52,5 +51,10 @@ function stopIdleTimer() {
   idleTimer.interval = null;
 }
 
+function notifyTimerDone(userId) {
+  const socket = socketsPerUser[userId];
+  socket.emit('timer done');
+}
 
-module.exports = { setIo, startIdleTimer, stopIdleTimer, idleTimer };
+
+module.exports = { setIo, startIdleTimer, stopIdleTimer, idleTimer, notifyTimerDone };
