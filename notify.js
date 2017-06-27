@@ -53,6 +53,7 @@ function stopIdleTimer() {
 
 function notifyTimerDone(userId) {
   const socket = socketsPerUser[userId];
+  console.log('emit "timer done" on socket', socket, userId);
   socket.emit('timer done');
 }
 
