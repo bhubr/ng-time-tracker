@@ -56,7 +56,7 @@
 
     <footer class="footer">
       <div class="container" ng-controller="timerCtrl">
-        <p class="text-muted">{{ timeRemaining | formatTimer }}</p>
+        <p ng-if="! hideFooterTimer" class="text-muted">{{ timeRemaining | formatTimer }}</p>
         <div><button class="btn btn-info" ng-click="logout()">FORCE LOGOUT</button></div>
       </div>
     </footer>

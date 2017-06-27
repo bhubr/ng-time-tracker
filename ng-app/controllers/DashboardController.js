@@ -1,6 +1,8 @@
 DashboardController.$inject = ['$rootScope', '$scope', 'lodash', 'moment', 'dataService', 'optionService', 'data'];
 
 function DashboardController($rootScope, $scope, _, moment, dataService, optionService, data) {
+  $scope.hideFooterTimer = true;
+
   $scope.dailyPost = {
     markdown: ''
   };
